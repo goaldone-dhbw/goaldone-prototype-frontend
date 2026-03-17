@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --configuration=production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "generate:api": "openapi-generator-cli generate -i openapi.yaml -g typescript-angular -o src/app/api --additional-properties=ngVersion=21,withInterfaces=true,supportsES6=true"
