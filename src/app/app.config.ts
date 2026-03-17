@@ -11,12 +11,11 @@ import { ApiModule, Configuration } from './api';
 import { environment } from '../environments/environment';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { authInterceptor } from './auth.interceptor';
 import { LucideAngularModule, Check, Home, User } from 'lucide-angular';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(),
     provideBrowserGlobalErrorListeners(),
     provideAnimationsAsync(),
     providePrimeNG({
