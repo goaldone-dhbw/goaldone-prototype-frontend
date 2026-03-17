@@ -12,10 +12,11 @@ import { environment } from '../environments/environment';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { LucideAngularModule, Check, Home, User } from 'lucide-angular';
+import { authInterceptor } from './core/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([authInterceptor])),
     provideBrowserGlobalErrorListeners(),
     provideAnimationsAsync(),
     providePrimeNG({
@@ -30,9 +31,6 @@ export const appConfig: ApplicationConfig = {
         () =>
           new Configuration({
             basePath: environment.apiBasePath,
-            credentials: {
-              bearerAuth: () => localStorage.getItem('accessToken') ?? '',
-            },
           }),
       ),
     ),
