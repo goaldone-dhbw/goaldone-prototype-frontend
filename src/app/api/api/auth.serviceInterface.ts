@@ -16,7 +16,6 @@ import { ChangePasswordRequest } from '../model/models';
 import { LoginRequest } from '../model/models';
 import { LoginResponse } from '../model/models';
 import { ProblemDetail } from '../model/models';
-import { RefreshRequest } from '../model/models';
 import { RefreshResponse } from '../model/models';
 
 
@@ -47,7 +46,7 @@ export interface AuthServiceInterface {
 
     /**
      * Login mit E-Mail und Passwort
-     * Gibt Access Token und Refresh Token zurück.
+     * Gibt den Access Token im Response Body zurück. Setzt den Refresh Token als HttpOnly Cookie (nicht im Body). Der Cookie ist auf &#x60;Path&#x3D;/api/v1/auth&#x60; beschränkt und wird vom Browser ausschließlich an &#x60;/auth/refresh&#x60; und &#x60;/auth/logout&#x60; mitgesendet. 
      * @endpoint post /auth/login
      * @param loginRequest 
      */
@@ -55,18 +54,18 @@ export interface AuthServiceInterface {
 
     /**
      * Logout – Refresh Token invalidieren
-     * Invalidiert den übergebenen Refresh Token serverseitig.
+     * Liest den Refresh Token aus dem HttpOnly Cookie und invalidiert ihn serverseitig. Löscht den Cookie durch Setzen von Max-Age&#x3D;0. Kein Request Body erforderlich – der Cookie wird vom Browser automatisch mitgesendet. 
      * @endpoint post /auth/logout
-     * @param refreshRequest 
+     * @param refreshToken HttpOnly Refresh Token Cookie (wird vom Browser automatisch mitgesendet)
      */
-    logout(refreshRequest: RefreshRequest, extraHttpRequestParams?: any): Observable<{}>;
+    logout(refreshToken: string, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
      * Access Token erneuern (Token Rotation)
-     * Gibt einen neuen Access Token und einen neuen Refresh Token zurück. Der alte Refresh Token wird invalidiert (Token Rotation). 
+     * Liest den Refresh Token aus dem HttpOnly Cookie &#x60;refresh_token&#x60;. Gibt einen neuen Access Token im Body zurück und setzt einen neuen Refresh Token Cookie. Der alte Refresh Token Cookie wird serverseitig invalidiert (Token Rotation). Kein Request Body erforderlich – der Cookie wird vom Browser automatisch mitgesendet. 
      * @endpoint post /auth/refresh
-     * @param refreshRequest 
+     * @param refreshToken HttpOnly Refresh Token Cookie (wird vom Browser automatisch mitgesendet)
      */
-    refreshToken(refreshRequest: RefreshRequest, extraHttpRequestParams?: any): Observable<RefreshResponse>;
+    refreshToken(refreshToken: string, extraHttpRequestParams?: any): Observable<RefreshResponse>;
 
 }

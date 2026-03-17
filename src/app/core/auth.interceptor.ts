@@ -1,19 +1,33 @@
-import { HttpInterceptorFn, HttpRequest, HttpHandlerFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpRequest, HttpContextToken } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError, BehaviorSubject, filter, take } from 'rxjs';
 import { AuthStore } from './auth.store';
 import { AuthService } from '../api';
 import { Router } from '@angular/router';
 
-// Verhindert parallele Refresh-Calls (Token Rotation!)
+export const NEEDS_CREDENTIALS = new HttpContextToken<boolean>(() => false);
+
+const PUBLIC_ENDPOINTS = ['/auth/login', '/auth/refresh', '/auth/invitations/'];
+
+// Endpunkte die den Cookie brauchen → withCredentials: true
+const COOKIE_ENDPOINTS = [
+  '/auth/login',
+  '/auth/refresh',
+  '/auth/logout',
+  '/auth/invitations',
+];
+
 let isRefreshing = false;
 const refreshDone$ = new BehaviorSubject<string | null>(null);
 
-// Endpunkte die KEIN Bearer-Token brauchen (security: [] in OpenAPI)
-const PUBLIC_ENDPOINTS = ['/auth/login', '/auth/refresh', '/auth/invitations/'];
-
-function isAuthEndpoint(url: string): boolean {
+function isPublic(url: string) {
   return PUBLIC_ENDPOINTS.some((e) => url.includes(e));
+}
+function needsCookie(req: HttpRequest<unknown>) {
+  return (
+    COOKIE_ENDPOINTS.some((e) => req.url.includes(e)) ||
+    req.context.get(NEEDS_CREDENTIALS)
+  );
 }
 
 function addBearer(req: HttpRequest<unknown>, token: string) {
@@ -25,11 +39,16 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authApi = inject(AuthService);
   const router = inject(Router);
 
-  // Public Endpunkte (login, refresh, invitation) → kein Header
-  if (isAuthEndpoint(req.url)) {
+  if (needsCookie(req)) {
+    req = req.clone({ withCredentials: true });
+  }
+
+  // Öffentliche Endpunkte ohne Token
+  if (isPublic(req.url)) {
     return next(req);
   }
 
+  // Alle anderen: Bearer Token anhängen
   const token = store.accessToken();
   const authedReq = token ? addBearer(req, token) : req;
 
@@ -37,14 +56,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((err) => {
       if (err.status !== 401) return throwError(() => err);
 
-      const refreshToken = store.refreshToken();
-      if (!refreshToken) {
-        store.clear();
+      // Kein Refresh möglich wenn kein User eingeloggt
+      if (!store.isLoggedIn()) {
         router.navigate(['/login']);
         return throwError(() => err);
       }
 
-      // Bereits ein Refresh läuft → warten bis der fertig ist
+      // Parallele Refresh-Calls abfangen
       if (isRefreshing) {
         return refreshDone$.pipe(
           filter((t) => t !== null),
@@ -53,21 +71,18 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         );
       }
 
-      // Refresh starten
       isRefreshing = true;
       refreshDone$.next(null);
 
-      return authApi.refreshToken({ refreshToken }).pipe(
+      // Dummy string für refreshToken Call (wird vom Browser durch den echten Cookie ersetzt)
+      return authApi.refreshToken('').pipe(
         switchMap((res) => {
           isRefreshing = false;
-          // Token Rotation: beide Tokens aktualisieren
-          store.setTokens(res.accessToken, res.refreshToken);
+          store.setTokens(res.accessToken);
           refreshDone$.next(res.accessToken);
-          // Original-Request mit neuem Token wiederholen
           return next(addBearer(req, res.accessToken));
         }),
         catchError((refreshErr) => {
-          // Refresh Token auch abgelaufen → ausloggen
           isRefreshing = false;
           store.clear();
           router.navigate(['/login']);
