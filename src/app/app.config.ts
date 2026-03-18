@@ -1,21 +1,22 @@
 import {
-    ApplicationConfig,
-    importProvidersFrom,
-    inject,
-    provideAppInitializer,
-    provideBrowserGlobalErrorListeners,
+  ApplicationConfig,
+  importProvidersFrom,
+  inject,
+  provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeuix/themes/aura';
 import { routes } from './app.routes';
 import { ApiModule, Configuration, AuthService as GoaldoneAuthApi } from './api';
 import { environment } from '../environments/environment';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { LucideAngularModule, Check, Home, User } from 'lucide-angular';
 import { authInterceptor } from './core/auth.interceptor';
 import { AuthStore } from './core/auth.store';
-import { catchError, of, take, tap } from 'rxjs';
-import { GoaldoneTheme } from './GoaldoneTheme';
+import { catchError, of, tap } from 'rxjs';
 
 export const appConfig: ApplicationConfig = {
     providers: [
