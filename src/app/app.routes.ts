@@ -1,13 +1,24 @@
 import { Routes } from '@angular/router';
+import { authGuard, guestGuard } from './core/auth.guard';
 
 export const routes: Routes = [
     {
         path: '',
         pathMatch: 'full',
-        loadComponent: () => import('./features/landing/landing.page').then((m) => m.LandingPage),
+        loadComponent: () =>
+            import('./features/landing/landing.page').then((m) => m.LandingPage),
     },
     {
+        path: 'login',
+        canActivate: [guestGuard],
+        loadComponent: () =>
+            import('./features/login/login.component').then((m) => m.LoginComponent),
+    },
+
+    {
         path: 'app',
+        canActivate: [authGuard],
+        canActivateChild: [authGuard],
         loadComponent: () =>
             import('./core/layouts/app-shell/app-shell.component').then((m) => m.AppShellComponent),
         children: [
@@ -21,14 +32,9 @@ export const routes: Routes = [
             {
                 path: 'settings',
                 loadComponent: () =>
-                    import('./features/settings/settings-dev-shell.component').then(
-                        (m) => m.SettingsDevShellComponent,
+                    import('./features/settings/settings.component').then(
+                        (m) => m.SettingsComponent,
                     ),
-            },
-            {
-                path: 'login',
-                loadComponent: () =>
-                    import('./features/login/login.component').then((m) => m.LoginComponent),
             },
         ],
     },

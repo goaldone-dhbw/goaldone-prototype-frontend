@@ -21,7 +21,7 @@ export class AuthService {
       .pipe(
         tap((res) => {
           this.store.setTokens(res.accessToken, res.user);
-          this.router.navigate(['/settings']);
+          this.router.navigate(['/app']);
         }),
       );
   }

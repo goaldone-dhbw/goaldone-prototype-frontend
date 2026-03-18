@@ -27,5 +27,5 @@ export const guestGuard: CanActivateFn = () => {
         return true;
     }
 
-    return router.parseUrl('/settings');
+    return router.parseUrl('/app');
 };

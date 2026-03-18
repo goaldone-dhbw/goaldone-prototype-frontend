@@ -43,14 +43,13 @@ export const appConfig: ApplicationConfig = {
         provideAppInitializer(() => {
             const authApi = inject(GoaldoneAuthApi);
             const store = inject(AuthStore);
-            authApi
+            return authApi
                 .refreshToken('')
                 .pipe(
                     take(1),
                     tap((res) => store.setTokens(res.accessToken)),
                     catchError(() => of(null)),
-                )
-                .subscribe();
+                );
         }),
     ],
 };
