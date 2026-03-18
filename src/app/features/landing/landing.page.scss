@@ -1,0 +1,17 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: var(--p-surface-ground);
+}
+
+.landing-wrapper {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+:host ::ng-deep .p-card {
+  max-width: 36rem;
+}
+

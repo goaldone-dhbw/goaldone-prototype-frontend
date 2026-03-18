@@ -1,0 +1,20 @@
+:host {
+  display: block;
+}
+
+.sidebar {
+  height: 100%;
+  padding: var(--p-card-body-padding, 1rem);
+  border-right: 1px solid var(--p-content-border-color);
+  background: var(--p-surface-card);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--p-primary-color);
+  font-weight: 600;
+}
+

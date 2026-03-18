@@ -15,7 +15,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { authInterceptor } from './core/auth.interceptor';
 import { AuthStore } from './core/auth.store';
-import { catchError, of, tap } from 'rxjs';
+import { catchError, of, take, tap } from 'rxjs';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -39,12 +39,14 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => {
       const authApi = inject(GoaldoneAuthApi);
       const store = inject(AuthStore);
-      // Cookie ist noch da → neuen Access Token holen
-      // Dummy-String für die generierte API-Signatur
-      return authApi.refreshToken('').pipe(
-        tap((res) => store.setTokens(res.accessToken)),
-        catchError(() => of(null)), // Nicht eingeloggt → kein Problem
-      );
+      authApi
+        .refreshToken('')
+        .pipe(
+          take(1),
+          tap((res) => store.setTokens(res.accessToken)),
+          catchError(() => of(null)),
+        )
+        .subscribe();
     }),
   ],
 };
