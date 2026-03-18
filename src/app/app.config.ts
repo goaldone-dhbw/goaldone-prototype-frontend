@@ -1,13 +1,12 @@
 import {
-  ApplicationConfig,
-  importProvidersFrom,
-  inject,
-  provideAppInitializer,
-  provideBrowserGlobalErrorListeners,
+    ApplicationConfig,
+    importProvidersFrom,
+    inject,
+    provideAppInitializer,
+    provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
 import { routes } from './app.routes';
 import { ApiModule, Configuration, AuthService as GoaldoneAuthApi } from './api';
 import { environment } from '../environments/environment';
@@ -16,37 +15,41 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { authInterceptor } from './core/auth.interceptor';
 import { AuthStore } from './core/auth.store';
 import { catchError, of, take, tap } from 'rxjs';
+import { GoaldoneTheme } from './GoaldoneTheme';
 
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideHttpClient(withInterceptors([authInterceptor])),
-    provideBrowserGlobalErrorListeners(),
-    provideAnimationsAsync(),
-    providePrimeNG({
-      theme: {
-        preset: Aura,
-      },
-    }),
-    provideRouter(routes),
-    importProvidersFrom(
-      ApiModule.forRoot(
-        () =>
-          new Configuration({
-            basePath: environment.apiBasePath,
-          }),
-      ),
-    ),
-    provideAppInitializer(() => {
-      const authApi = inject(GoaldoneAuthApi);
-      const store = inject(AuthStore);
-      authApi
-        .refreshToken('')
-        .pipe(
-          take(1),
-          tap((res) => store.setTokens(res.accessToken)),
-          catchError(() => of(null)),
-        )
-        .subscribe();
-    }),
-  ],
+    providers: [
+        provideHttpClient(withInterceptors([authInterceptor])),
+        provideBrowserGlobalErrorListeners(),
+        provideAnimationsAsync(),
+        providePrimeNG({
+            theme: {
+                preset: GoaldoneTheme,
+                options: {
+                    darkModeSelector: '[data-theme="light"]',
+                },
+            },
+        }),
+        provideRouter(routes),
+        importProvidersFrom(
+            ApiModule.forRoot(
+                () =>
+                    new Configuration({
+                        basePath: environment.apiBasePath,
+                    }),
+            ),
+        ),
+        provideAppInitializer(() => {
+            const authApi = inject(GoaldoneAuthApi);
+            const store = inject(AuthStore);
+            authApi
+                .refreshToken('')
+                .pipe(
+                    take(1),
+                    tap((res) => store.setTokens(res.accessToken)),
+                    catchError(() => of(null)),
+                )
+                .subscribe();
+        }),
+    ],
 };
