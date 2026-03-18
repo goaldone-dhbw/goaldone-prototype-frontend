@@ -13,7 +13,6 @@ import { ApiModule, Configuration, AuthService as GoaldoneAuthApi } from './api'
 import { environment } from '../environments/environment';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { LucideAngularModule, Check, Home, User } from 'lucide-angular';
 import { authInterceptor } from './core/auth.interceptor';
 import { AuthStore } from './core/auth.store';
 import { catchError, of, tap } from 'rxjs';
@@ -30,7 +29,6 @@ export const appConfig: ApplicationConfig = {
     }),
     provideRouter(routes),
     importProvidersFrom(
-      LucideAngularModule.pick({ Check, Home, User }),
       ApiModule.forRoot(
         () =>
           new Configuration({
