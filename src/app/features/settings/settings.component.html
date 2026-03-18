@@ -4,12 +4,11 @@
     <h1>Einstellungen</h1>
 
     <div class="settings-grid">
-        <!-- Section 1: Account -->
         <p-card header="Account">
             <div class="account-section">
                 <div class="user-info">
-                    <p class="user-name">{{ user()?.firstName }} {{ user()?.lastName }}</p>
-                    <p class="user-email">{{ user()?.email }}</p>
+                    <p class="user-name">{{ userProfile()?.firstName }} {{ userProfile()?.lastName }}</p>
+                    <p class="user-email">{{ userProfile()?.email }}</p>
                 </div>
 
                 <div class="account-actions">
@@ -33,7 +32,6 @@
         </p-card>
 
         @if (isAdmin()) {
-            <!-- Section 2: Mitglieder -->
             <p-card header="Mitglieder" styleClass="settings-card admin-section">
                 <p-table
                     [value]="members()"
@@ -67,7 +65,7 @@
                                     styleClass="p-button-alarm"
                                     [text]="true"
                                     (onClick)="removeMember(member.id)"
-                                    [disabled]="member.id === user()?.id" />
+                                    [disabled]="member.id === userProfile()?.id" />
                             </td>
                         </tr>
                     </ng-template>

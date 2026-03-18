@@ -56,12 +56,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((err) => {
       if (err.status !== 401) return throwError(() => err);
 
-      // Kein Refresh möglich wenn kein User eingeloggt
-      if (!store.isLoggedIn()) {
-        router.navigate(['/login']);
-        return throwError(() => err);
-      }
-
       // Parallele Refresh-Calls abfangen
       if (isRefreshing) {
         return refreshDone$.pipe(

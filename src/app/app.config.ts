@@ -36,6 +36,7 @@ export const appConfig: ApplicationConfig = {
                 () =>
                     new Configuration({
                         basePath: environment.apiBasePath,
+                        withCredentials: true,
                     }),
             ),
         ),
