@@ -1,4 +1,3 @@
-// settings-dev-shell.component.ts
 import { Component } from '@angular/core';
 import { SettingsComponent } from './settings.component';
 

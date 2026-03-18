@@ -1,0 +1,52 @@
+<div class="login-container">
+  <p-card header="Willkommen bei Goaldone" styleClass="login-card">
+    <div class="login-form">
+      <div class="field">
+        <label for="email">E-Mail</label>
+        <input
+          id="email"
+          type="email"
+          pInputText
+          [(ngModel)]="email"
+          name="email"
+          autocomplete="email"
+          class="full-width"
+          required
+        />
+      </div>
+
+      <div class="field">
+        <label for="password">Passwort</label>
+        <p-password
+          id="password"
+          [(ngModel)]="password"
+          name="password"
+          [feedback]="false"
+          [toggleMask]="true"
+          autocomplete="current-password"
+          styleClass="full-width"
+          inputStyleClass="full-width"
+          required
+        ></p-password>
+      </div>
+
+      @if (errorMessage()) {
+        <p-message
+          severity="error"
+          [text]="errorMessage()!"
+          styleClass="full-width margin-bottom"
+        ></p-message>
+      }
+
+      <p-button
+        label="Anmelden"
+        icon="pi pi-sign-in"
+        styleClass="full-width"
+        [loading]="loading()"
+        [disabled]="loading()"
+        type="button"
+        (onClick)="onSubmit()"
+      ></p-button>
+    </div>
+  </p-card>
+</div>

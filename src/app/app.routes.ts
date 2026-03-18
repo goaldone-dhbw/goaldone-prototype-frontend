@@ -25,10 +25,15 @@ export const routes: Routes = [
                         (m) => m.SettingsDevShellComponent,
                     ),
             },
+            {
+                path: 'login',
+                loadComponent: () =>
+                    import('./features/login/login.component').then((m) => m.LoginComponent),
+            },
         ],
     },
     {
         path: '**',
-        redirectTo: 'app',
+        redirectTo: 'login',
     },
 ];

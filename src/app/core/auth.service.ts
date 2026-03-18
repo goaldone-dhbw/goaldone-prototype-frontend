@@ -22,7 +22,7 @@ export class AuthService {
         tap((res) => {
           // ✅ Kein refreshToken mehr im Body — nur accessToken und user speichern
           this.store.setTokens(res.accessToken, res.user);
-          this.router.navigate(['/tasks']);
+          this.router.navigate(['/settings']);
         }),
       );
   }
