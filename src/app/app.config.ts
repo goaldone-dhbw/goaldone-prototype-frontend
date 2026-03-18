@@ -26,7 +26,7 @@ export const appConfig: ApplicationConfig = {
             theme: {
                 preset: GoaldoneTheme,
                 options: {
-                    darkModeSelector: '[data-theme="light"]',
+                    darkModeSelector: '[data-theme="dark"]',
                 },
             },
         }),
