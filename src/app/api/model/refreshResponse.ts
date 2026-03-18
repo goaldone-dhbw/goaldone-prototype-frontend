@@ -14,9 +14,5 @@ export interface RefreshResponse {
      * Neuer JWT Access Token, gültig 15 Minuten
      */
     accessToken: string;
-    /**
-     * Neuer Refresh Token (Token Rotation), gültig 7 Tage
-     */
-    refreshToken: string;
 }
 

@@ -21,7 +21,6 @@ export * from './pageMetadata';
 export * from './problemDetail';
 export * from './recurrenceRule';
 export * from './recurrenceType';
-export * from './refreshRequest';
 export * from './refreshResponse';
 export * from './role';
 export * from './scheduleEntry';

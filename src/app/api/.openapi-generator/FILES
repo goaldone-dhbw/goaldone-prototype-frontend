@@ -50,7 +50,6 @@ model/pageMetadata.ts
 model/problemDetail.ts
 model/recurrenceRule.ts
 model/recurrenceType.ts
-model/refreshRequest.ts
 model/refreshResponse.ts
 model/role.ts
 model/scheduleEntry.ts
