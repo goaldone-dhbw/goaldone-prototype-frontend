@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeng/themes/aura';
+import Aura from '@primeuix/themes/aura';
 import { routes } from './app.routes';
 import { ApiModule, Configuration, AuthService as GoaldoneAuthApi } from './api';
 import { environment } from '../environments/environment';
