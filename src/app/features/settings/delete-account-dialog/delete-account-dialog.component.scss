@@ -1,0 +1,41 @@
+.delete-account-dialog {
+    width: 90vw;
+    max-width: 450px;
+}
+
+.dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-top: 0.5rem;
+}
+
+.warning-container {
+    padding: 1rem;
+    background-color: var(--p-red-50);
+    border-left: 4px solid var(--p-red-500);
+    border-radius: var(--p-border-radius-md);
+
+    .warning-text {
+        margin: 0;
+        color: var(--p-red-700);
+        font-weight: 500;
+        line-height: 1.5;
+    }
+}
+
+.field-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--p-text-color);
+    }
+}
+
+.full-width {
+    width: 100%;
+}

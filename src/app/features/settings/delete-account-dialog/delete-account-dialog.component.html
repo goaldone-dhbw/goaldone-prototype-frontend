@@ -1,0 +1,42 @@
+<p-dialog
+    [(visible)]="visible"
+    [modal]="true"
+    header="Account löschen"
+    [closable]="true"
+    (onHide)="close()"
+    styleClass="delete-account-dialog">
+
+    <div class="dialog-content">
+        <div class="warning-container">
+            <p class="warning-text">Diese Aktion ist unwiderruflich. Alle deine Daten werden permanent gelöscht.</p>
+        </div>
+
+        <div class="field-container">
+            <label for="confirmationText">Zur Bestätigung "LÖSCHEN" eingeben</label>
+            <input
+                id="confirmationText"
+                pInputText
+                [(ngModel)]="confirmationText"
+                placeholder="LÖSCHEN"
+                class="full-width" />
+        </div>
+
+        @if (errorMessage()) {
+            <p-message severity="error" styleClass="full-width">{{ errorMessage() }}</p-message>
+        }
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button
+            label="Abbrechen"
+            [text]="true"
+            (onClick)="close()"
+            [disabled]="loading()" />
+        <p-button
+            label="Account endgültig löschen"
+            severity="danger"
+            (onClick)="deleteAccount()"
+            [loading]="loading()"
+            [disabled]="confirmationText() !== 'LÖSCHEN'" />
+    </ng-template>
+</p-dialog>

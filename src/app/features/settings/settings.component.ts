@@ -15,6 +15,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { ToastModule } from 'primeng/toast';
 import { ChangePasswordDialogComponent } from './change-password-dialog/change-password-dialog.component';
+import { DeleteAccountDialogComponent } from './delete-account-dialog/delete-account-dialog.component';
 import { catchError, of, finalize } from 'rxjs';
 
 @Component({
@@ -33,6 +34,7 @@ import { catchError, of, finalize } from 'rxjs';
         MessageModule,
         ToastModule,
         ChangePasswordDialogComponent,
+        DeleteAccountDialogComponent,
     ],
     providers: [MessageService],
     templateUrl: './settings.component.html',
@@ -52,6 +54,7 @@ export class SettingsComponent implements OnInit {
     isSuperAdmin = computed(() => this.userProfile()?.role === 'SUPER_ADMIN');
 
     showPasswordDialog = signal(false);
+    showDeleteAccountDialog = signal(false);
 
     // Members state
     members = signal<MemberResponse[]>([]);
@@ -135,12 +138,28 @@ export class SettingsComponent implements OnInit {
             .removeMember(userId)
             .pipe(
                 catchError((error) => {
-                    if (error.status === 404) {
+                    const detail = error.error;
+                    if (error.status === 409 && detail?.detail === 'last-admin-cannot-be-removed') {
                         this.messageService.add({
                             key: 'settings-toast',
                             severity: 'error',
                             summary: 'Fehler',
-                            detail: 'Mitglied nicht gefunden.',
+                            detail: 'Dieses Mitglied ist der letzte Admin. Bitte zunächst einen anderen Admin ernennen.',
+                        });
+                    } else if (error.status === 404) {
+                        this.messageService.add({
+                            key: 'settings-toast',
+                            severity: 'error',
+                            summary: 'Fehler',
+                            detail: 'Mitglied nicht gefunden. Die Seite wird neu geladen.',
+                        });
+                        this.loadMembers();
+                    } else {
+                        this.messageService.add({
+                            key: 'settings-toast',
+                            severity: 'error',
+                            summary: 'Fehler',
+                            detail: 'Fehler beim Entfernen des Mitglieds. Bitte versuche es erneut.',
                         });
                     }
                     return of(null);

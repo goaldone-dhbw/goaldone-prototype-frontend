@@ -27,6 +27,17 @@
                         styleClass="p-button-alarm action-button"
                         severity="danger"
                     />
+
+                    <p-divider />
+
+                    <p-button
+                        label="Account löschen"
+                        icon="pi pi-trash"
+                        (onClick)="showDeleteAccountDialog.set(true)"
+                        styleClass="p-button-alarm action-button"
+                        severity="danger"
+                        [text]="true"
+                    />
                 </div>
             </div>
         </p-card>
@@ -60,12 +71,13 @@
                             </td>
                             <td>{{ formatDate(member.joinedAt) }}</td>
                             <td>
-                                <p-button
-                                    icon="pi pi-user-minus"
-                                    styleClass="p-button-alarm"
-                                    [text]="true"
-                                    (onClick)="removeMember(member.id)"
-                                    [disabled]="member.id === userProfile()?.id" />
+                                @if (member.id !== userProfile()?.id) {
+                                    <p-button
+                                        icon="pi pi-user-minus"
+                                        styleClass="p-button-alarm"
+                                        [text]="true"
+                                        (onClick)="removeMember(member.id)" />
+                                }
                             </td>
                         </tr>
                     </ng-template>
@@ -142,3 +154,4 @@
 </div>
 
 <app-change-password-dialog [(visible)]="showPasswordDialog" />
+<app-delete-account-dialog [(visible)]="showDeleteAccountDialog" />
