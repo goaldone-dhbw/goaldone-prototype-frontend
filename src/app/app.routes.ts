@@ -2,44 +2,48 @@ import { Routes } from '@angular/router';
 import { authGuard, guestGuard } from './core/auth.guard';
 
 export const routes: Routes = [
-    {
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () => import('./features/landing/landing.page').then((m) => m.LandingPage),
+  },
+{
+    path: 'login',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+        import('./features/login/login.component').then((m) => m.LoginComponent),
+},
+  {
+    path: 'app',
+      canActivate: [authGuard],
+      canActivateChild: [authGuard],
+    loadComponent: () =>
+      import('./core/layouts/app-shell/app-shell.component').then((m) => m.AppShellComponent),
+    children: [
+      {
         path: '',
-        pathMatch: 'full',
         loadComponent: () =>
-            import('./features/landing/landing.page').then((m) => m.LandingPage),
-    },
-    {
-        path: 'login',
-        canActivate: [guestGuard],
+          import('./features/workspace/workspace-home.page').then((m) => m.WorkspaceHomePage),
+      },
+      {
+        path: 'schedule',
         loadComponent: () =>
-            import('./features/login/login.component').then((m) => m.LoginComponent),
-    },
-
-    {
-        path: 'app',
-        canActivate: [authGuard],
-        canActivateChild: [authGuard],
+          import('./features/schedule/schedule.page').then((m) => m.SchedulePage),
+      },
+      {
+        path: 'organization',
         loadComponent: () =>
-            import('./core/layouts/app-shell/app-shell.component').then((m) => m.AppShellComponent),
-        children: [
-            {
-                path: '',
-                loadComponent: () =>
-                    import('./features/workspace/workspace-home.page').then(
-                        (m) => m.WorkspaceHomePage,
-                    ),
-            },
-            {
-                path: 'settings',
-                loadComponent: () =>
-                    import('./features/settings/settings.component').then(
-                        (m) => m.SettingsComponent,
-                    ),
-            },
-        ],
-    },
-    {
-        path: '**',
-        redirectTo: 'login',
-    },
+          import('./features/org-settings/org-settings.page').then((m) => m.OrgSettingsPage),
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./features/settings/settings.page').then((m) => m.SettingsPage),
+      },
+    ],
+  },
+  {
+    path: '**',
+    redirectTo: 'app',
+  },
 ];

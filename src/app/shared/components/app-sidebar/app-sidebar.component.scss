@@ -7,6 +7,10 @@
   padding: var(--p-card-body-padding, 1rem);
   border-right: 1px solid var(--p-content-border-color);
   background: var(--p-surface-card);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .brand {
