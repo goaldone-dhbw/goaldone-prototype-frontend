@@ -13,16 +13,30 @@ import { RouterLink } from '@angular/router';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppSidebarComponent {
-    protected readonly navigationItems: MenuItem[] = [
-        {
-            label: 'Start',
-            icon: 'pi pi-home',
-            routerLink: '/app',
-        },
-        {
-            label: 'Einstellungen',
-            icon: 'pi pi-cog',
-            routerLink: '/app/settings',
-        },
-    ];
+  protected readonly navigationItems: MenuItem[] = [
+    {
+      label: 'Workspace',
+      icon: 'pi pi-home',
+      routerLink: '/app',
+    },
+    {
+      label: 'Planungsansicht',
+      icon: 'pi pi-list-check',
+      routerLink: '/app/schedule',
+    },
+  ];
+
+  protected readonly settingsItems: MenuItem[] = [
+    {
+      label: 'Organisation',
+      icon: 'pi pi-building',
+      routerLink: '/app/organization',
+    },
+    {
+      label: 'Einstellungen',
+      icon: 'pi pi-cog',
+      routerLink: '/app/settings',
+    },
+  ];
 }
+
