@@ -1,0 +1,22 @@
+.update-member-role-dialog {
+    width: 90vw;
+    max-width: 450px;
+}
+
+.dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-top: 0.5rem;
+}
+
+.info-container {
+    p {
+        margin: 0 0 0.5rem 0;
+        line-height: 1.5;
+    }
+}
+
+.full-width {
+    width: 100%;
+}

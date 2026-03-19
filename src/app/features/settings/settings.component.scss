@@ -58,6 +58,11 @@
     margin-top: 1rem;
 }
 
+.table-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
 .invite-form {
     margin-bottom: 2rem;
     max-width: 600px;
