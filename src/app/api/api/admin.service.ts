@@ -192,6 +192,7 @@ export class AdminService extends BaseService implements AdminServiceInterface {
 
     /**
      * Organisation löschen (Super-Admin, Hard Delete)
+     * Löscht eine Organisation vollständig und unwiderruflich.  **Kaskadierendes Löschen** – folgende Daten werden automatisch mitgelöscht: - Alle Mitglieder der Organisation (User-Accounts) - Alle Tasks aller Mitglieder - Alle Breaks aller Mitglieder - Alle Schedule-Einträge aller Mitglieder - Alle offenen Einladungen der Organisation - Alle Refresh-Tokens der Mitglieder  Nur für Nutzer mit Rolle &#x60;SUPER_ADMIN&#x60;. 
      * @endpoint delete /admin/organizations/{orgId}
      * @param orgId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -235,6 +236,66 @@ export class AdminService extends BaseService implements AdminServiceInterface {
         }
 
         let localVarPath = `/admin/organizations/${this.configuration.encodeParam({name: "orgId", value: orgId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Super-Admin entfernen (Super-Admin, Hard Delete)
+     * Löscht einen anderen Super-Admin vollständig aus dem System inklusive aller zugehörigen Daten.  **Einschränkung:** Ein Super-Admin kann sich nicht selbst löschen. Wenn &#x60;superAdminId&#x60; der eigenen &#x60;sub&#x60;-Claim aus dem JWT entspricht, wird der Request mit &#x60;403 Forbidden&#x60; abgelehnt.  Nur für Nutzer mit Rolle &#x60;SUPER_ADMIN&#x60;. 
+     * @endpoint delete /admin/super-admins/{superAdminId}
+     * @param superAdminId UUID des zu löschenden Super-Admins (darf nicht die eigene UUID sein)
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public deleteSuperAdmin(superAdminId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public deleteSuperAdmin(superAdminId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public deleteSuperAdmin(superAdminId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public deleteSuperAdmin(superAdminId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (superAdminId === null || superAdminId === undefined) {
+            throw new Error('Required parameter superAdminId was null or undefined when calling deleteSuperAdmin.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/problem+json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/admin/super-admins/${this.configuration.encodeParam({name: "superAdminId", value: superAdminId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
         const { basePath, withCredentials } = this.configuration;
         return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`,
             {
