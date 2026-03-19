@@ -37,7 +37,7 @@ export interface TasksServiceInterface {
 
     /**
      * Neuen Task erstellen
-     * Erstellt einen neuen Task für den eingeloggten Nutzer. Wenn &#x60;estimatedDurationMinutes&#x60; &gt; 480 (8h), wird empfohlen, den Task zu splitten – dies kann entweder clientseitig angeboten oder serverseitig automatisch erfolgen. 
+     * Erstellt einen neuen Task für den eingeloggten Nutzer. Wenn &#x60;estimatedDurationMinutes&#x60; &gt; 480 (8h), wird empfohlen, den Task zu splitten – dies kann entweder clientseitig angeboten oder serverseitig automatisch erfolgen.  **Einschränkung:** &#x60;SUPER_ADMIN&#x60;-Nutzer dürfen keine Tasks erstellen (&#x60;403 Forbidden&#x60;). Tasks können ausschließlich von &#x60;USER&#x60;- und &#x60;ADMIN&#x60;-Nutzern angelegt werden. 
      * @endpoint post /tasks
      * @param createTaskRequest 
      */

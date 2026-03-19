@@ -44,6 +44,7 @@ export class UsersService extends BaseService implements UsersServiceInterface {
 
     /**
      * Eigenen Account löschen (Hard Delete)
+     * Löscht den eigenen Account inklusive aller zugehörigen Daten (Tasks, Breaks, Schedule-Einträge).  **Einschränkungen:** - &#x60;SUPER_ADMIN&#x60; kann sich nicht selbst löschen (&#x60;403 Forbidden&#x60;). - Ein &#x60;ADMIN&#x60;, der der letzte Admin seiner Organisation ist, kann sich nicht selbst löschen (&#x60;409 Conflict&#x60;).   Es muss mindestens ein weiterer Admin in der Organisation verbleiben. 
      * @endpoint delete /users/me
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.

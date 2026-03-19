@@ -45,11 +45,19 @@ export interface AdminServiceInterface {
 
     /**
      * Organisation löschen (Super-Admin, Hard Delete)
-     * 
+     * Löscht eine Organisation vollständig und unwiderruflich.  **Kaskadierendes Löschen** – folgende Daten werden automatisch mitgelöscht: - Alle Mitglieder der Organisation (User-Accounts) - Alle Tasks aller Mitglieder - Alle Breaks aller Mitglieder - Alle Schedule-Einträge aller Mitglieder - Alle offenen Einladungen der Organisation - Alle Refresh-Tokens der Mitglieder  Nur für Nutzer mit Rolle &#x60;SUPER_ADMIN&#x60;. 
      * @endpoint delete /admin/organizations/{orgId}
      * @param orgId 
      */
     deleteOrganization(orgId: string, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * Super-Admin entfernen (Super-Admin, Hard Delete)
+     * Löscht einen anderen Super-Admin vollständig aus dem System inklusive aller zugehörigen Daten.  **Einschränkung:** Ein Super-Admin kann sich nicht selbst löschen. Wenn &#x60;superAdminId&#x60; der eigenen &#x60;sub&#x60;-Claim aus dem JWT entspricht, wird der Request mit &#x60;403 Forbidden&#x60; abgelehnt.  Nur für Nutzer mit Rolle &#x60;SUPER_ADMIN&#x60;. 
+     * @endpoint delete /admin/super-admins/{superAdminId}
+     * @param superAdminId UUID des zu löschenden Super-Admins (darf nicht die eigene UUID sein)
+     */
+    deleteSuperAdmin(superAdminId: string, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
      * Alle Organisationen auflisten (Super-Admin)

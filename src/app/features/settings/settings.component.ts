@@ -14,7 +14,11 @@ import { PaginatorModule } from 'primeng/paginator';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { ToastModule } from 'primeng/toast';
+import { TooltipModule } from 'primeng/tooltip';
 import { ChangePasswordDialogComponent } from './change-password-dialog/change-password-dialog.component';
+import { DeleteAccountDialogComponent } from './delete-account-dialog/delete-account-dialog.component';
+import { DeleteMemberDialogComponent } from './delete-member-dialog/delete-member-dialog.component';
+import { UpdateMemberRoleDialogComponent } from './update-member-role-dialog/update-member-role-dialog.component';
 import { catchError, of, finalize } from 'rxjs';
 
 @Component({
@@ -32,7 +36,11 @@ import { catchError, of, finalize } from 'rxjs';
         InputTextModule,
         MessageModule,
         ToastModule,
+        TooltipModule,
         ChangePasswordDialogComponent,
+        DeleteAccountDialogComponent,
+        DeleteMemberDialogComponent,
+        UpdateMemberRoleDialogComponent,
     ],
     providers: [MessageService],
     templateUrl: './settings.component.html',
@@ -52,6 +60,11 @@ export class SettingsComponent implements OnInit {
     isSuperAdmin = computed(() => this.userProfile()?.role === 'SUPER_ADMIN');
 
     showPasswordDialog = signal(false);
+    showDeleteAccountDialog = signal(false);
+    showDeleteMemberDialog = signal(false);
+    showUpdateRoleDialog = signal(false);
+    memberToDelete = signal<MemberResponse | null>(null);
+    memberToUpdateRole = signal<MemberResponse | null>(null);
 
     // Members state
     members = signal<MemberResponse[]>([]);
@@ -130,33 +143,14 @@ export class SettingsComponent implements OnInit {
             });
     }
 
-    removeMember(userId: string) {
-        this.membersService
-            .removeMember(userId)
-            .pipe(
-                catchError((error) => {
-                    if (error.status === 404) {
-                        this.messageService.add({
-                            key: 'settings-toast',
-                            severity: 'error',
-                            summary: 'Fehler',
-                            detail: 'Mitglied nicht gefunden.',
-                        });
-                    }
-                    return of(null);
-                }),
-            )
-            .subscribe((res) => {
-                if (res !== null) {
-                    this.messageService.add({
-                        key: 'settings-toast',
-                        severity: 'success',
-                        summary: 'Erfolg',
-                        detail: 'Mitglied entfernt.',
-                    });
-                    this.loadMembers();
-                }
-            });
+    openDeleteMemberDialog(member: MemberResponse) {
+        this.memberToDelete.set(member);
+        this.showDeleteMemberDialog.set(true);
+    }
+
+    openUpdateRoleDialog(member: MemberResponse) {
+        this.memberToUpdateRole.set(member);
+        this.showUpdateRoleDialog.set(true);
     }
 
     onMembersPageChange(event: any) {
@@ -238,22 +232,31 @@ export class SettingsComponent implements OnInit {
                             key: 'settings-toast',
                             severity: 'error',
                             summary: 'Fehler',
-                            detail: 'Einladung nicht gefunden.',
+                            detail: 'Einladung nicht gefunden. Die Seite wird neu geladen.',
+                        });
+                        this.loadInvitations();
+                    } else {
+                        this.messageService.add({
+                            key: 'settings-toast',
+                            severity: 'error',
+                            summary: 'Fehler',
+                            detail: 'Einladung konnte nicht widerrufen werden.',
                         });
                     }
-                    return of(null);
+                    // Return a special value to indicate error
+                    return of({ error: true });
                 }),
             )
-            .subscribe((res) => {
-                if (res !== null) {
-                    this.messageService.add({
-                        key: 'settings-toast',
-                        severity: 'success',
-                        summary: 'Erfolg',
-                        detail: 'Einladung widerrufen.',
-                    });
-                    this.loadInvitations();
-                }
+            .subscribe((res: any) => {
+                if (res?.error) return;
+
+                this.messageService.add({
+                    key: 'settings-toast',
+                    severity: 'success',
+                    summary: 'Erfolg',
+                    detail: 'Einladung wurde widerrufen.',
+                });
+                this.loadInvitations();
             });
     }
 

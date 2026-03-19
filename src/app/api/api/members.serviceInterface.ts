@@ -35,8 +35,8 @@ export interface MembersServiceInterface {
     listMembers(page?: number, size?: number, extraHttpRequestParams?: any): Observable<MemberPage>;
 
     /**
-     * Mitglied aus der Organisation entfernen
-     * Nur für Nutzer mit Rolle ADMIN oder höher.
+     * Mitglied aus der Organisation entfernen (Hard Delete)
+     * Entfernt ein Mitglied vollständig aus dem System. Durch Datenbank-Kaskaden werden dabei automatisch gelöscht: - Alle Tasks des Mitglieds - Alle Breaks des Mitglieds - Alle Schedule-Einträge des Mitglieds - Alle Refresh-Tokens des Mitglieds  Nur für Nutzer mit Rolle &#x60;ADMIN&#x60; oder höher.  **Einschränkung:** Der letzte &#x60;ADMIN&#x60; einer Organisation kann nicht entfernt werden (&#x60;409 Conflict&#x60;). Es muss mindestens ein Admin in der Organisation verbleiben. 
      * @endpoint delete /organizations/me/members/{userId}
      * @param userId UUID des Nutzers
      */

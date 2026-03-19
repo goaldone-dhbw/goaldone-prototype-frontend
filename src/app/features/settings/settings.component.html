@@ -27,6 +27,17 @@
                         styleClass="p-button-alarm action-button"
                         severity="danger"
                     />
+
+                    <p-divider />
+
+                    <p-button
+                        label="Account löschen"
+                        icon="pi pi-trash"
+                        (onClick)="showDeleteAccountDialog.set(true)"
+                        styleClass="p-button-alarm action-button"
+                        severity="danger"
+                        [text]="true"
+                    />
                 </div>
             </div>
         </p-card>
@@ -60,12 +71,24 @@
                             </td>
                             <td>{{ formatDate(member.joinedAt) }}</td>
                             <td>
-                                <p-button
-                                    icon="pi pi-user-minus"
-                                    styleClass="p-button-alarm"
-                                    [text]="true"
-                                    (onClick)="removeMember(member.id)"
-                                    [disabled]="member.id === userProfile()?.id" />
+                                @if (member.id !== userProfile()?.id) {
+                                    <div class="table-actions">
+                                        <p-button
+                                            [icon]="member.role === 'ADMIN' ? 'pi pi-user-minus' : 'pi pi-user-plus'"
+                                            [pTooltip]="member.role === 'ADMIN' ? 'Zum Nutzer herabstufen' : 'Zum Admin befördern'"
+                                            tooltipPosition="top"
+                                            [text]="true"
+                                            (onClick)="openUpdateRoleDialog(member)" />
+                                        
+                                        <p-button
+                                            icon="pi pi-trash"
+                                            styleClass="p-button-alarm"
+                                            pTooltip="Mitglied entfernen"
+                                            tooltipPosition="top"
+                                            [text]="true"
+                                            (onClick)="openDeleteMemberDialog(member)" />
+                                    </div>
+                                }
                             </td>
                         </tr>
                     </ng-template>
@@ -141,4 +164,22 @@
     </div>
 </div>
 
-<app-change-password-dialog [(visible)]="showPasswordDialog" />
+<app-change-password-dialog 
+    [visible]="showPasswordDialog()" 
+    (visibleChange)="showPasswordDialog.set($event)" />
+
+<app-delete-account-dialog 
+    [visible]="showDeleteAccountDialog()" 
+    (visibleChange)="showDeleteAccountDialog.set($event)" />
+
+<app-delete-member-dialog 
+    [visible]="showDeleteMemberDialog()" 
+    (visibleChange)="showDeleteMemberDialog.set($event)" 
+    [member]="memberToDelete()"
+    (deleted)="loadMembers()" />
+
+<app-update-member-role-dialog
+    [visible]="showUpdateRoleDialog()" 
+    (visibleChange)="showUpdateRoleDialog.set($event)"
+    [member]="memberToUpdateRole()"
+    (updated)="loadMembers()" />
