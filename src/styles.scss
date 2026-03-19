@@ -1,2 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'primeicons/primeicons.css';
+
+:root {
+  --p-content-padding: 1rem;
+  --p-card-body-padding: 1rem;
+
+  --p-surface-ground: #000;
+  --p-surface-card: #000;
+  --p-primary-card: #FFF;
+  --p-content-border-color: #FFF;
+}

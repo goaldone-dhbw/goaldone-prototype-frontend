@@ -17,6 +17,23 @@ export class AppSidebarComponent {
       icon: 'pi pi-home',
       routerLink: '/app',
     },
+    {
+      label: 'Planungsansicht',
+      icon: 'pi pi-list-check',
+      routerLink: '/app/schedule',
+    },
+  ];
+
+  protected readonly settingsItems: MenuItem[] = [
+    {
+      label: 'Organisation',
+      icon: 'pi pi-building',
+      routerLink: '/app/organization',
+    },
+    {
+      label: 'Einstellungen',
+      icon: 'pi pi-cog',
+      routerLink: '/app/settings',
+    },
   ];
 }
-
