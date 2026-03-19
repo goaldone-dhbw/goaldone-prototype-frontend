@@ -1,52 +1,55 @@
 import {
-  ApplicationConfig,
-  importProvidersFrom,
-  inject,
-  provideAppInitializer,
-  provideBrowserGlobalErrorListeners,
+    ApplicationConfig,
+    importProvidersFrom,
+    inject,
+    provideAppInitializer,
+    provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
 import { routes } from './app.routes';
 import { ApiModule, Configuration, AuthService as GoaldoneAuthApi } from './api';
 import { environment } from '../environments/environment';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { LucideAngularModule, Check, Home, User } from 'lucide-angular';
 import { authInterceptor } from './core/auth.interceptor';
 import { AuthStore } from './core/auth.store';
-import { catchError, of, tap } from 'rxjs';
+import { catchError, of, take, tap } from 'rxjs';
+import { GoaldoneTheme } from './GoaldoneTheme';
 
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideHttpClient(withInterceptors([authInterceptor])),
-    provideBrowserGlobalErrorListeners(),
-    provideAnimationsAsync(),
-    providePrimeNG({
-      theme: {
-        preset: Aura,
-      },
-    }),
-    provideRouter(routes),
-    importProvidersFrom(
-      LucideAngularModule.pick({ Check, Home, User }),
-      ApiModule.forRoot(
-        () =>
-          new Configuration({
-            basePath: environment.apiBasePath,
-          }),
-      ),
-    ),
-    provideAppInitializer(() => {
-      const authApi = inject(GoaldoneAuthApi);
-      const store = inject(AuthStore);
-      // Cookie ist noch da → neuen Access Token holen
-      // Dummy-String für die generierte API-Signatur
-      return authApi.refreshToken('').pipe(
-        tap((res) => store.setTokens(res.accessToken)),
-        catchError(() => of(null)), // Nicht eingeloggt → kein Problem
-      );
-    }),
-  ],
+    providers: [
+        provideHttpClient(withInterceptors([authInterceptor])),
+        provideBrowserGlobalErrorListeners(),
+        provideAnimationsAsync(),
+        providePrimeNG({
+            theme: {
+                preset: GoaldoneTheme,
+                options: {
+                    darkModeSelector: '[data-theme="dark"]',
+                },
+            },
+        }),
+        provideRouter(routes),
+        importProvidersFrom(
+            ApiModule.forRoot(
+                () =>
+                    new Configuration({
+                        basePath: environment.apiBasePath,
+                        withCredentials: true,
+                    }),
+            ),
+        ),
+        provideAppInitializer(() => {
+            const authApi = inject(GoaldoneAuthApi);
+            const store = inject(AuthStore);
+            return authApi
+                .refreshToken('')
+                .pipe(
+                    take(1),
+                    tap((res) => store.setTokens(res.accessToken)),
+                    catchError(() => of(null)),
+                );
+        }),
+    ],
 };

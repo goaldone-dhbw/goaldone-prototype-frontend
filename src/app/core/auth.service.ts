@@ -20,16 +20,13 @@ export class AuthService {
       })
       .pipe(
         tap((res) => {
-          // ✅ Kein refreshToken mehr im Body — nur accessToken und user speichern
           this.store.setTokens(res.accessToken, res.user);
-          this.router.navigate(['/tasks']);
+          this.router.navigate(['/app']);
         }),
       );
   }
 
   logout() {
-    // ✅ Kein Body mehr — Cookie geht automatisch mit (withCredentials im Interceptor)
-    // Dummy-String nötig für die generierte API-Signatur
     this.api.logout('').subscribe({
       complete: () => {
         this.store.clear();

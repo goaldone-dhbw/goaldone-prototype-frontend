@@ -1,7 +1,7 @@
 # GitHub Copilot Instructions – Goaldone Frontend
 
 ## Project overview
-Goaldone is a browser-based task planning system for organizations, built with Angular 21, PrimeNG 21, Lucide Angular, and an OpenAPI-generated HTTP client. It implements a multi-tenant architecture with strict tenant isolation enforced by the backend via JWT claims.
+Goaldone is a browser-based task planning system for organizations, built with Angular 21, PrimeNG 21, PrimeIcons, and an OpenAPI-generated HTTP client. It implements a multi-tenant architecture with strict tenant isolation enforced by the backend via JWT claims.
 
 ## Repository structure
 - `src/app/api/` — fully generated HTTP client, never edit manually.
@@ -73,10 +73,10 @@ Goaldone is a browser-based task planning system for organizations, built with A
   - `dialogs` → `<p-dialog>` or `<p-confirmdialog>`
 - Always import the specific PrimeNG module in the component's `imports` array.
 
-### Icons — Lucide Angular only
-- Only use Lucide Angular for icons.
-- Always use the `<lucide-icon>` component: `<lucide-icon name="check" [size]="20" [strokeWidth]="1.5" />`.
-- Always import `LucideAngularModule` and pick required icons in `app.config.ts` or component imports.
+### Icons — PrimeIcons only
+- Only use PrimeIcons (`pi pi-*`) for icons.
+- Use PrimeNG-compatible icon usage, for example: `icon="pi pi-check"` on PrimeNG components or `<i class="pi pi-check"></i>` where needed.
+- Ensure PrimeIcons stylesheet is available globally via `src/styles.scss`.
 
 ### Styling — no TailwindCSS
 - Never use TailwindCSS utility classes.
