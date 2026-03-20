@@ -27,16 +27,20 @@ export class AuthService {
   }
 
   logout() {
-    this.api.logout('').subscribe({
-      complete: () => {
-        this.store.clear();
-        this.router.navigate(['/login']);
-      },
-      error: () => {
-        // Auch bei Fehler lokal ausloggen
-        this.store.clear();
-        this.router.navigate(['/login']);
-      },
-    });
+    this.api
+      .logout('', undefined, undefined, {
+        context: new HttpContext().set(NEEDS_CREDENTIALS, true),
+      })
+      .subscribe({
+        complete: () => {
+          this.store.clear();
+          this.router.navigate(['/login']);
+        },
+        error: () => {
+          // Auch bei Fehler lokal ausloggen
+          this.store.clear();
+          this.router.navigate(['/login']);
+        },
+      });
   }
 }
