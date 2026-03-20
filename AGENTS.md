@@ -54,10 +54,21 @@ Follow this checklist for every change:
 - [ ] **Never use raw HTML tags** like `<button>` or `<input>` if a PrimeNG equivalent (`p-button`, `p-inputtext`) exists.
 - [ ] **Explicitly import each PrimeNG module** in the component's `imports` array.
 
-**Icons**
-- [ ] **Only use PrimeIcons** (`pi pi-*`) for icons.
-- [ ] **Use PrimeNG-compatible icon usage** (e.g., `icon="pi pi-check"` on PrimeNG components or `<i class="pi pi-check"></i>` where needed).
-- [ ] **Ensure PrimeIcons stylesheet is globally loaded** via `src/styles.scss`.
+### UI components — PrimeNG only
+- Only use PrimeNG components for UI primitives.
+- Never use raw HTML elements when a PrimeNG equivalent exists:
+    - `<button>` → `<p-button>`
+    - `<input>` → `<p-inputtext>`, `<p-password>`, or `<p-inputnumber>`
+    - `<select>` → `<p-select>`
+    - `<table>` → `<p-table>`
+    - `dialogs` → `<p-dialog>` or `<p-confirmdialog>`
+- Always import the specific PrimeNG module in the component's `imports` array.
+
+### Icons — PrimeIcons only
+- Only use PrimeIcons (`pi pi-*`) for icons.
+- Use PrimeNG-compatible icon usage, for example: `icon="pi pi-check"` on PrimeNG components or `<i class="pi pi-check"></i>` where needed.
+- Ensure PrimeIcons stylesheet is available globally via `src/styles.scss`.
+
 
 **Styling**
 - [ ] **No TailwindCSS** — do not use utility classes (e.g., `flex`, `p-4`).

@@ -1,7 +1,7 @@
 # GEMINI.md – Goaldone Frontend
 
 ## 1. Project overview
-Goaldone is a browser-based task planning system for organizations (TINF2024 project). It allows users to manage tasks and breaks while an algorithm generates an optimized weekly schedule. The tech stack is based on Angular 21, PrimeNG 21, Lucide Angular, and an HTTP client generated via OpenAPI Generator.
+Goaldone is a browser-based task planning system for organizations (TINF2024 project). It allows users to manage tasks and breaks while an algorithm generates an optimized weekly schedule. The tech stack is based on Angular 21, PrimeNG 21, Prime icons, and an HTTP client generated via OpenAPI Generator.
 
 ## 2. Repository structure
 ```text
@@ -54,10 +54,11 @@ Follow this checklist for every change:
 - [ ] **Never use raw HTML tags** like `<button>` or `<input>` if a PrimeNG equivalent (`p-button`, `p-inputtext`) exists.
 - [ ] **Explicitly import each PrimeNG module** in the component's `imports` array.
 
-**Icons**
-- [ ] **Only use Lucide Angular** for icons — no other libraries or custom SVGs.
-- [ ] **Use the `<lucide-icon>` component**: `<lucide-icon name="circle-check" [size]="20" [strokeWidth]="1.5" />`.
-- [ ] **Import `LucideAngularModule`** and register specific icons in `app.config.ts` or per component.
+### Icons — PrimeIcons only
+- Only use PrimeIcons (`pi pi-*`) for icons.
+- Use PrimeNG-compatible icon usage, for example: `icon="pi pi-check"` on PrimeNG components or `<i class="pi pi-check"></i>` where needed.
+- Ensure PrimeIcons stylesheet is available globally via `src/styles.scss`.
+
 
 **Styling**
 - [ ] **No TailwindCSS** — do not use utility classes (e.g., `flex`, `p-4`).

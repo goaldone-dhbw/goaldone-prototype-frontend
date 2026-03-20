@@ -1,4 +1,130 @@
-:host {
-  display: block;
+.settings-page {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    h1 {
+        margin-bottom: 2rem;
+        color: var(--p-text-color);
+    }
 }
 
+.settings-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.settings-card {
+    border-radius: var(--p-border-radius-xl);
+}
+
+.account-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.user-info {
+    margin-bottom: 0.75rem;
+
+    .user-name {
+        font-weight: 700;
+        margin: 0;
+        font-size: 1.125rem;
+    }
+
+    .user-email {
+        color: var(--p-text-secondary-color);
+        margin: 0;
+    }
+}
+
+.account-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.action-button {
+    width: 100%;
+
+    @media (min-width: 768px) {
+        width: max-content;
+    }
+}
+
+.admin-section {
+    margin-top: 1rem;
+}
+
+.org-settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 600px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+        font-weight: 600;
+        color: var(--p-text-color);
+    }
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.table-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.invite-form {
+    margin-bottom: 2rem;
+    max-width: 600px;
+}
+
+.invite-input-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    @media (min-width: 768px) {
+        flex-direction: row;
+    }
+}
+
+.invite-input {
+    flex-grow: 1;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.mt-1 {
+    margin-top: 0.5rem;
+}
+
+:host ::ng-deep {
+    .p-datatable {
+        .p-datatable-thead > tr > th {
+            background-color: var(--p-surface-50);
+            color: var(--p-text-secondary-color);
+            font-weight: 600;
+        }
+    }
+
+    .p-paginator {
+        border-top: 1px solid var(--p-divider-color);
+        margin-top: 1rem;
+        padding-top: 1rem;
+    }
+}

@@ -1,5 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
+import { Role } from '../api';
 import { AuthStore } from './auth.store';
 
 /**
@@ -28,4 +29,22 @@ export const guestGuard: CanActivateFn = () => {
     }
 
     return router.parseUrl('/app');
+};
+
+/**
+ * Erlaubt Zugriff nur für bestimmte Rollen.
+ */
+export const roleGuard = (allowedRoles: readonly Role[]): CanActivateFn => () => {
+    const store = inject(AuthStore);
+
+    if (!store.isLoggedIn()) {
+        return inject(Router).parseUrl('/login');
+    }
+
+    const currentRole = store.role();
+    if (currentRole && allowedRoles.includes(currentRole)) {
+        return true;
+    }
+
+    return inject(Router).parseUrl('/app');
 };
