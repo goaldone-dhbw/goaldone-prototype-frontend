@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, Output, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -10,6 +9,7 @@ import { AuthStore } from '../../../core/auth.store';
 import { Router } from '@angular/router';
 import { catchError, finalize, of } from 'rxjs';
 import { MessageService } from 'primeng/api';
+import { BaseDialogComponent } from '../../../shared/components/base-dialog/base-dialog.component';
 
 @Component({
   selector: 'app-delete-account-dialog',
@@ -17,10 +17,10 @@ import { MessageService } from 'primeng/api';
   imports: [
     CommonModule,
     FormsModule,
-    DialogModule,
     ButtonModule,
     InputTextModule,
-    MessageModule
+    MessageModule,
+    BaseDialogComponent
   ],
   templateUrl: './delete-account-dialog.component.html',
   styleUrl: './delete-account-dialog.component.scss'

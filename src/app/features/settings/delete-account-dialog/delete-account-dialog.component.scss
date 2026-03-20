@@ -1,26 +1,17 @@
-.delete-account-dialog {
-    width: 90vw;
-    max-width: 450px;
-}
-
-.dialog-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    padding-top: 0.5rem;
-}
-
-.warning-container {
-    padding: 1rem;
-    background-color: var(--p-red-50);
-    border-left: 4px solid var(--p-red-500);
-    border-radius: var(--p-border-radius-md);
+.info-container {
+    p {
+        margin: 0 0 1rem 0;
+        line-height: 1.5;
+    }
 
     .warning-text {
-        margin: 0;
+        padding: 0.75rem;
+        background-color: var(--p-red-50);
+        border-left: 4px solid var(--p-red-500);
+        border-radius: var(--p-border-radius-md);
         color: var(--p-red-700);
         font-weight: 500;
-        line-height: 1.5;
+        margin: 0;
     }
 }
 
@@ -34,8 +25,4 @@
         font-size: 0.875rem;
         color: var(--p-text-color);
     }
-}
-
-.full-width {
-    width: 100%;
 }

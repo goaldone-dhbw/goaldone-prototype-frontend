@@ -1,0 +1,35 @@
+<p-dialog
+    [(visible)]="visible"
+    [modal]="true"
+    [header]="header()"
+    [closable]="!loading()"
+    (onHide)="onClose()"
+    [styleClass]="'base-dialog ' + styleClass()">
+
+    <form (ngSubmit)="onConfirm()">
+        <div class="dialog-content">
+            <ng-content></ng-content>
+
+            @if (errorMessage()) {
+                <p-message severity="error" styleClass="full-width">{{ errorMessage() }}</p-message>
+            }
+            
+            <button type="submit" style="display: none" aria-hidden="true" [disabled]="actionDisabled() || loading()"></button>
+        </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+        <p-button
+            [label]="cancelLabel()"
+            [text]="true"
+            (onClick)="onClose()"
+            [disabled]="loading()" />
+        <p-button
+            [label]="actionLabel()"
+            [severity]="computedSeverity()"
+            [icon]="actionIcon()"
+            (onClick)="onConfirm()"
+            [loading]="loading()"
+            [disabled]="actionDisabled()" />
+    </ng-template>
+</p-dialog>

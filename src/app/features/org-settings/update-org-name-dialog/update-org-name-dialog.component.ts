@@ -1,17 +1,17 @@
 import { Component, EventEmitter, Input, Output, signal, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { OrganizationsService } from '../../../api';
 import { catchError, finalize, of } from 'rxjs';
 import { MessageService } from 'primeng/api';
+import { BaseDialogComponent } from '../../../shared/components/base-dialog/base-dialog.component';
 
 @Component({
     selector: 'app-update-org-name-dialog',
     standalone: true,
-    imports: [CommonModule, FormsModule, DialogModule, ButtonModule, MessageModule],
+    imports: [CommonModule, FormsModule, ButtonModule, MessageModule, BaseDialogComponent],
     templateUrl: './update-org-name-dialog.component.html',
     styleUrl: './update-org-name-dialog.component.scss',
 })

@@ -8,23 +8,24 @@
         @if (isAdmin()) {
             <p-card header="Organisationsname" styleClass="settings-card admin-section">
                 <div class="org-settings-form">
-                    <div class="invite-input-row">
+                    <form (ngSubmit)="updateOrganization()" class="invite-input-row">
                         <input
                             id="orgName"
+                            name="orgName"
                             type="text"
                             pInputText
                             [ngModel]="orgName()"
                             (ngModelChange)="orgName.set($event)"
                             class="invite-input" />
                         <p-button
+                            type="submit"
                             label="Speichern"
                             icon="pi pi-save"
-                            (onClick)="updateOrganization()"
                             [loading]="orgUpdating()"
                             [disabled]="!orgName() || orgName() === initialOrgName()"
                             class="form-action-button"
                         />
-                    </div>
+                    </form>
                 </div>
             </p-card>
 
@@ -88,22 +89,23 @@
 
             <p-card header="Einladungen" styleClass="settings-card admin-section">
                 <div class="invite-form">
-                    <div class="invite-input-row">
+                    <form (ngSubmit)="sendInvitation()" class="invite-input-row">
                         <input
                             type="text"
                             pInputText
+                            name="inviteEmail"
                             placeholder="E-Mail-Adresse"
                             [ngModel]="inviteEmail()"
                             (ngModelChange)="inviteEmail.set($event)"
                             class="invite-input" />
                         <p-button
+                            type="submit"
                             label="Einladen"
                             icon="pi pi-send"
-                            (onClick)="sendInvitation()"
                             [loading]="inviteSending()"
                             [disabled]="!inviteEmail()"
                             class="form-action-button"/>
-                    </div>
+                    </form>
 
                     @if (inviteError()) {
                         <p-message severity="error" styleClass="full-width mt-1">{{ inviteError() }}</p-message>

@@ -1,42 +1,25 @@
-<p-dialog
+<app-base-dialog
     [(visible)]="visible"
-    [modal]="true"
     header="Rolle anpassen"
-    [closable]="true"
-    (onHide)="close()"
-    styleClass="update-member-role-dialog">
+    [actionLabel]="'Als ' + targetRoleLabel() + ' festlegen'"
+    actionIcon="pi pi-check"
+    [loading]="loading()"
+    [errorMessage]="errorMessage()"
+    (confirm)="updateRole()"
+    (close)="close()">
 
-    <div class="dialog-content">
-        <div class="info-container">
-            <p>Möchten Sie die Rolle für <strong>{{ member()?.email }}</strong> ändern?</p>
-            <p>Die neue Rolle wird <strong>{{ targetRoleLabel() }}</strong> sein.</p>
-        </div>
-
-        @if (member()?.role === 'ADMIN') {
-            <p-message severity="warn" styleClass="full-width">
-                Der Nutzer verliert damit seine Administrator-Berechtigungen in dieser Organisation.
-            </p-message>
-        } @else if (member()?.role === 'USER') {
-            <p-message severity="info" styleClass="full-width">
-                Der Nutzer erhält damit Administrator-Berechtigungen und kann Mitglieder verwalten.
-            </p-message>
-        }
-
-        @if (errorMessage()) {
-            <p-message severity="error" styleClass="full-width">{{ errorMessage() }}</p-message>
-        }
+    <div class="info-container">
+        <p>Möchten Sie die Rolle für <strong>{{ member()?.email }}</strong> ändern?</p>
+        <p>Die neue Rolle wird <strong>{{ targetRoleLabel() }}</strong> sein.</p>
     </div>
 
-    <ng-template pTemplate="footer">
-        <p-button
-            label="Abbrechen"
-            [text]="true"
-            (onClick)="close()"
-            [disabled]="loading()" />
-        <p-button
-            [label]="'Als ' + targetRoleLabel() + ' festlegen'"
-            icon="pi pi-check"
-            (onClick)="updateRole()"
-            [loading]="loading()" />
-    </ng-template>
-</p-dialog>
+    @if (member()?.role === 'ADMIN') {
+        <p-message severity="warn" styleClass="full-width">
+            Der Nutzer verliert damit seine Administrator-Berechtigungen in dieser Organisation.
+        </p-message>
+    } @else if (member()?.role === 'USER') {
+        <p-message severity="info" styleClass="full-width">
+            Der Nutzer erhält damit Administrator-Berechtigungen und kann Mitglieder verwalten.
+        </p-message>
+    }
+</app-base-dialog>

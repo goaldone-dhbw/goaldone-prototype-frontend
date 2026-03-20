@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, Output, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
@@ -10,6 +9,7 @@ import { AuthService as GoaldoneAuthApi } from '../../../api';
 import { catchError, finalize, of } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { Divider } from 'primeng/divider';
+import { BaseDialogComponent } from '../../../shared/components/base-dialog/base-dialog.component';
 
 @Component({
     selector: 'app-change-password-dialog',
@@ -17,12 +17,12 @@ import { Divider } from 'primeng/divider';
     imports: [
         CommonModule,
         FormsModule,
-        DialogModule,
         ButtonModule,
         InputTextModule,
         PasswordModule,
         MessageModule,
         Divider,
+        BaseDialogComponent,
     ],
     templateUrl: './change-password-dialog.component.html',
     styleUrl: './change-password-dialog.component.scss',
