@@ -11,6 +11,7 @@ import { Tag } from 'primeng/tag';
 import { Tooltip } from 'primeng/tooltip';
 import { DeleteMemberDialogComponent } from './delete-member-dialog/delete-member-dialog.component';
 import { UpdateMemberRoleDialogComponent } from './update-member-role-dialog/update-member-role-dialog.component';
+import { UpdateOrgNameDialogComponent } from './update-org-name-dialog/update-org-name-dialog.component';
 import { catchError, finalize, of } from 'rxjs';
 import {
     InvitationResponse,
@@ -21,7 +22,6 @@ import {
     Role,
 } from '../../api';
 import { AuthStore } from '../../core/auth.store';
-import { Toast } from 'primeng/toast';
 
 @Component({
     selector: 'app-org-settings-page',
@@ -39,15 +39,15 @@ import { Toast } from 'primeng/toast';
         Tooltip,
         DeleteMemberDialogComponent,
         UpdateMemberRoleDialogComponent,
+        UpdateOrgNameDialogComponent,
         FormsModule,
-        Toast,
     ],
     templateUrl: './org-settings.page.html',
     styleUrl: './org-settings.page.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrgSettingsPage implements OnInit {
-    protected readonly title = 'Organisation';
+    protected readonly title = 'Organisations Einstellungen';
 
     private authStore = inject(AuthStore);
     private membersService = inject(MembersService);
@@ -60,11 +60,13 @@ export class OrgSettingsPage implements OnInit {
 
     showDeleteMemberDialog = signal(false);
     showUpdateRoleDialog = signal(false);
+    showUpdateOrgNameDialog = signal(false);
     memberToDelete = signal<MemberResponse | null>(null);
     memberToUpdateRole = signal<MemberResponse | null>(null);
 
     // Organization state
     orgName = signal('');
+    initialOrgName = signal('');
     allowedDomain = signal<string | null>(null);
     orgLoading = signal(false);
     orgUpdating = signal(false);
@@ -100,11 +102,24 @@ export class OrgSettingsPage implements OnInit {
             .pipe(finalize(() => this.orgLoading.set(false)))
             .subscribe((org) => {
                 this.orgName.set(org.name);
+                this.initialOrgName.set(org.name);
                 this.allowedDomain.set(org.allowedDomain ?? null);
             });
     }
 
     updateOrganization() {
+        // If the name changed, we show the dialog instead of updating directly
+        if (this.orgName() !== this.initialOrgName()) {
+            this.showUpdateOrgNameDialog.set(true);
+            return;
+        }
+
+        // If name hasn't changed, we might still want to update other settings (like allowedDomain)
+        // But since we only have one "Save" button for the name right now, we can just do it.
+        this.executeOrgUpdate();
+    }
+
+    executeOrgUpdate() {
         this.orgUpdating.set(true);
         this.organizationsService
             .updateOrganizationSettings({
@@ -131,6 +146,7 @@ export class OrgSettingsPage implements OnInit {
                         summary: 'Erfolg',
                         detail: 'Organisationseinstellungen gespeichert.',
                     });
+                    this.initialOrgName.set(this.orgName());
                 }
             });
     }

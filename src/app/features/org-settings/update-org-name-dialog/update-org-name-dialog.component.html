@@ -1,0 +1,41 @@
+<p-dialog
+    [(visible)]="visible"
+    [modal]="true"
+    header="Organisationsname ändern"
+    [closable]="true"
+    (onHide)="close()"
+    styleClass="update-org-name-dialog">
+
+    <div class="dialog-content">
+        <div class="info-container">
+            <p>Möchten Sie den Namen Ihrer Organisation wirklich ändern?</p>
+            <div class="comparison">
+                <div class="comparison-item">
+                    <span class="label">Von:</span>
+                    <span class="value old">{{ oldName() }}</span>
+                </div>
+                <div class="comparison-item">
+                    <span class="label">Zu:</span>
+                    <span class="value new">{{ newName() }}</span>
+                </div>
+            </div>
+        </div>
+
+        @if (errorMessage()) {
+            <p-message severity="error" styleClass="full-width">{{ errorMessage() }}</p-message>
+        }
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button
+            label="Abbrechen"
+            [text]="true"
+            (onClick)="close()"
+            [disabled]="loading()" />
+        <p-button
+            label="Name ändern"
+            icon="pi pi-check"
+            (onClick)="updateName()"
+            [loading]="loading()" />
+    </ng-template>
+</p-dialog>

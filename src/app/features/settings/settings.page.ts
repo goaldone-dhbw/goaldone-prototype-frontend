@@ -2,7 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
-import { UsersService, UserResponse } from '../../api';
+import { UsersService, UserResponse, Role } from '../../api';
 import { MessageService } from 'primeng/api';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
@@ -17,6 +17,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ChangePasswordDialogComponent } from './change-password-dialog/change-password-dialog.component';
 import { DeleteAccountDialogComponent } from './delete-account-dialog/delete-account-dialog.component';
 import { catchError, of } from 'rxjs';
+import { AuthStore } from '../../core/auth.store';
 
 @Component({
     selector: 'app-settings',
@@ -35,22 +36,25 @@ import { catchError, of } from 'rxjs';
         ToastModule,
         TooltipModule,
         ChangePasswordDialogComponent,
-        DeleteAccountDialogComponent
+        DeleteAccountDialogComponent,
     ],
     providers: [MessageService],
     templateUrl: './settings.page.html',
     styleUrl: './settings.page.scss',
 })
 export class SettingsPage implements OnInit {
+    protected readonly title = 'Einstellungen';
+
     private authService = inject(AuthService);
     private usersService = inject(UsersService);
     private messageService = inject(MessageService);
+    private authStore = inject(AuthStore);
 
     userProfile = signal<UserResponse | null>(null);
+    isSuperAdmin = computed(() => this.authStore.hasRole(Role.SuperAdmin));
 
     showPasswordDialog = signal(false);
     showDeleteAccountDialog = signal(false);
-
 
     ngOnInit() {
         this.loadUserProfile();
@@ -78,7 +82,6 @@ export class SettingsPage implements OnInit {
     logout() {
         this.authService.logout();
     }
-
 
     formatDate(dateStr?: string): string {
         if (!dateStr) return '-';

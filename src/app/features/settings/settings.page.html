@@ -1,8 +1,7 @@
-<p-toast key="settings-toast" />
+<p-card header="{{title}}">
+</p-card>
 
 <div class="settings-page">
-    <h1>Einstellungen</h1>
-
     <div class="settings-grid">
         <p-card header="Account">
             <div class="account-section">
@@ -30,14 +29,16 @@
 
                     <p-divider />
 
-                    <p-button
-                        label="Account löschen"
-                        icon="pi pi-trash"
-                        (onClick)="showDeleteAccountDialog.set(true)"
-                        styleClass="p-button-alarm action-button"
-                        severity="danger"
-                        [text]="true"
-                    />
+                    @if (!isSuperAdmin()) {
+                        <p-button
+                            label="Account löschen"
+                            icon="pi pi-trash"
+                            (onClick)="showDeleteAccountDialog.set(true)"
+                            styleClass="p-button-alarm action-button"
+                            severity="danger"
+                            [text]="true"
+                        />
+                    }
                 </div>
             </div>
         </p-card>

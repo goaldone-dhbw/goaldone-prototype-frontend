@@ -42,6 +42,12 @@ export const routes: Routes = [
                     ),
             },
             {
+                path: 'super-admin',
+                canActivate: [roleGuard([Role.SuperAdmin])],
+                loadComponent: () =>
+                    import('./features/super-admins-settings/super-admin.page').then((m) => m.SuperAdminPage)
+            },
+            {
                 path: 'settings',
                 loadComponent: () =>
                     import('./features/settings/settings.page').then((m) => m.SettingsPage),

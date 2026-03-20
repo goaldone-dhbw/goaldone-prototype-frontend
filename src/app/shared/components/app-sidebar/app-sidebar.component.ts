@@ -43,10 +43,18 @@ export class AppSidebarComponent {
         // Nur für ADMIN anzeigen (nicht SUPER_ADMIN, nicht USER)
         if (currentRole === Role.Admin) {
             items.unshift({
-                label: 'Organisation',
+                label: 'Organisation verwalten',
                 icon: 'pi pi-building',
                 routerLink: '/app/organization',
             });
+        }
+
+        if (currentRole === Role.SuperAdmin) {
+            items.unshift({
+                label: 'Super-Admin',
+                icon: 'pi pi-key',
+                routerLink: '/app/super-admin',
+            })
         }
 
         return items;
