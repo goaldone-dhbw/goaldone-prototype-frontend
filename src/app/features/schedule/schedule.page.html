@@ -1,4 +1,9 @@
 <p-card header="{{title}}">
-  <p>Platzhalter für {{ title }}</p>
+    <p>Platzhalter für {{ title }}</p>
+    <p-button
+        [label]="button.label"
+        [icon]="button.icon"
+        (click)="onStartPlanning()">
+    </p-button>
 </p-card>
 
