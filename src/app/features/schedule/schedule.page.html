@@ -7,3 +7,51 @@
     </p-button>
 </p-card>
 
+
+<p-dialog
+    [visible]="showDialog()"
+    (visibleChange)="showDialog.set($event)"
+    header="Neue Aufgabe erstellen"
+    [modal]="true"
+    [closable]="true">
+
+    <form (ngSubmit)="onSubmit()">
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div>
+                <label for="name" style="display: block; margin-bottom: 0.5rem;">Name:</label>
+                <p-inputtext
+                    id="name"
+                    [ngModel]="formData().name"
+                    (ngModelChange)="updateFormData('name', $event)"
+                    name="name"
+                    [contentEditable]="true"
+                    style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;"
+                    [minlength]=50>
+                </p-inputtext>
+            </div>
+            <div>
+                <label for="description" style="display: block; margin-bottom: 0.5rem;">Beschreibung:</label>
+                <p-textarea
+                    id="description"
+                    name="description"
+                    [ngModel]="formData().description"
+                    (ngModelChange)="updateFormData('description', $event)"
+                    [contentEditable]="true"
+                    style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; min-height: 100px;">
+                </p-textarea>
+            </div>
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem;">
+                <p-button
+                    label="Abbrechen"
+                    severity="secondary"
+                    (click)="showDialog.set(false)">
+                </p-button>
+                <p-button
+                    label="Speichern"
+                    type="submit"
+                    severity="success">
+                </p-button>
+            </div>
+        </div>
+    </form>
+</p-dialog>
