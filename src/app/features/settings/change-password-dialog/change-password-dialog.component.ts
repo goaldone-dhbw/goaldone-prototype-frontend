@@ -21,7 +21,6 @@ import { BaseDialogComponent } from '../../../shared/components/base-dialog/base
         InputTextModule,
         PasswordModule,
         MessageModule,
-        Divider,
         BaseDialogComponent,
     ],
     templateUrl: './change-password-dialog.component.html',

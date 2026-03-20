@@ -1,0 +1,44 @@
+<app-base-dialog
+    [visible]="visible"
+    (visibleChange)="visibleChange.emit($event)"
+    header="Neue Organisation anlegen"
+    actionLabel="Anlegen"
+    [actionDisabled]="form.invalid"
+    [loading]="loading()"
+    [errorMessage]="errorMessage()"
+    (confirm)="submit()"
+    (close)="close()"
+>
+    <form [formGroup]="form" class="flex flex-column gap-3">
+        <div class="flex flex-column gap-2">
+            <label for="orgName">Name der Organisation</label>
+            <input pInputText id="orgName" formControlName="name" placeholder="z.B. Firma GmbH" />
+            <p-message
+                *ngIf="form.get('name')?.touched && form.get('name')?.errors?.['required']"
+                severity="error"
+                variant="simple"
+                size="small"
+                text="Name ist erforderlich."
+            ></p-message>
+        </div>
+
+        <div class="flex flex-column gap-2">
+            <label for="adminEmail">E-Mail des ersten Admins</label>
+            <input pInputText id="adminEmail" formControlName="adminEmail" placeholder="admin@firma.de" />
+            <p-message
+                *ngIf="form.get('adminEmail')?.touched && form.get('adminEmail')?.errors?.['required']"
+                severity="error"
+                variant="simple"
+                size="small"
+                text="E-Mail ist erforderlich."
+            ></p-message>
+            <p-message
+                *ngIf="form.get('adminEmail')?.touched && form.get('adminEmail')?.errors?.['email']"
+                severity="error"
+                variant="simple"
+                size="small"
+                text="Bitte eine gültige E-Mail-Adresse eingeben."
+            ></p-message>
+        </div>
+    </form>
+</app-base-dialog>

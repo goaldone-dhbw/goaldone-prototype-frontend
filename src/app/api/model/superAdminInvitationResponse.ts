@@ -9,10 +9,13 @@
  */
 
 
-export interface AddSuperAdminRequest { 
-    /**
-     * E-Mail-Adresse der einzuladenden Person. Es wird eine Einladungs-E-Mail verschickt – kein bestehender Account erforderlich.
-     */
+export interface SuperAdminInvitationResponse { 
+    id: string;
     email: string;
+    /**
+     * Ablaufzeitpunkt des Einladungslinks (48h nach Erstellung)
+     */
+    expiresAt: string;
+    createdAt: string;
 }
 

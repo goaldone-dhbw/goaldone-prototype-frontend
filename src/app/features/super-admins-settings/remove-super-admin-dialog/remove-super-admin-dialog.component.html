@@ -1,0 +1,29 @@
+<app-base-dialog
+    [visible]="visible"
+    (visibleChange)="visibleChange.emit($event)"
+    header="Super-Admin entfernen"
+    actionLabel="Entfernen"
+    actionSeverity="danger"
+    [actionDisabled]="isConfirmDisabled()"
+    [loading]="loading()"
+    [errorMessage]="errorMessage()"
+    (confirm)="submit()"
+    (close)="close()"
+>
+    <div class="flex flex-column gap-3">
+        <p>
+            Soll <strong>{{ superAdmin?.firstName }} {{ superAdmin?.lastName }}</strong> ({{ superAdmin?.email }}) als Super-Admin entfernt werden?
+            Dieser Vorgang ist unwiderruflich.
+        </p>
+        <div class="flex flex-column gap-2 mt-2">
+            <label for="confirmEmail">Zur Bestätigung die E-Mail des Benutzers eingeben</label>
+            <input 
+                pInputText 
+                id="confirmEmail" 
+                [ngModel]="confirmationEmail()" 
+                (ngModelChange)="confirmationEmail.set($event)"
+                placeholder="E-Mail eingeben" 
+            />
+        </div>
+    </div>
+</app-base-dialog>

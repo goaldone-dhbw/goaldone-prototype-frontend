@@ -16,7 +16,8 @@ import { CreateOrganizationRequest } from '../model/models';
 import { OrganizationPage } from '../model/models';
 import { OrganizationResponse } from '../model/models';
 import { ProblemDetail } from '../model/models';
-import { UserResponse } from '../model/models';
+import { SuperAdminInvitationResponse } from '../model/models';
+import { SuperAdminPage } from '../model/models';
 
 
 import { Configuration }                                     from '../configuration';
@@ -28,12 +29,12 @@ export interface AdminServiceInterface {
     configuration: Configuration;
 
     /**
-     * Neuen Super-Admin hinzufügen (Super-Admin)
-     * Erteilt einem bestehenden Nutzer die SUPER_ADMIN Rolle.
+     * Neuen Super-Admin einladen (Super-Admin)
+     * Sendet eine Einladungs-E-Mail an die angegebene Adresse. Der Eingeladene erhält die Rolle SUPER_ADMIN ohne Organisationszugehörigkeit. Kein bestehender Account erforderlich. 
      * @endpoint post /admin/super-admins
      * @param addSuperAdminRequest 
      */
-    addSuperAdmin(addSuperAdminRequest: AddSuperAdminRequest, extraHttpRequestParams?: any): Observable<UserResponse>;
+    addSuperAdmin(addSuperAdminRequest: AddSuperAdminRequest, extraHttpRequestParams?: any): Observable<SuperAdminInvitationResponse>;
 
     /**
      * Neue Organisation anlegen (Super-Admin)
@@ -67,5 +68,14 @@ export interface AdminServiceInterface {
      * @param size Anzahl Einträge pro Seite
      */
     listOrganizations(page?: number, size?: number, extraHttpRequestParams?: any): Observable<OrganizationPage>;
+
+    /**
+     * Alle Super-Admins auflisten (Super-Admin)
+     * 
+     * @endpoint get /admin/super-admins
+     * @param page Seitennummer (0-basiert)
+     * @param size Anzahl Einträge pro Seite
+     */
+    listSuperAdmins(page?: number, size?: number, extraHttpRequestParams?: any): Observable<SuperAdminPage>;
 
 }

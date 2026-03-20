@@ -25,6 +25,8 @@ export * from './refreshResponse';
 export * from './role';
 export * from './scheduleEntry';
 export * from './scheduleResponse';
+export * from './superAdminInvitationResponse';
+export * from './superAdminPage';
 export * from './taskPage';
 export * from './taskResponse';
 export * from './taskStatus';

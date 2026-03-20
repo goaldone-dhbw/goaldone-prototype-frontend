@@ -53,6 +53,8 @@ model/refreshResponse.ts
 model/role.ts
 model/scheduleEntry.ts
 model/scheduleResponse.ts
+model/superAdminInvitationResponse.ts
+model/superAdminPage.ts
 model/taskPage.ts
 model/taskResponse.ts
 model/taskStatus.ts
