@@ -11,6 +11,7 @@ export * from './fieldError';
 export * from './generateScheduleRequest';
 export * from './invitationPage';
 export * from './invitationResponse';
+export * from './invitationTokenInfoResponse';
 export * from './loginRequest';
 export * from './loginResponse';
 export * from './memberPage';

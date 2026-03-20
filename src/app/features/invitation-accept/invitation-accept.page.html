@@ -1,0 +1,66 @@
+<div class="invitation-container">
+  @if (loading()) {
+    <p-progressSpinner ariaLabel="loading"></p-progressSpinner>
+  } @else if (invitationInvalid()) {
+    <p-card header="Einladung ungültig" styleClass="invitation-card">
+      <p-message severity="error" text="Dieser Einladungslink ist ungültig." styleClass="full-width"></p-message>
+      <div class="footer-actions">
+        <p-button label="Zur Startseite" routerLink="/" icon="pi pi-arrow-left" styleClass="p-button-text"></p-button>
+      </div>
+    </p-card>
+  } @else if (invitationExpired()) {
+    <p-card header="Einladung abgelaufen" styleClass="invitation-card">
+      <p-message severity="warn" text="Dieser Einladungslink ist abgelaufen." styleClass="full-width"></p-message>
+      <div class="footer-actions">
+        <p-button label="Zur Startseite" routerLink="/" icon="pi pi-arrow-left" styleClass="p-button-text"></p-button>
+      </div>
+    </p-card>
+  } @else {
+    <p-card header="Account fertigstellen" styleClass="invitation-card">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="invitation-form">
+        <div class="field">
+          <label for="email">E-Mail</label>
+          <input id="email" type="email" pInputText formControlName="email" class="full-width" />
+        </div>
+
+        <div class="field">
+          <label for="firstName">Vorname</label>
+          <input id="firstName" type="text" pInputText formControlName="firstName" class="full-width"
+                 [class.ng-invalid]="getControlError('firstName')" [class.ng-dirty]="form.get('firstName')?.touched" />
+          @if (getControlError('firstName')) {
+            <small class="p-error">{{ getControlError('firstName') }}</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="lastName">Nachname</label>
+          <input id="lastName" type="text" pInputText formControlName="lastName" class="full-width"
+                 [class.ng-invalid]="getControlError('lastName')" [class.ng-dirty]="form.get('lastName')?.touched" />
+          @if (getControlError('lastName')) {
+            <small class="p-error">{{ getControlError('lastName') }}</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="password">Passwort</label>
+          <p-password id="password" formControlName="password" [toggleMask]="true" styleClass="full-width"
+                      inputStyleClass="full-width" [class.ng-invalid]="getControlError('password')"
+                      [class.ng-dirty]="form.get('password')?.touched" [feedback]="true" promptLabel="Passwort wählen"
+                      weakLabel="Schwach" mediumLabel="Mittel" strongLabel="Stark"></p-password>
+          @if (getControlError('password')) {
+            <small class="p-error">{{ getControlError('password') }}</small>
+          }
+        </div>
+
+        @if (errorMessage()) {
+          <p-message severity="error" [text]="errorMessage()!" styleClass="full-width"></p-message>
+        }
+
+        <div class="footer-actions">
+          <p-button label="Account erstellen" icon="pi pi-check" styleClass="full-width" [loading]="submitting()"
+                    [disabled]="submitting() || form.invalid" type="submit"></p-button>
+        </div>
+      </form>
+    </p-card>
+  }
+</div>

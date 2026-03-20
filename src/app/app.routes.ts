@@ -55,6 +55,13 @@ export const routes: Routes = [
         ],
     },
     {
+        path: 'invitations/:token',
+        loadComponent: () =>
+            import('./features/invitation-accept/invitation-accept.page').then(
+                (m) => m.InvitationAcceptPage,
+            ),
+    },
+    {
         path: '**',
         redirectTo: 'app',
     },

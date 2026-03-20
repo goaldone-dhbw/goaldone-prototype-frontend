@@ -38,6 +38,7 @@ model/fieldError.ts
 model/generateScheduleRequest.ts
 model/invitationPage.ts
 model/invitationResponse.ts
+model/invitationTokenInfoResponse.ts
 model/loginRequest.ts
 model/loginResponse.ts
 model/memberPage.ts

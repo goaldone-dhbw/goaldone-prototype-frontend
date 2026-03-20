@@ -15,6 +15,7 @@ import { AcceptInvitationRequest } from '../model/models';
 import { CreateInvitationRequest } from '../model/models';
 import { InvitationPage } from '../model/models';
 import { InvitationResponse } from '../model/models';
+import { InvitationTokenInfoResponse } from '../model/models';
 import { LoginResponse } from '../model/models';
 import { ProblemDetail } from '../model/models';
 
@@ -43,6 +44,14 @@ export interface InvitationsServiceInterface {
      * @param createInvitationRequest 
      */
     createInvitation(createInvitationRequest: CreateInvitationRequest, extraHttpRequestParams?: any): Observable<InvitationResponse>;
+
+    /**
+     * Informationen zu einem Einladungstoken abrufen
+     * Öffentlicher Endpunkt (kein JWT erforderlich). Gibt die E-Mail-Adresse zurück, die mit dem Token verknüpft ist. Wird genutzt, um das Registrierungsformular vorauszufüllen. 
+     * @endpoint get /auth/invitations/{token}
+     * @param token UUID-Token aus dem Einladungslink
+     */
+    getInvitationInfo(token: string, extraHttpRequestParams?: any): Observable<InvitationTokenInfoResponse>;
 
     /**
      * Offene Einladungen auflisten
