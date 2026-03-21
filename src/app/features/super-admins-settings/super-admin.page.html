@@ -1,0 +1,145 @@
+<div class="super-admin-settings-container">
+    <h2>{{ title }}</h2>
+
+    <!-- Section 1: Organisationsverwaltung -->
+    <p-card header="Organisationsverwaltung" class="settings-card">
+        <div class="flex flex-column gap-4">
+            <div class="flex justify-content-between align-items-center mb-3">
+                <span>Verwalte alle Organisationen im System.</span>
+                <p-button 
+                    label="Neue Organisation anlegen" 
+                    icon="pi pi-plus" 
+                    (onClick)="showCreateOrgDialog.set(true)"
+                ></p-button>
+            </div>
+
+            <p-table 
+                [value]="organizations()" 
+                [loading]="orgLoading()"
+                styleClass="p-datatable-sm"
+            >
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Name</th>
+                        <th>ID</th>
+                        <th style="width: 4rem"></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-org>
+                    <tr>
+                        <td>{{ org.name }}</td>
+                        <td>
+                            <code [pTooltip]="org.id">{{ truncateId(org.id) }}...</code>
+                        </td>
+                        <td>
+                            <p-button 
+                                icon="pi pi-trash" 
+                                severity="danger" 
+                                [text]="true" 
+                                pTooltip="Löschen"
+                                (onClick)="openDeleteOrgDialog(org)"
+                            ></p-button>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="3" class="text-center p-4">Keine Organisationen gefunden.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+            <p-paginator 
+                [rows]="orgSize()" 
+                [totalRecords]="orgTotalElements()" 
+                [first]="orgPage() * orgSize()"
+                (onPageChange)="onOrgPageChange($event)"
+                [showCurrentPageReport]="true"
+                currentPageReportTemplate="{first} - {last} von {totalRecords}"
+            ></p-paginator>
+        </div>
+    </p-card>
+
+    <!-- Section 2: Super-Admin-Verwaltung -->
+    <p-card header="Super-Admin-Verwaltung" class="settings-card mt-4">
+        <div class="flex flex-column gap-4">
+            <div class="flex justify-content-between align-items-center mb-3">
+                <span>Verwalte die globalen Berechtigungen für das System.</span>
+                <p-button 
+                    label="Super-Admin hinzufügen" 
+                    icon="pi pi-user-plus" 
+                    (onClick)="showAddSuperAdminDialog.set(true)"
+                ></p-button>
+            </div>
+
+            <p-table 
+                [value]="superAdmins()" 
+                [loading]="saLoading()"
+                styleClass="p-datatable-sm"
+            >
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Name</th>
+                        <th>E-Mail</th>
+                        <th>Erstellt am</th>
+                        <th style="width: 4rem"></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-sa>
+                    <tr>
+                        <td>{{ sa.firstName }} {{ sa.lastName }}</td>
+                        <td>{{ sa.email }}</td>
+                        <td>{{ formatDate(sa.createdAt) }}</td>
+                        <td>
+                            <p-button 
+                                icon="pi pi-trash" 
+                                severity="danger" 
+                                [text]="true" 
+                                pTooltip="Entfernen"
+                                [disabled]="sa.id === authStore.user()?.id"
+                                (onClick)="openDeleteSaDialog(sa)"
+                            ></p-button>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="4" class="text-center p-4">Keine Super-Admins gefunden.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+            <p-paginator 
+                [rows]="saSize()" 
+                [totalRecords]="saTotalElements()" 
+                [first]="saPage() * saSize()"
+                (onPageChange)="onSaPageChange($event)"
+                [showCurrentPageReport]="true"
+                currentPageReportTemplate="{first} - {last} von {totalRecords}"
+            ></p-paginator>
+        </div>
+    </p-card>
+</div>
+
+<!-- Dialogs -->
+<app-create-organization-dialog
+    [(visible)]="showCreateOrgDialog"
+    (created)="loadOrganizations(0)"
+></app-create-organization-dialog>
+
+<app-delete-organization-dialog
+    [(visible)]="showDeleteOrgDialog"
+    [organization]="orgToDelete()"
+    (deleted)="loadOrganizations()"
+></app-delete-organization-dialog>
+
+<app-add-super-admin-dialog
+    [(visible)]="showAddSuperAdminDialog"
+    (added)="loadSuperAdmins(0)"
+></app-add-super-admin-dialog>
+
+<app-remove-super-admin-dialog
+    [(visible)]="showRemoveSuperAdminDialog"
+    [superAdmin]="saToDelete()"
+    (removed)="loadSuperAdmins()"
+></app-remove-super-admin-dialog>

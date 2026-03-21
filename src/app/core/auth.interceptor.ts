@@ -54,7 +54,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authedReq).pipe(
     catchError((err) => {
-      if (err.status !== 401) return throwError(() => err);
+      if (err.status !== 401 || req.url.includes('/auth/logout')) {
+        return throwError(() => err);
+      }
 
       // Parallele Refresh-Calls abfangen
       if (isRefreshing) {

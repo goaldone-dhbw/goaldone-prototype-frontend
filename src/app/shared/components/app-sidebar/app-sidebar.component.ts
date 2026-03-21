@@ -1,8 +1,10 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { Menu } from 'primeng/menu';
 import { Image } from 'primeng/image';
 import { RouterLink } from '@angular/router';
+import { Role } from '../../../api';
+import { AuthStore } from '../../../core/auth.store';
 
 @Component({
     selector: 'app-sidebar',
@@ -13,30 +15,48 @@ import { RouterLink } from '@angular/router';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppSidebarComponent {
-  protected readonly navigationItems: MenuItem[] = [
-    {
-      label: 'Workspace',
-      icon: 'pi pi-home',
-      routerLink: '/app',
-    },
-    {
-      label: 'Planungsansicht',
-      icon: 'pi pi-list-check',
-      routerLink: '/app/schedule',
-    },
-  ];
+    private authStore = inject(AuthStore);
 
-  protected readonly settingsItems: MenuItem[] = [
-    {
-      label: 'Organisation',
-      icon: 'pi pi-building',
-      routerLink: '/app/organization',
-    },
-    {
-      label: 'Einstellungen',
-      icon: 'pi pi-cog',
-      routerLink: '/app/settings',
-    },
-  ];
+    protected readonly navigationItems: MenuItem[] = [
+        {
+            label: 'Workspace',
+            icon: 'pi pi-home',
+            routerLink: '/app',
+        },
+        {
+            label: 'Planungsansicht',
+            icon: 'pi pi-list-check',
+            routerLink: '/app/schedule',
+        },
+    ];
+
+    protected settingsItems = computed<MenuItem[]>(() => {
+        const currentRole = this.authStore.role();
+        const items: MenuItem[] = [
+            {
+                label: 'Einstellungen',
+                icon: 'pi pi-cog',
+                routerLink: '/app/settings',
+            },
+        ];
+
+        // Nur für ADMIN anzeigen (nicht SUPER_ADMIN, nicht USER)
+        if (currentRole === Role.Admin) {
+            items.unshift({
+                label: 'Organisation verwalten',
+                icon: 'pi pi-building',
+                routerLink: '/app/organization',
+            });
+        }
+
+        if (currentRole === Role.SuperAdmin) {
+            items.unshift({
+                label: 'Super-Admin',
+                icon: 'pi pi-key',
+                routerLink: '/app/super-admin',
+            })
+        }
+
+        return items;
+    });
 }
-

@@ -1,0 +1,27 @@
+<app-base-dialog
+    [(visible)]="visible"
+    header="Mitglied entfernen"
+    actionLabel="Mitglied endgültig löschen"
+    actionSeverity="danger"
+    [loading]="loading()"
+    [actionDisabled]="confirmationText() !== 'LÖSCHEN'"
+    [errorMessage]="errorMessage()"
+    (confirm)="deleteMember()"
+    (close)="close()">
+
+    <div class="info-container">
+        <p>Möchten Sie das Mitglied <strong>{{ member()?.email }}</strong> wirklich aus der Organisation entfernen?</p>
+        <p class="warning-text">Diese Aktion ist unwiderruflich. Der Nutzer verliert sofortigen Zugriff auf alle Daten.</p>
+    </div>
+
+    <div class="field-container">
+        <label for="confirmationTextMember">Zur Bestätigung "LÖSCHEN" eingeben</label>
+        <input
+            id="confirmationTextMember"
+            pInputText
+            [(ngModel)]="confirmationText"
+            name="confirmation"
+            placeholder="LÖSCHEN"
+            class="full-width" />
+    </div>
+</app-base-dialog>

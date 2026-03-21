@@ -1,4 +1,178 @@
-<p-card header="{{ title }}">
-  <p>Platzhalter für {{ title }}</p>
+<p-card header="{{title}}">
+    <p>Platzhalter für {{ title }}</p>
 </p-card>
+
+<div class="settings-page">
+
+    <div class="settings-grid">
+        @if (isAdmin()) {
+            <p-card header="Organisationsname" styleClass="settings-card admin-section">
+                <div class="org-settings-form">
+                    <form (ngSubmit)="updateOrganization()" class="invite-input-row">
+                        <input
+                            id="orgName"
+                            name="orgName"
+                            type="text"
+                            pInputText
+                            [ngModel]="orgName()"
+                            (ngModelChange)="orgName.set($event)"
+                            class="invite-input" />
+                        <p-button
+                            type="submit"
+                            label="Speichern"
+                            icon="pi pi-save"
+                            [loading]="orgUpdating()"
+                            [disabled]="!orgName() || orgName() === initialOrgName()"
+                            class="form-action-button"
+                        />
+                    </form>
+                </div>
+            </p-card>
+
+            <p-card header="Mitglieder" styleClass="settings-card admin-section">
+                <p-table
+                    [value]="members()"
+                    [loading]="membersLoading()"
+                    responsiveLayout="scroll"
+                    styleClass="p-datatable-sm">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Vorname</th>
+                            <th>Nachname</th>
+                            <th>E-Mail</th>
+                            <th>Rolle</th>
+                            <th>Beigetreten am</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-member>
+                        <tr>
+                            <td>{{ member.firstName }}</td>
+                            <td>{{ member.lastName }}</td>
+                            <td>{{ member.email }}</td>
+                            <td>
+                                <p-tag
+                                    [value]="member.role"
+                                    [severity]="member.role === 'ADMIN' ? 'success' : 'secondary'" />
+                            </td>
+                            <td>{{ formatDate(member.joinedAt) }}</td>
+                            <td>
+                                @if (member.id !== userProfile()?.id) {
+                                    <div class="table-actions">
+                                        <p-button
+                                            [icon]="member.role === 'ADMIN' ? 'pi pi-user-minus' : 'pi pi-user-plus'"
+                                            [pTooltip]="member.role === 'ADMIN' ? 'Zum Nutzer herabstufen' : 'Zum Admin befördern'"
+                                            tooltipPosition="top"
+                                            [text]="true"
+                                            (onClick)="openUpdateRoleDialog(member)" />
+
+                                        <p-button
+                                            icon="pi pi-trash"
+                                            styleClass="p-button-alarm"
+                                            pTooltip="Mitglied entfernen"
+                                            tooltipPosition="top"
+                                            [text]="true"
+                                            (onClick)="openDeleteMemberDialog(member)" />
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                <p-paginator
+                    (onPageChange)="onMembersPageChange($event)"
+                    [first]="membersPage() * membersSize"
+                    [rows]="membersSize"
+                    [totalRecords]="membersTotal()"
+                    [rowsPerPageOptions]="[10, 20, 50]" />
+            </p-card>
+
+            <p-card header="Einladungen" styleClass="settings-card admin-section">
+                <div class="invite-form">
+                    <form (ngSubmit)="sendInvitation()" class="invite-input-row">
+                        <input
+                            type="text"
+                            pInputText
+                            name="inviteEmail"
+                            placeholder="E-Mail-Adresse"
+                            [ngModel]="inviteEmail()"
+                            (ngModelChange)="inviteEmail.set($event)"
+                            class="invite-input" />
+                        <p-button
+                            type="submit"
+                            label="Einladen"
+                            icon="pi pi-send"
+                            [loading]="inviteSending()"
+                            [disabled]="!inviteEmail()"
+                            class="form-action-button"/>
+                    </form>
+
+                    @if (inviteError()) {
+                        <p-message severity="error" styleClass="full-width mt-1">{{ inviteError() }}</p-message>
+                    }
+                    @if (inviteWarn()) {
+                        <p-message severity="warn" styleClass="full-width mt-1">{{ inviteWarn() }}</p-message>
+                    }
+                </div>
+
+                <p-table
+                    [value]="invitations()"
+                    [loading]="invitationsLoading()"
+                    responsiveLayout="scroll"
+                    styleClass="p-datatable-sm">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>E-Mail</th>
+                            <th>Erstellt am</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-invitation>
+                        <tr>
+                            <td>{{ invitation.email }}</td>
+                            <td>{{ formatDate(invitation.createdAt) }}</td>
+                            <td>
+                                <p-button
+                                    icon="pi pi-times"
+                                    styleClass="p-button-alarm"
+                                    [text]="true"
+                                    (onClick)="revokeInvitation(invitation.id)" />
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                <p-paginator
+                    (onPageChange)="onInvitationsPageChange($event)"
+                    [first]="invitationsPage() * invitationsSize"
+                    [rows]="invitationsSize"
+                    [totalRecords]="invitationsTotal()"
+                    [rowsPerPageOptions]="[10, 20, 50]" />
+            </p-card>
+        } @else {
+            <p-message severity="warn" styleClass="full-width">
+                Sie haben nicht die erforderlichen Rechte, um auf diese Seite zuzugreifen. Nur Admins können
+                Organisationseinstellungen verwalten.
+            </p-message>
+        }
+    </div>
+</div>
+
+<app-delete-member-dialog
+    [visible]="showDeleteMemberDialog()"
+    (visibleChange)="showDeleteMemberDialog.set($event)"
+    [member]="memberToDelete()"
+    (deleted)="loadMembers()" />
+
+<app-update-member-role-dialog
+    [visible]="showUpdateRoleDialog()"
+    (visibleChange)="showUpdateRoleDialog.set($event)"
+    [member]="memberToUpdateRole()"
+    (updated)="loadMembers()" />
+
+<app-update-org-name-dialog
+    [visible]="showUpdateOrgNameDialog()"
+    (visibleChange)="showUpdateOrgNameDialog.set($event)"
+    [oldName]="initialOrgName()"
+    [newName]="orgName()"
+    (updated)="loadOrganization()" />
 

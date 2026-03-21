@@ -1,13 +1,14 @@
 <div class="login-container">
   <p-card header="Willkommen bei Goaldone" styleClass="login-card">
-    <div class="login-form">
+    <form class="login-form" (ngSubmit)="onSubmit()">
       <div class="field">
         <label for="email">E-Mail</label>
         <input
           id="email"
           type="email"
           pInputText
-          [(ngModel)]="email"
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
           name="email"
           autocomplete="email"
           class="full-width"
@@ -19,7 +20,8 @@
         <label for="password">Passwort</label>
         <p-password
           id="password"
-          [(ngModel)]="password"
+          [ngModel]="password()"
+          (ngModelChange)="password.set($event)"
           name="password"
           [feedback]="false"
           [toggleMask]="true"
@@ -44,9 +46,8 @@
         styleClass="full-width"
         [loading]="loading()"
         [disabled]="loading()"
-        type="button"
-        (onClick)="onSubmit()"
+        type="submit"
       ></p-button>
-    </div>
+    </form>
   </p-card>
 </div>

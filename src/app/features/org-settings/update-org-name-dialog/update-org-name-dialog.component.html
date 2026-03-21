@@ -1,0 +1,25 @@
+<app-base-dialog
+    [(visible)]="visible"
+    header="Organisationsname ändern"
+    actionLabel="Name ändern"
+    actionIcon="pi pi-check"
+    [loading]="loading()"
+    [errorMessage]="errorMessage()"
+    (confirm)="updateName()"
+    (close)="close()"
+    actionSeverity="danger">
+
+    <div class="info-container">
+        <p>Möchten Sie den Namen Ihrer Organisation wirklich ändern?</p>
+        <div class="comparison">
+            <div class="comparison-item">
+                <span class="label">Von:</span>
+                <span class="value old">{{ oldName() }}</span>
+            </div>
+            <div class="comparison-item">
+                <span class="label">Zu:</span>
+                <span class="value new">{{ newName() }}</span>
+            </div>
+        </div>
+    </div>
+</app-base-dialog>

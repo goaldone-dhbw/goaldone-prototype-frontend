@@ -1,8 +1,7 @@
-<p-toast key="settings-toast" />
+<p-card header="{{title}}">
+</p-card>
 
 <div class="settings-page">
-    <h1>Einstellungen</h1>
-
     <div class="settings-grid">
         <p-card header="Account">
             <div class="account-section">
@@ -30,156 +29,26 @@
 
                     <p-divider />
 
-                    <p-button
-                        label="Account löschen"
-                        icon="pi pi-trash"
-                        (onClick)="showDeleteAccountDialog.set(true)"
-                        styleClass="p-button-alarm action-button"
-                        severity="danger"
-                        [text]="true"
-                    />
+                    @if (!isSuperAdmin()) {
+                        <p-button
+                            label="Account löschen"
+                            icon="pi pi-trash"
+                            (onClick)="showDeleteAccountDialog.set(true)"
+                            styleClass="p-button-alarm action-button"
+                            severity="danger"
+                            [text]="true"
+                        />
+                    }
                 </div>
             </div>
         </p-card>
-
-        @if (isAdmin()) {
-            <p-card header="Mitglieder" styleClass="settings-card admin-section">
-                <p-table
-                    [value]="members()"
-                    [loading]="membersLoading()"
-                    responsiveLayout="scroll"
-                    styleClass="p-datatable-sm">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th>Vorname</th>
-                            <th>Nachname</th>
-                            <th>E-Mail</th>
-                            <th>Rolle</th>
-                            <th>Beigetreten am</th>
-                            <th>Aktionen</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-member>
-                        <tr>
-                            <td>{{ member.firstName }}</td>
-                            <td>{{ member.lastName }}</td>
-                            <td>{{ member.email }}</td>
-                            <td>
-                                <p-tag
-                                    [value]="member.role"
-                                    [severity]="member.role === 'ADMIN' ? 'success' : 'secondary'" />
-                            </td>
-                            <td>{{ formatDate(member.joinedAt) }}</td>
-                            <td>
-                                @if (member.id !== userProfile()?.id) {
-                                    <div class="table-actions">
-                                        <p-button
-                                            [icon]="member.role === 'ADMIN' ? 'pi pi-user-minus' : 'pi pi-user-plus'"
-                                            [pTooltip]="member.role === 'ADMIN' ? 'Zum Nutzer herabstufen' : 'Zum Admin befördern'"
-                                            tooltipPosition="top"
-                                            [text]="true"
-                                            (onClick)="openUpdateRoleDialog(member)" />
-                                        
-                                        <p-button
-                                            icon="pi pi-trash"
-                                            styleClass="p-button-alarm"
-                                            pTooltip="Mitglied entfernen"
-                                            tooltipPosition="top"
-                                            [text]="true"
-                                            (onClick)="openDeleteMemberDialog(member)" />
-                                    </div>
-                                }
-                            </td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-                <p-paginator
-                    (onPageChange)="onMembersPageChange($event)"
-                    [first]="membersPage() * membersSize"
-                    [rows]="membersSize"
-                    [totalRecords]="membersTotal()"
-                    [rowsPerPageOptions]="[10, 20, 50]" />
-            </p-card>
-
-            <!-- Section 3: Einladungen -->
-            <p-card header="Einladungen" styleClass="settings-card admin-section">
-                <div class="invite-form">
-                    <div class="invite-input-row">
-                        <input
-                            type="text"
-                            pInputText
-                            placeholder="E-Mail-Adresse"
-                            [(ngModel)]="inviteEmail"
-                            class="invite-input" />
-                        <p-button
-                            label="Einladen"
-                            icon="pi pi-send"
-                            (onClick)="sendInvitation()"
-                            [loading]="inviteSending()"
-                            [disabled]="!inviteEmail()" />
-                    </div>
-
-                    @if (inviteError()) {
-                        <p-message severity="error" styleClass="full-width mt-1">{{ inviteError() }}</p-message>
-                    }
-                    @if (inviteWarn()) {
-                        <p-message severity="warn" styleClass="full-width mt-1">{{ inviteWarn() }}</p-message>
-                    }
-                </div>
-
-                <p-table
-                    [value]="invitations()"
-                    [loading]="invitationsLoading()"
-                    responsiveLayout="scroll"
-                    styleClass="p-datatable-sm">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th>E-Mail</th>
-                            <th>Erstellt am</th>
-                            <th>Aktionen</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-invitation>
-                        <tr>
-                            <td>{{ invitation.email }}</td>
-                            <td>{{ formatDate(invitation.createdAt) }}</td>
-                            <td>
-                                <p-button
-                                    icon="pi pi-times"
-                                    styleClass="p-button-alarm"
-                                    [text]="true"
-                                    (onClick)="revokeInvitation(invitation.id)" />
-                            </td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-                <p-paginator
-                    (onPageChange)="onInvitationsPageChange($event)"
-                    [first]="invitationsPage() * invitationsSize"
-                    [rows]="invitationsSize"
-                    [totalRecords]="invitationsTotal()"
-                    [rowsPerPageOptions]="[10, 20, 50]" />
-            </p-card>
-        }
     </div>
 </div>
 
-<app-change-password-dialog 
-    [visible]="showPasswordDialog()" 
+<app-change-password-dialog
+    [visible]="showPasswordDialog()"
     (visibleChange)="showPasswordDialog.set($event)" />
 
-<app-delete-account-dialog 
-    [visible]="showDeleteAccountDialog()" 
+<app-delete-account-dialog
+    [visible]="showDeleteAccountDialog()"
     (visibleChange)="showDeleteAccountDialog.set($event)" />
-
-<app-delete-member-dialog 
-    [visible]="showDeleteMemberDialog()" 
-    (visibleChange)="showDeleteMemberDialog.set($event)" 
-    [member]="memberToDelete()"
-    (deleted)="loadMembers()" />
-
-<app-update-member-role-dialog
-    [visible]="showUpdateRoleDialog()" 
-    (visibleChange)="showUpdateRoleDialog.set($event)"
-    [member]="memberToUpdateRole()"
-    (updated)="loadMembers()" />

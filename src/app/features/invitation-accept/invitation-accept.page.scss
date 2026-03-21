@@ -1,0 +1,61 @@
+.invitation-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+  background-color: var(--p-surface-50);
+}
+
+.invitation-card {
+  width: 100%;
+  max-width: 450px;
+  border-radius: var(--p-border-radius-xl);
+  box-shadow: var(--p-shadow-3);
+}
+
+.invitation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-weight: 600;
+    color: var(--p-text-color);
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.footer-actions {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.p-error {
+  font-size: 0.875rem;
+  color: var(--p-error-color);
+}
+
+:host ::ng-deep {
+  .p-password,
+  .p-password-input {
+    width: 100%;
+  }
+
+  .p-card-header {
+    text-align: center;
+    padding-top: 1rem;
+  }
+}

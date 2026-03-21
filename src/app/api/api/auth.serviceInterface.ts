@@ -13,6 +13,7 @@ import { Observable }                                        from 'rxjs';
 
 import { AcceptInvitationRequest } from '../model/models';
 import { ChangePasswordRequest } from '../model/models';
+import { InvitationTokenInfoResponse } from '../model/models';
 import { LoginRequest } from '../model/models';
 import { LoginResponse } from '../model/models';
 import { ProblemDetail } from '../model/models';
@@ -43,6 +44,14 @@ export interface AuthServiceInterface {
      * @param changePasswordRequest 
      */
     changePassword(changePasswordRequest: ChangePasswordRequest, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * Informationen zu einem Einladungstoken abrufen
+     * Öffentlicher Endpunkt (kein JWT erforderlich). Gibt die E-Mail-Adresse zurück, die mit dem Token verknüpft ist. Wird genutzt, um das Registrierungsformular vorauszufüllen. 
+     * @endpoint get /auth/invitations/{token}
+     * @param token UUID-Token aus dem Einladungslink
+     */
+    getInvitationInfo(token: string, extraHttpRequestParams?: any): Observable<InvitationTokenInfoResponse>;
 
     /**
      * Login mit E-Mail und Passwort

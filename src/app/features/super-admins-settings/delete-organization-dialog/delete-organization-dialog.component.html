@@ -1,0 +1,29 @@
+<app-base-dialog
+    [visible]="visible"
+    (visibleChange)="visibleChange.emit($event)"
+    header="Organisation löschen"
+    actionLabel="Endgültig löschen"
+    actionSeverity="danger"
+    [actionDisabled]="isConfirmDisabled()"
+    [loading]="loading()"
+    [errorMessage]="errorMessage()"
+    (confirm)="submit()"
+    (close)="close()"
+>
+    <div class="flex flex-column gap-3">
+        <p class="warn-text">
+            Diese Aktion ist unwiderruflich. Die Organisation <strong>{{ organization?.name }}</strong> sowie alle zugehörigen Mitglieder, Tasks und Daten werden permanent gelöscht.
+        </p>
+
+        <div class="flex flex-column gap-2 mt-2">
+            <label for="confirmName">Zur Bestätigung den Organisationsnamen eingeben</label>
+            <input 
+                pInputText 
+                id="confirmName" 
+                [ngModel]="confirmationText()" 
+                (ngModelChange)="confirmationText.set($event)"
+                placeholder="Name der Organisation" 
+            />
+        </div>
+    </div>
+</app-base-dialog>

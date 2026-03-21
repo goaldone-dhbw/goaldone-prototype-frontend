@@ -11,7 +11,7 @@
 
 export interface AddSuperAdminRequest { 
     /**
-     * E-Mail eines bestehenden Nutzers, der Super-Admin werden soll
+     * E-Mail-Adresse der einzuladenden Person. Es wird eine Einladungs-E-Mail verschickt – kein bestehender Account erforderlich.
      */
     email: string;
 }
