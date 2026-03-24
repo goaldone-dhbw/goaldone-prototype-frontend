@@ -1,57 +1,26 @@
 <p-card header="{{title}}">
-    <p>Platzhalter für {{ title }}</p>
+  <br>
+  <div class="button-container">
     <p-button
-        [label]="button.label"
-        [icon]="button.icon"
-        (click)="onStartPlanning()">
+      [label]="addTaskButton.label"
+      [icon]="addTaskButton.icon"
+      (click)="onAddTask()">
     </p-button>
+
+    <p-button
+      [label]="scheduleTasksButton.label"
+      [icon]="scheduleTasksButton.icon"
+      (click)="scheduleTasks()">
+    </p-button>
+  </div>
 </p-card>
 
+<br>
 
-<p-dialog
-    [visible]="showDialog()"
-    (visibleChange)="showDialog.set($event)"
-    header="Neue Aufgabe erstellen"
-    [modal]="true"
-    [closable]="true">
+<p-card class="calendar-card">
+  <div class="calendar-wrapper">
+    <app-calendar></app-calendar>
+  </div>
+</p-card>
 
-    <form (ngSubmit)="onSubmit()">
-        <div style="display: flex; flex-direction: column; gap: 1rem;">
-            <div>
-                <label for="name" style="display: block; margin-bottom: 0.5rem;">Name:</label>
-                <p-inputtext
-                    id="name"
-                    [ngModel]="formData().name"
-                    (ngModelChange)="updateFormData('name', $event)"
-                    name="name"
-                    [contentEditable]="true"
-                    style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;"
-                    [minlength]=50>
-                </p-inputtext>
-            </div>
-            <div>
-                <label for="description" style="display: block; margin-bottom: 0.5rem;">Beschreibung:</label>
-                <p-textarea
-                    id="description"
-                    name="description"
-                    [ngModel]="formData().description"
-                    (ngModelChange)="updateFormData('description', $event)"
-                    [contentEditable]="true"
-                    style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; min-height: 100px;">
-                </p-textarea>
-            </div>
-            <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem;">
-                <p-button
-                    label="Abbrechen"
-                    severity="secondary"
-                    (click)="showDialog.set(false)">
-                </p-button>
-                <p-button
-                    label="Speichern"
-                    type="submit"
-                    severity="success">
-                </p-button>
-            </div>
-        </div>
-    </form>
-</p-dialog>
+<app-add-task-dialog></app-add-task-dialog>

@@ -1,46 +1,43 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import {ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
-import { DialogModule } from 'primeng/dialog';
-import { InputTextModule} from 'primeng/inputtext'; // Used in template
-import { TextareaModule } from 'primeng/textarea';
-import { FormsModule } from '@angular/forms';
-import {JsonPipe} from '@angular/common';
+
+import { CalendarComponent } from './calendar/caelndar.component'
+import { AddTaskDialog } from '../../shared/components/add-task-dialog/add-task-dialog.component';
 
 @Component({
   selector: 'app-schedule-page',
   standalone: true,
-  imports: [CardModule, ButtonModule, DialogModule, InputTextModule, TextareaModule, FormsModule],
+  imports: [CalendarComponent, CardModule, ButtonModule, AddTaskDialog],
   templateUrl: './schedule.page.html',
   styleUrl: './schedule.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
 export class SchedulePage {
+  @ViewChild(AddTaskDialog) addTaskDialog!: AddTaskDialog;
+
   protected readonly title = 'Planungsansicht';
-  protected button = {
+
+  protected addTaskButton = {
     label: 'Aufgabe hinzufügen',
     icon: 'pi pi-plus',
     severity: 'success',
   };
 
-  protected showDialog = signal(false);
-  protected formData = signal({
-    name: '',
-    description: '',
-  });
-
-  onStartPlanning() {
-    this.showDialog.set(true);
+  protected scheduleTasksButton = {
+    label: 'Planung starten',
+    icon: 'pi pi-calendar',
+    severity: 'primary',
   }
 
-  updateFormData(field: 'name' | 'description', value: string) {
-    const current = this.formData();
-    this.formData.set({ ...current, [field]: value });
+
+  onAddTask() {
+    console.log('Dialog geöffnet');
+    this.addTaskDialog.openDialog()
   }
 
-  onSubmit() {
-    console.log('Form eingereicht:', this.formData());
-    this.showDialog.set(false);
-    // Hier kannst du die Daten verarbeiten (z.B. API-Aufruf)
+  scheduleTasks() {
+    console.log('Scheduling tasks')
   }
 }
