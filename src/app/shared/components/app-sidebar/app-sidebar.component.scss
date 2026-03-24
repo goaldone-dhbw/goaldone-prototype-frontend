@@ -1,11 +1,13 @@
 :host {
     display: block;
+    height: 100%;
 }
 
 .sidebar {
     display: flex;
     flex-direction: column;
     height: 100%;
+    overflow: hidden;
     padding: var(--p-card-body-padding, 1rem);
     border-right: 1px solid var(--p-content-border-color);
     background: var(--p-surface-card);
