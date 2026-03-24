@@ -1,0 +1,8 @@
+:host {
+  display: block;
+  overflow: hidden;
+}
+
+::ng-deep .fc-scroller {
+  overflow-y: auto !important;
+}
