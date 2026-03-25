@@ -1,26 +1,29 @@
-<p-card header="{{title}}">
+<div class="schedule-page">
+  <h1>{{title}}</h1>
+  <p-card>
+    <div class="button-container">
+      <p-button
+        [label]="addTaskButton.label"
+        [icon]="addTaskButton.icon"
+        (click)="onAddTask()">
+      </p-button>
+
+      <p-button
+        [label]="scheduleTasksButton.label"
+        [icon]="scheduleTasksButton.icon"
+        (click)="scheduleTasks()">
+      </p-button>
+    </div>
+  </p-card>
+
   <br>
-  <div class="button-container">
-    <p-button
-      [label]="addTaskButton.label"
-      [icon]="addTaskButton.icon"
-      (click)="onAddTask()">
-    </p-button>
 
-    <p-button
-      [label]="scheduleTasksButton.label"
-      [icon]="scheduleTasksButton.icon"
-      (click)="scheduleTasks()">
-    </p-button>
-  </div>
-</p-card>
+  <p-card class="calendar-card">
+    <div class="calendar-wrapper">
+      <app-calendar></app-calendar>
+    </div>
+  </p-card>
 
-<br>
+  <app-add-task-dialog></app-add-task-dialog>
 
-<p-card class="calendar-card">
-  <div class="calendar-wrapper">
-    <app-calendar></app-calendar>
-  </div>
-</p-card>
-
-<app-add-task-dialog></app-add-task-dialog>
+</div>

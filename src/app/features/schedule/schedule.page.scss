@@ -1,3 +1,13 @@
+.schedule-page {
+  padding: 2em;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  h1 {
+    margin-bottom: 2rem;
+    color: var(--p-text-color);
+  }
+}
 :host {
   display: block;
 }
