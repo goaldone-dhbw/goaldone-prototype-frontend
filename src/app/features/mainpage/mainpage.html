@@ -1,0 +1,70 @@
+<main class="dashboard-wrapper">
+    <div class="dashboard-grid">
+
+        <div class="tasks-section">
+            <p-card header="Deine Aufgaben" styleClass="tasks-card">
+                <div class="tasks-list">
+
+                    <div class="task-item" *ngFor="let task of tasks">
+                        <div class="task-header">
+                            <h3>{{ task.title }}</h3>
+                        </div>
+
+                        <div class="task-meta">
+                            <span><i class="pi pi-calendar"></i> {{ task.startDate }}</span>
+                            <span><i class="pi pi-clock"></i> {{ task.duration }} min</span>
+                        </div>
+
+                        <p class="task-description">
+                            {{ task.description }}
+                        </p>
+                    </div>
+
+                </div>
+            </p-card>
+        </div>
+
+        <div class="right-section">
+
+            <app-add-task-dialog #taskDialog></app-add-task-dialog>
+            <p-button
+                label="Neue Aufgabe"
+                icon="pi pi-plus"
+                styleClass="new-task-button"
+                (click)="openDialog()"
+            ></p-button>
+
+            <p-card header="Nächste Aufgabe" styleClass="stat-card">
+                <div class="stat-content">
+                    <i class="pi pi-exclamation-circle stat-icon"></i>
+                    <div>
+                        <h3>{{ nextTask.title }}</h3>
+                        <p>Start: {{ nextTask.startDate }}, Dauer: {{ nextTask.duration }} min</p>
+                    </div>
+                </div>
+            </p-card>
+
+            <p-card header="Fortschritt" styleClass="stat-card">
+                <div class="stat-content">
+                    <i class="pi pi-check-circle stat-icon"></i>
+                    <div>
+                        <h2>{{ completedTasks }} / {{ totalTasks }}</h2>
+                        <p>Aufgaben abgeschlossen</p>
+                    </div>
+                </div>
+            </p-card>
+
+            <p-card header="Arbeitszeit" styleClass="stat-card">
+                <div class="stat-content">
+                    <i class="pi pi-clock stat-icon"></i>
+                    <div>
+                        <h2>{{ workedMinutes }} / {{ totalMinutes }} min</h2>
+                        <p>Minuten erledigt</p>
+                    </div>
+                </div>
+            </p-card>
+
+        </div>
+
+    </div>
+</main>

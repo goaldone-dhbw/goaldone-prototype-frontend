@@ -25,9 +25,7 @@ export const routes: Routes = [
                 path: '',
                 canActivate: [excludeRolesGuard([Role.SuperAdmin], '/app/super-admin')],
                 loadComponent: () =>
-                    import('./features/workspace/workspace-home.page').then(
-                        (m) => m.WorkspaceHomePage,
-                    ),
+                    import('./features/mainpage/mainpage').then((m) => m.MainpageComponent),
             },
             {
                 path: 'schedule',
