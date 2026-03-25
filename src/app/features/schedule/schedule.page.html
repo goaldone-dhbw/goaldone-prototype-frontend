@@ -1,4 +1,26 @@
 <p-card header="{{title}}">
-  <p>Platzhalter für {{ title }}</p>
+  <br>
+  <div class="button-container">
+    <p-button
+      [label]="addTaskButton.label"
+      [icon]="addTaskButton.icon"
+      (click)="onAddTask()">
+    </p-button>
+
+    <p-button
+      [label]="scheduleTasksButton.label"
+      [icon]="scheduleTasksButton.icon"
+      (click)="scheduleTasks()">
+    </p-button>
+  </div>
 </p-card>
 
+<br>
+
+<p-card class="calendar-card">
+  <div class="calendar-wrapper">
+    <app-calendar></app-calendar>
+  </div>
+</p-card>
+
+<app-add-task-dialog></app-add-task-dialog>

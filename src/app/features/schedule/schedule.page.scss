@@ -2,3 +2,23 @@
   display: block;
 }
 
+.calendar-card {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 2rem); /* optional: Platz für Header/Abstände */
+}
+
+.calendar-wrapper {
+  flex: 1;           /* nimmt restliche Höhe ein */
+  display: flex;
+  flex-direction: column;
+}
+
+calendar-wrapper app-calendar {
+  flex: 1;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between; /* verteilt die Elemente an den Enden */
+}
