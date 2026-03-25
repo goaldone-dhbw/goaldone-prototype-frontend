@@ -5,9 +5,6 @@ import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid'
 import deLocale from '@fullcalendar/core/locales/de';
 
-// new installs:
-// npm install @fullcalendar/angular @fullcalendar/core @fullcalendar/daygrid @fullcalendar/interaction @fullcalendar/timegrid
-
 
 @Component({
   selector: 'app-calendar',
