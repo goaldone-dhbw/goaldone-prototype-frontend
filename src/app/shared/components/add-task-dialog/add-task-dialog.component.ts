@@ -8,8 +8,8 @@ import { CardModule } from 'primeng/card';
 import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { FloatLabelModule } from 'primeng/floatlabel';
-import {DatePicker} from 'primeng/datepicker';
-
+import { DatePicker } from 'primeng/datepicker';
+import { Checkbox } from 'primeng/checkbox';
 
 @Component({
   selector: 'app-add-task-dialog',
@@ -24,14 +24,14 @@ import {DatePicker} from 'primeng/datepicker';
     SelectModule,
     InputNumberModule,
     FloatLabelModule,
-    DatePicker
+    DatePicker,
+    Checkbox,
   ],
   templateUrl: './add-task-dialog.component.html',
   styleUrls: ['./add-task-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTaskDialog {
-  protected date: Date | null = null;
 
   protected items = [
     { label: 'Open', value: 'Open' },
@@ -39,7 +39,7 @@ export class AddTaskDialog {
     { label: 'Done', value: 'Done' },
     { label: 'Needs Review', value: 'Needs Review' },
     { label: 'In Review', value: 'In Review' },
-    { label: 'Closed', value: 'Closed' }
+    { label: 'Closed', value: 'Closed' },
   ];
 
   protected showDialog = signal(false);
@@ -51,19 +51,68 @@ export class AddTaskDialog {
     estimatedTime: null as number | null,
     trackedTime: null as number | null,
     description: '',
+    startDate: null as Date | null,
+    endDate: null as Date | null,
+    scheduled: true,
+    chunked: false,
+    chunkCount: 0,
+    chunkDurations: [] as (string | null)[],
   });
 
   updateFormData(field: keyof ReturnType<typeof this.formData>, value: any) {
     const current = this.formData();
-    this.formData.set({ ...current, [field]: value });
+
+    let updated = { ...current, [field]: value };
+
+    // 👉 Chunk Count -> Array anpassen
+    if (field === 'chunkCount') {
+      updated.chunkDurations = Array.from(
+        { length: value },
+        (_, i) => current.chunkDurations[i] || null
+      );
+    }
+
+    this.formData.set(updated);
+  }
+
+  updateChunk(index: number, value: string) {
+    const current = this.formData();
+    const updatedChunks = [...current.chunkDurations];
+    updatedChunks[index] = value;
+
+    this.formData.set({
+      ...current,
+      chunkDurations: updatedChunks,
+    });
   }
 
   onSubmit() {
     console.log('Form eingereicht:', this.formData());
     this.showDialog.set(false);
+
+    // submit
+
+    this.resetFormData()
   }
 
   openDialog() {
     this.showDialog.set(true);
+  }
+
+  resetFormData() {
+    this.formData.set({
+      name: '',
+      status: null,
+      deadline: null,
+      estimatedTime: null,
+      trackedTime: null,
+      description: '',
+      startDate: null,
+      endDate: null,
+      scheduled: true,
+      chunked: false,
+      chunkCount: 0,
+      chunkDurations: [],
+    });
   }
 }
