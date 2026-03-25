@@ -1,17 +1,24 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { ButtonModule } from 'primeng/button';
+
 import { DialogModule } from 'primeng/dialog';
-import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
 import { FormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
-import { SelectModule } from 'primeng/select';
+
+import { ButtonModule } from 'primeng/button';
+
+import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
+
 import { FloatLabelModule } from 'primeng/floatlabel';
+
+import { TextareaModule } from 'primeng/textarea';
+import { SelectModule } from 'primeng/select';
 import { DatePicker } from 'primeng/datepicker';
 import { Checkbox } from 'primeng/checkbox';
-import {TaskModel} from '../../models/task.model';
-import {TaskState} from '../../models/task-state.model';
+
+import { TaskModel } from '../../models/task.model';
+import { TaskState } from '../../models/task-state.model';
+import { TaskDifficultyModel } from '../../models/task-difficulty.model';
 
 @Component({
   selector: 'app-add-task-dialog',
@@ -33,43 +40,34 @@ import {TaskState} from '../../models/task-state.model';
   styleUrls: ['./add-task-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class AddTaskDialog {
-
-  protected items = Object.values(TaskState).map(status => ({
+  protected taskStates = Object.values(TaskState).map((status) => ({
     label: status,
-    value: status
+    value: status,
   }));
+
+  protected taskDifficulty = Object.values(TaskDifficultyModel).map((difficulty) => ({
+    label: difficulty,
+    value: difficulty,
+  }));
+
 
   protected showDialog = signal(false);
 
-  protected formData = signal<TaskModel>({
-    title: '',
-    estimatedTime: 0,
-    status: TaskState.Open,
-    deadline: undefined,
-    trackedTime: 0,
-    start: undefined,
-    end: undefined,
-    description: '',
-    scheduleTask: false,
-    numChunks: 0,
-    chunks: []
-  });
+  protected formData = signal<TaskModel>(this.getDefaultFormData());
 
-  updateFormData(field: keyof ReturnType<typeof this.formData>, value: any) {
+  updateFormData(field: keyof TaskModel, value: any) {
     const current = this.formData();
-
     let updated = { ...current, [field]: value };
 
     if (field === 'numChunks') {
       updated.chunks = Array.from(
         { length: value },
-        (_, i) => current.chunks[i] || null
+        (_, i) => current.chunks[i] ?? null
       );
     }
-    this.formData.set(updated);
 
+    this.formData.set(updated);
   }
 
   updateChunk(index: number, value: number) {
@@ -89,35 +87,44 @@ export class AddTaskDialog {
   }
 
   openDialog(taskData: TaskModel | null) {
-    this.setData(taskData)
+    this.setData(taskData);
     this.showDialog.set(true);
   }
 
-  isOpened() {
-    return this.showDialog();
+  private getDefaultFormData(): TaskModel {
+    return {
+      title: '',
+      status: TaskState.Open,
+      deadline: undefined,
+      difficulty: TaskDifficultyModel.Easy,
+      estimatedTime: 0,
+      trackedTime: 0,
+      startDate: undefined,
+      endDate: undefined,
+      description: '',
+      scheduleTask: true,
+      numChunks: 1,
+      chunks: [0]
+    };
   }
 
-
   setData(taskData: TaskModel | null) {
-    if (taskData) {
-      this.updateFormData("title", taskData.title)
-      this.updateFormData("estimatedTime", taskData.estimatedTime)
-      this.updateFormData("status", taskData.status)
-      this.updateFormData("deadline", taskData.deadline)
-      this.updateFormData("description", taskData.description)
-      this.updateFormData("scheduleTask", taskData.scheduleTask)
-      this.updateFormData("numChunks", taskData.numChunks)
-      this.updateFormData("chunks", taskData.chunks)
-    }
-    else {
-      this.updateFormData("title", '')
-      this.updateFormData("estimatedTime", 0)
-      this.updateFormData("status", TaskState.Open)
-      this.updateFormData("deadline", undefined)
-      this.updateFormData("description", '')
-      this.updateFormData("scheduleTask", false)
-      this.updateFormData("numChunks", 0)
-      this.updateFormData("chunks", [])
-    }
+    const base = this.getDefaultFormData();
+
+    // Set available data
+    const data = taskData
+      ? { ...base, ...taskData }
+      : base;
+
+    // Update chunks based on numChunks
+    const chunks = Array.from(
+      { length: data.numChunks },
+      (_, i) => data.chunks?.[i] ?? null
+    );
+
+    this.formData.set({
+      ...data,
+      chunks,
+    });
   }
 }

@@ -1,4 +1,4 @@
-.form-grid {
+.general, .schedule, .chunk {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
@@ -17,19 +17,37 @@
 .input-row p-select,
 .input-row p-datepicker,
 .input-row p-inputnumber,
-.input-row p-textarea,
+.input-row textarea,
 .input-row input {
+  width: 100%;
+}
+
+:host ::ng-deep textarea {
+  width: 100%;
+  resize: none;
+}
+
+
+:host ::ng-deep .button {
   width: 100%;
 }
 
 /* Buttons */
 .button-row {
-  display: flex;
-  justify-content: flex-end;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
+  width: 100%;
 }
 
-/* Chunk Styling */
+:host ::ng-deep .button-row .p-button {
+  width: 100%;
+}
+
+:host ::ng-deep .button-row .p-button button {
+  width: 100%;
+}
+
 .chunk-list {
   display: flex;
   flex-direction: column;
