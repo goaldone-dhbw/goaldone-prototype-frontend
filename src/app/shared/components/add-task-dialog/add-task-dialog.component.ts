@@ -72,7 +72,7 @@ export class AddTaskDialog {
 
   }
 
-  updateChunk(index: number, value: string) {
+  updateChunk(index: number, value: number) {
     const current = this.formData();
     const updatedChunks = [...current.chunks];
     updatedChunks[index] = value;

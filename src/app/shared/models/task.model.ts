@@ -12,6 +12,6 @@ export interface TaskModel {
   description?: string;
   scheduleTask: boolean;
   numChunks: number;
-  chunks: number[];
+  chunks: (number | null)[];
 }
 
