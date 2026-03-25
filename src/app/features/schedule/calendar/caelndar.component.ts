@@ -1,12 +1,12 @@
-import {Component} from '@angular/core';
-import { FullCalendarModule } from '@fullcalendar/angular';
+import {Component, ViewChild} from '@angular/core';
+import {FullCalendarModule} from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid'
 import deLocale from '@fullcalendar/core/locales/de';
-
-// new installs:
-// npm install @fullcalendar/angular @fullcalendar/core @fullcalendar/daygrid @fullcalendar/interaction @fullcalendar/timegrid
+import {AddTaskDialog} from '../../../shared/components/add-task-dialog/add-task-dialog.component';
+import {TaskModel} from '../../../shared/models/task.model';
+import {TaskState} from '../../../shared/models/task-state.model';
 
 
 @Component({
@@ -17,6 +17,55 @@ import deLocale from '@fullcalendar/core/locales/de';
   styleUrl: 'calendar.component.scss'
 })
 export class CalendarComponent {
+  @ViewChild(AddTaskDialog) addTaskDialog!: AddTaskDialog;
+
+  protected taskArray : TaskModel[] = [
+    {
+      title: 'Meeting',
+      status: TaskState.Open,
+      deadline: new Date('2026-03-30'),
+      estimatedTime: 120,
+      trackedTime: 0,
+      start: new Date('2026-03-23T10:00:00'),
+      end: new Date('2026-03-23T12:00:00'),
+      description: 'Description for Meeting',
+      scheduleTask: true,
+      numChunks: 1,
+      chunks: []
+    }, {
+      title: 'Meeting',
+      status: TaskState.Open,
+      deadline: new Date('2026-03-30'),
+      estimatedTime: 120,
+      trackedTime: 0,
+      start: new Date('2026-03-26T12:00:00'),
+      end: new Date('2026-03-26T15:00:00'),
+      description: 'Description for Task Meeting',
+      scheduleTask: true,
+      numChunks: 1,
+      chunks: []
+    }, {
+      title: 'Lunch',
+      status: TaskState.Open,
+      deadline: new Date('2026-03-31'),
+      estimatedTime: 120,
+      trackedTime: 0,
+      start: new Date('2026-03-25T11:00:00'),
+      end: new Date('2026-03-25T13:00:00'),
+      description: 'Description for Task Lunch',
+      scheduleTask: true,
+      numChunks: 1,
+      chunks: []
+    }
+  ]
+
+  protected eventsArray: { title: string; start: string | Date; end: string | Date }[] = this.taskArray.map(task => ({
+    title: task.title,
+    start: task.start!,
+    end: task.end!
+  }));
+
+
   calendarOptions = {
 
     // Format
@@ -33,19 +82,27 @@ export class CalendarComponent {
       center: 'title',
       right: 'timeGridWeek,timeGridDay'
     },
-
-    // Events
-    events: [
-      { title: 'Meeting', start: '2026-03-23T10:00:00', end: '2026-03-23T12:00:00' },
-      { title: 'Meeting', start: '2026-03-24T14:00:00', end: '2026-03-24T15:00:00' },
-      { title: 'Meeting', start: '2026-03-27T09:00:00', end: '2026-03-27T12:00:00' }
-    ],
+    events: this.eventsArray,
 
     // Methods
     dateClick: (arg: any) => this.handleDateClick(arg),
+    eventClick: (arg: any) => this.handleEventClick(arg)
   };
 
+  handleEventClick(arg: any) {
+
+    // Somehow get Task from Event
+
+    this.addTaskDialog.openDialog(this.taskArray[0]); // Example task
+  }
+
   handleDateClick(arg: any) {
-    alert('date click! ' + arg.dateStr); // add Event to Calendar
+
+    datum: String = arg.dateStr;
+
+    // event <- AddTaskDialog()
+    //
+
+
   }
 }
