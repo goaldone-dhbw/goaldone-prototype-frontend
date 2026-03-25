@@ -1,12 +1,13 @@
-import {Component, ViewChild} from '@angular/core';
-import {FullCalendarModule} from '@fullcalendar/angular';
+import { Component, ViewChild } from '@angular/core';
+import { FullCalendarModule } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import timeGridPlugin from '@fullcalendar/timegrid'
+import timeGridPlugin from '@fullcalendar/timegrid';
 import deLocale from '@fullcalendar/core/locales/de';
-import {AddTaskDialog} from '../../../shared/components/add-task-dialog/add-task-dialog.component';
-import {TaskModel} from '../../../shared/models/task.model';
-import {TaskState} from '../../../shared/models/task-state.model';
+import { AddTaskDialog } from '../../../shared/components/add-task-dialog/add-task-dialog.component';
+import { TaskModel } from '../../../shared/models/task.model';
+import { TaskState } from '../../../shared/models/task-state.model';
+import { TaskDifficultyModel } from '../../../shared/models/task-difficulty.model';
 
 
 @Component({
@@ -25,9 +26,10 @@ export class CalendarComponent {
       status: TaskState.Open,
       deadline: new Date('2026-03-30'),
       estimatedTime: 120,
+      difficulty: TaskDifficultyModel.Moderate,
       trackedTime: 0,
-      start: new Date('2026-03-23T10:00:00'),
-      end: new Date('2026-03-23T12:00:00'),
+      startDate: new Date('2026-03-23T10:00:00'),
+      endDate: new Date('2026-03-23T12:00:00'),
       description: 'Description for Meeting',
       scheduleTask: true,
       numChunks: 1,
@@ -36,10 +38,11 @@ export class CalendarComponent {
       title: 'Meeting',
       status: TaskState.Open,
       deadline: new Date('2026-03-30'),
+      difficulty: TaskDifficultyModel.Moderate,
       estimatedTime: 120,
       trackedTime: 0,
-      start: new Date('2026-03-26T12:00:00'),
-      end: new Date('2026-03-26T15:00:00'),
+      startDate: new Date('2026-03-26T12:00:00'),
+      endDate: new Date('2026-03-26T15:00:00'),
       description: 'Description for Task Meeting',
       scheduleTask: true,
       numChunks: 1,
@@ -48,10 +51,11 @@ export class CalendarComponent {
       title: 'Lunch',
       status: TaskState.Open,
       deadline: new Date('2026-03-31'),
+      difficulty: TaskDifficultyModel.Easy,
       estimatedTime: 120,
       trackedTime: 0,
-      start: new Date('2026-03-25T11:00:00'),
-      end: new Date('2026-03-25T13:00:00'),
+      startDate: new Date('2026-03-25T11:00:00'),
+      endDate: new Date('2026-03-25T13:00:00'),
       description: 'Description for Task Lunch',
       scheduleTask: true,
       numChunks: 1,
@@ -61,8 +65,8 @@ export class CalendarComponent {
 
   protected eventsArray: { title: string; start: string | Date; end: string | Date }[] = this.taskArray.map(task => ({
     title: task.title,
-    start: task.start!,
-    end: task.end!
+    start: task.startDate!,
+    end: task.endDate!
   }));
 
 

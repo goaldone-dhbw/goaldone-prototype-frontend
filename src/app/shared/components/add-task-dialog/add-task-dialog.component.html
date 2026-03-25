@@ -1,137 +1,170 @@
 <p-dialog
   [visible]="showDialog()"
   (visibleChange)="showDialog.set($event)"
-  header="Neue Aufgabe erstellen"
-  [modal]="true">
+  header="Aufgabe bearbeiten"
+  [modal]="true"
+  [closable]="false">
 
   <form (ngSubmit)="onSubmit()">
-    <div class="form-grid">
+    <p-card class="form-grid">
+      <div class="general">
+        <div class="input-row">
+          <label>Name:</label>
+          <input
+            pInputText
+            id="title"
+            [ngModel]="formData().title"
+            (ngModelChange)="updateFormData('title', $event)"
+            name="title">
+        </div>
 
-      <div class="input-row">
-        <label>Name:</label>
-        <p-inputtext
-          [ngModel]="formData().name"
-          (ngModelChange)="updateFormData('name', $event)"
-          name="name">
-        </p-inputtext>
-      </div>
+        <div class="input-row">
+          <label>Status:</label>
+          <p-select
+            id="status"
+            [options]="taskStates"
+            optionLabel="label"
+            optionValue="value"
+            [ngModel]="formData().status"
+            (ngModelChange)="updateFormData('status', $event)"
+            name="status"
+            placeholder="Status wählen">
+          </p-select>
+        </div>
 
-      <div class="input-row">
-        <label>Status:</label>
-        <p-select
-          [options]="items"
-          optionLabel="label"
-          optionValue="value"
-          [ngModel]="formData().status"
-          (ngModelChange)="updateFormData('status', $event)"
-          name="status">
-        </p-select>
-      </div>
+        <div class="input-row">
+          <label>Deadline:</label>
+          <p-datepicker
+            [ngModel]="formData().deadline"
+            (ngModelChange)="updateFormData('deadline', $event)">
+          </p-datepicker>
+        </div>
 
-      <div class="input-row">
-        <label>Deadline:</label>
-        <p-datepicker
-          [ngModel]="formData().deadline"
-          (ngModelChange)="updateFormData('deadline', $event)">
-        </p-datepicker>
-      </div>
+        <div class="input-row">
+          <label>Kognitiver Anspruch</label>
+          <p-select
+            id="difficulty"
+            [options]="taskDifficulty"
+            optionLabel="label"
+            optionValue="value"
+            [ngModel]="formData().difficulty"
+            (ngModelChange)="updateFormData('difficulty', $event)"
+            name="difficulty"
+            placeholder="Schwierigkeit wählen">
+          </p-select>
+        </div>
 
-      <div class="input-row">
-        <label>Geschätzte Zeit:</label>
-        <p-inputnumber
-          [ngModel]="formData().estimatedTime"
-          (ngModelChange)="updateFormData('estimatedTime', $event)">
-        </p-inputnumber>
-      </div>
+        <div class="input-row">
+          <label>Geschätzte Zeit:</label>
+          <p-inputnumber
+            id="estimatedTime"
+            [ngModel]="formData().estimatedTime"
+            (ngModelChange)="updateFormData('estimatedTime', $event)">
+          </p-inputnumber>
+        </div>
 
-      <div class="input-row">
-        <label>Erfasste Zeit:</label>
-        <p-inputnumber
-          [ngModel]="formData().trackedTime"
-          (ngModelChange)="updateFormData('trackedTime', $event)">
-        </p-inputnumber>
-      </div>
+        <div class="input-row">
+          <label>Erfasste Zeit:</label>
+          <p-inputnumber
+            [ngModel]="formData().trackedTime"
+            (ngModelChange)="updateFormData('trackedTime', $event)">
+          </p-inputnumber>
+        </div>
 
-      <div class="input-row full-width">
-        <p-floatlabel>
-          <p-textarea
-            [ngModel]="formData().description"
-            (ngModelChange)="updateFormData('description', $event)">
-          </p-textarea>
+        <div class="input-row full-width">
           <label>Beschreibung</label>
-        </p-floatlabel>
-      </div>
-
-      <hr class="full-width">
-
-      <!-- Schedule -->
-      <div class="input-row full-width">
-        <p-checkbox
-          [ngModel]="formData().scheduled"
-          (ngModelChange)="updateFormData('scheduled', $event)"
-          binary="true"
-          label="Schedule Task">
-        </p-checkbox>
-      </div>
-
-      <div class="input-row">
-        <label>Start:</label>
-        <p-datepicker
-          [ngModel]="formData().startDate"
-          (ngModelChange)="updateFormData('startDate', $event)"
-          [disabled]="formData().scheduled">
-        </p-datepicker>
-      </div>
-
-      <div class="input-row">
-        <label>Ende:</label>
-        <p-datepicker
-          [ngModel]="formData().endDate"
-          (ngModelChange)="updateFormData('endDate', $event)"
-          [disabled]="formData().scheduled">
-        </p-datepicker>
-      </div>
-
-      <hr class="full-width">
-
-      <!-- Chunk -->
-      <div class="input-row full-width">
-        <p-checkbox
-          [ngModel]="formData().chunked"
-          (ngModelChange)="updateFormData('chunked', $event)"
-          binary="true"
-          label="Chunk Task">
-        </p-checkbox>
-      </div>
-
-      <div class="input-row" *ngIf="formData().chunked">
-        <label>Anzahl:</label>
-        <p-inputnumber
-          [ngModel]="formData().chunkCount"
-          (ngModelChange)="updateFormData('chunkCount', $event)">
-        </p-inputnumber>
-      </div>
-
-      <div class="input-row full-width" *ngIf="formData().chunked">
-        <div class="chunk-list">
-          <div *ngFor="let c of formData().chunkDurations; let i = index" class="chunk-item">
-            <label>{{ i + 1 }}.</label>
-            <input
-              type="text"
-              [ngModel]="c"
-              (ngModelChange)="updateChunk(i, $event)"
-              placeholder="hh:mm">
-          </div>
+          <textarea
+            pTextarea
+            id="description"
+            [ngModel]="formData().description"
+            (ngModelChange)="updateFormData('description', $event)"
+            name="description">
+        </textarea>
         </div>
       </div>
 
-      <hr class="full-width">
+
+      <br>
+      <hr>
+      <br>
+
+      <div>
+        <p-checkbox
+          [ngModel]="formData().scheduleTask"
+          (ngModelChange)="updateFormData('scheduleTask', $event)"
+          binary="true"
+          variant="filled"
+          label="scheduleTask">
+        </p-checkbox>
+        <label>  Schedule Task</label>
+      </div>
+
+      <br>
+
+      <div class="schedule">
+        <div class="input-row">
+          <label>Start:</label>
+          <p-datepicker
+            [ngModel]="formData().startDate"
+            (ngModelChange)="updateFormData('startDate', $event)"
+            [disabled]="formData().scheduleTask">
+          </p-datepicker>
+        </div>
+
+        <div class="input-row">
+          <label>Ende:</label>
+          <p-datepicker
+            [ngModel]="formData().endDate"
+            (ngModelChange)="updateFormData('endDate', $event)"
+            [disabled]="formData().scheduleTask">
+          </p-datepicker>
+        </div>
+      </div>
+
+      <br>
+      <hr>
+      <br>
+
+      <div class="chunk">
+        <div class="input-row">
+          <label>Anzahl Chunks:</label>
+          <p-inputnumber
+            [ngModel]="formData().numChunks"
+            (ngModelChange)="updateFormData('numChunks', $event)">
+          </p-inputnumber>
+        </div>
+
+        @if (formData().numChunks) {
+          <div class="input-row full-width">
+            <div class="chunk-list">
+
+              @for (c of formData().chunks; track $index; let i = $index) {
+                <div class="chunk-item">
+                  <label>{{ i + 1 }}.</label>
+
+                  <p-inputnumber
+                    type="text"
+                    [ngModel]="c"
+                    (input)="updateChunk(i, $any($event.target).value)"
+                    placeholder="hh:mm">
+                  </p-inputnumber>
+                </div>
+              }
+
+            </div>
+          </div>
+        }
+      </div>
+
+      <br>
+      <hr>
+      <br>
 
       <div class="button-row full-width">
         <p-button label="Abbrechen" (click)="showDialog.set(false)"></p-button>
         <p-button label="Speichern" type="submit" severity="success"></p-button>
       </div>
 
-    </div>
+    </p-card>
   </form>
 </p-dialog>

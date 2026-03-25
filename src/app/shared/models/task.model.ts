@@ -1,14 +1,16 @@
 import { TaskState} from './task-state.model';
+import { TaskDifficultyModel } from './task-difficulty.model';
 
 export interface TaskModel {
   id?: number;
   title: string;
   status: TaskState,
   deadline: Date | undefined,
+  difficulty: TaskDifficultyModel,
   estimatedTime: number;
   trackedTime: number;
-  start: Date | undefined;
-  end?: Date | undefined;
+  startDate: Date | undefined;
+  endDate?: Date | undefined;
   description?: string;
   scheduleTask: boolean;
   numChunks: number;

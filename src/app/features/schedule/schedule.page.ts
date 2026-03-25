@@ -31,7 +31,6 @@ export class SchedulePage {
     severity: 'primary',
   }
 
-
   onAddTask() {
     console.log('Dialog geöffnet');
     this.addTaskDialog.openDialog()
