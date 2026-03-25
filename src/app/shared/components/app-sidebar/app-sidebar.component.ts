@@ -17,6 +17,8 @@ import { AuthStore } from '../../../core/auth.store';
 export class AppSidebarComponent {
     private authStore = inject(AuthStore);
 
+    isSuperAdmin = computed(() => this.authStore.hasRole(Role.SuperAdmin));
+
     protected readonly navigationItems: MenuItem[] = [
         {
             label: 'Workspace',
@@ -54,7 +56,7 @@ export class AppSidebarComponent {
                 label: 'Super-Admin',
                 icon: 'pi pi-key',
                 routerLink: '/app/super-admin',
-            })
+            });
         }
 
         return items;

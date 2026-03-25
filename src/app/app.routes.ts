@@ -50,7 +50,7 @@ export const routes: Routes = [
             {
                 path: 'settings',
                 loadComponent: () =>
-                    import('./features/settings/settings.page').then((m) => m.SettingsPage),
+                    import('./features/user-settings/user-settings.page').then((m) => m.UserSettingsPage),
             },
         ],
     },
