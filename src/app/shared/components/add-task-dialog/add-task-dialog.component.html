@@ -8,13 +8,13 @@
   <form (ngSubmit)="onSubmit()">
     <div style="display: flex; flex-direction: column; gap: 1rem;">
       <div class="input-row">
-        <label for="name" style="display: block; margin-bottom: 0.5rem;">Name:</label>
-        <p-inputtext
-          id="name"
-          [ngModel]="formData().name"
-          (ngModelChange)="updateFormData('name', $event)"
+        <label for="title" style="display: block; margin-bottom: 0.5rem;">Name:</label>
+        <pInputText
+          id="title"
+          [ngModel]="formData().title"
+          (ngModelChange)="updateFormData('title', $event)"
           name="name">
-        </p-inputtext>
+        </pInputText>
       </div>
       <div class="input-row">
         <label for="status" style="display: block; margin-bottom: 0.5rem;">Status:</label>
@@ -39,34 +39,35 @@
       </div>
       <div class="input-row">
         <label for="estimatedTime" style="display: block; margin-bottom: 0.5rem;">Geschätzte Zeit (h):</label>
-        <p-inputnumber
+        <pInputText
           id="estimatedTime"
           [ngModel]="formData().estimatedTime"
           (ngModelChange)="updateFormData('estimatedTime', $event)"
           name="estimatedTime"
           mode="decimal"
           placeholder="z.B. 3">
-        </p-inputnumber>
+        </pInputText>
       </div>
       <div class="input-row">
         <label for="trackedTime" style="display: block; margin-bottom: 0.5rem;">Erfasste Zeit (h):</label>
-        <p-inputnumber
+        <pInputText
           id="trackedTime"
           [ngModel]="formData().trackedTime"
           (ngModelChange)="updateFormData('trackedTime', $event)"
           name="trackedTime"
           mode="decimal"
           placeholder="z.B. 2">
-        </p-inputnumber>
+        </pInputText>
       </div>
       <div class="input-row">
         <p-floatlabel>
-          <p-textarea
+          <p-inputtextarea
+            pInputTextarea
             id="description"
             [ngModel]="formData().description"
             (ngModelChange)="updateFormData('description', $event)"
             name="description">
-          </p-textarea>
+          </p-inputtextarea>
           <label for="description">Beschreibung</label>
         </p-floatlabel>
       </div>
