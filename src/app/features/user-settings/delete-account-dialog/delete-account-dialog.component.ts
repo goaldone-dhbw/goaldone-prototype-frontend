@@ -5,7 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { UsersService } from '../../../api';
-import { AuthStore } from '../../../core/auth.store';
+import { AuthStore } from '../../../core/auth/auth.store';
 import { Router } from '@angular/router';
 import { catchError, finalize, of } from 'rxjs';
 import { MessageService } from 'primeng/api';
@@ -82,14 +82,14 @@ export class DeleteAccountDialogComponent {
     ).subscribe((res) => {
       // In success case, res is undefined (204 No Content) but not null from catchError
       if (this.errorMessage()) return;
-      
+
       this.messageService.add({
         key: 'settings-toast',
         severity: 'success',
         summary: 'Erfolg',
         detail: 'Account erfolgreich gelöscht.'
       });
-      
+
       this.authStore.clear();
       this.router.navigate(['/login']);
       this.close();

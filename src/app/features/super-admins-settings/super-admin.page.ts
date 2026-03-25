@@ -7,7 +7,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { PaginatorModule } from 'primeng/paginator';
 import { MessageService } from 'primeng/api';
 import { AdminService, OrganizationResponse, PageMetadata, UserResponse } from '../../api';
-import { AuthStore } from '../../core/auth.store';
+import { AuthStore } from '../../core/auth/auth.store';
 import { CreateOrganizationDialogComponent } from './create-organization-dialog/create-organization-dialog.component';
 import { DeleteOrganizationDialogComponent } from './delete-organization-dialog/delete-organization-dialog.component';
 import { AddSuperAdminDialogComponent } from './add-super-admin-dialog/add-super-admin-dialog.component';

@@ -1,6 +1,6 @@
 // auth.store.ts
 import { Injectable, signal, computed } from '@angular/core';
-import { Role, UserResponse } from '../api';
+import { Role, UserResponse } from '../../api';
 
 @Injectable({ providedIn: 'root' })
 export class AuthStore {

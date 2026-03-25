@@ -4,7 +4,7 @@ import { Menu } from 'primeng/menu';
 import { Image } from 'primeng/image';
 import { RouterLink } from '@angular/router';
 import { Role } from '../../../api';
-import { AuthStore } from '../../../core/auth.store';
+import { AuthStore } from '../../../core/auth/auth.store';
 
 @Component({
     selector: 'app-sidebar',

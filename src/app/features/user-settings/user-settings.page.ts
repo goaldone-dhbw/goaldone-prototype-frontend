@@ -1,7 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../core/auth.service';
+import { AuthService } from '../../core/auth/auth.service';
 import { UsersService, UserResponse, Role } from '../../api';
 import { MessageService } from 'primeng/api';
 import { CardModule } from 'primeng/card';
@@ -17,7 +17,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ChangePasswordDialogComponent } from './change-password-dialog/change-password-dialog.component';
 import { DeleteAccountDialogComponent } from './delete-account-dialog/delete-account-dialog.component';
 import { catchError, of } from 'rxjs';
-import { AuthStore } from '../../core/auth.store';
+import { AuthStore } from '../../core/auth/auth.store';
 
 @Component({
     selector: 'app-settings',
