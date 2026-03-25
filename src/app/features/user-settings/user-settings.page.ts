@@ -39,10 +39,10 @@ import { AuthStore } from '../../core/auth.store';
         DeleteAccountDialogComponent,
     ],
     providers: [MessageService],
-    templateUrl: './settings.page.html',
-    styleUrl: './settings.page.scss',
+    templateUrl: './user-settings.page.html',
+    styleUrl: './user-settings.page.scss',
 })
-export class SettingsPage implements OnInit {
+export class UserSettingsPage implements OnInit {
     protected readonly title = 'Einstellungen';
 
     private authService = inject(AuthService);
