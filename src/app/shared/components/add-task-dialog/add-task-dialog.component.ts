@@ -1,14 +1,15 @@
-import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
-import {ButtonModule} from 'primeng/button';
-import {DialogModule} from 'primeng/dialog';
-import {InputTextModule} from 'primeng/inputtext';
-import {TextareaModule} from 'primeng/textarea';
-import {FormsModule} from '@angular/forms';
-import {CardModule} from 'primeng/card';
-import {SelectModule} from 'primeng/select';
-import {InputNumberModule} from 'primeng/inputnumber';
-import {FloatLabelModule} from 'primeng/floatlabel';
-import {DatePicker} from 'primeng/datepicker';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { TextareaModule } from 'primeng/textarea';
+import { FormsModule } from '@angular/forms';
+import { CardModule } from 'primeng/card';
+import { SelectModule } from 'primeng/select';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { DatePicker } from 'primeng/datepicker';
+import { Checkbox } from 'primeng/checkbox';
 import {TaskModel} from '../../models/task.model';
 import {TaskState} from '../../models/task-state.model';
 
@@ -25,7 +26,8 @@ import {TaskState} from '../../models/task-state.model';
     SelectModule,
     InputNumberModule,
     FloatLabelModule,
-    DatePicker
+    DatePicker,
+    Checkbox,
   ],
   templateUrl: './add-task-dialog.component.html',
   styleUrls: ['./add-task-dialog.component.scss'],
@@ -33,8 +35,6 @@ import {TaskState} from '../../models/task-state.model';
 })
 
 export class AddTaskDialog {
-  protected date: Date | null = null;
-
 
   protected items = Object.values(TaskState).map(status => ({
     label: status,
@@ -59,7 +59,28 @@ export class AddTaskDialog {
 
   updateFormData(field: keyof ReturnType<typeof this.formData>, value: any) {
     const current = this.formData();
-    this.formData.set({ ...current, [field]: value });
+
+    let updated = { ...current, [field]: value };
+
+    if (field === 'numChunks') {
+      updated.chunks = Array.from(
+        { length: value },
+        (_, i) => current.chunks[i] || null
+      );
+    }
+    this.formData.set(updated);
+
+  }
+
+  updateChunk(index: number, value: string) {
+    const current = this.formData();
+    const updatedChunks = [...current.chunks];
+    updatedChunks[index] = value;
+
+    this.formData.set({
+      ...current,
+      chunks: updatedChunks,
+    });
   }
 
   onSubmit() {
