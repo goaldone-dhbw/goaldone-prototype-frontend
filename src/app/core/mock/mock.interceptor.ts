@@ -1,7 +1,7 @@
 import { Role } from '../../api';
 import { HttpEvent, HttpHandlerFn, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Observable, delay, of } from 'rxjs';
-import { MOCK_USERS, MOCK_TASKS, MOCK_ORGANIZATIONS, MOCK_MEMBERS, MOCK_BREAKS, MOCK_SCHEDULE, MOCK_SUPERADMIN_INVITATIONS } from './mock-data';
+import { MOCK_USERS, MOCK_TASKS, MOCK_ORGANIZATIONS, MOCK_MEMBERS, MOCK_BREAKS, MOCK_SCHEDULE, MOCK_SUPERADMIN_INVITATIONS, MOCK_WORKING_HOURS } from './mock-data';
 import { environment } from '../../../environments/environment';
 
 export function mockInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
@@ -67,6 +67,16 @@ export function mockInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
 
     // Fallback if no token or unknown user
     return ok(MOCK_USERS['user@goaldone.de']);
+  }
+
+  // --- Working Hours Endpoints ---
+
+  if (url.endsWith('/users/me/working-hours') && method === 'GET') {
+    return ok(MOCK_WORKING_HOURS);
+  }
+
+  if (url.endsWith('/users/me/working-hours') && method === 'PUT') {
+    return ok(body);
   }
 
   // --- Workspace & Tasks Endpoints ---

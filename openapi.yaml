@@ -94,6 +94,8 @@ tags:
     description: Einladungslinks verwalten (Admin)
   - name: tasks
     description: Aufgaben erstellen, abrufen, bearbeiten und löschen
+  - name: working-hours
+    description: Wöchentliche Arbeitszeit-Vorlage verwalten
   - name: breaks
     description: Persönliche Pausen konfigurieren
   - name: schedule
@@ -813,6 +815,95 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+
+  # ════════════════════════════════════════════
+  # WORKING HOURS
+  # ════════════════════════════════════════════
+
+  /users/me/working-hours:
+    get:
+      tags: [working-hours]
+      summary: Eigene Arbeitszeit-Vorlage abrufen
+      description: |
+        Gibt die wöchentliche Arbeitszeit-Vorlage des eingeloggten Nutzers zurück.
+        Die Vorlage enthält für jeden Wochentag (Mo–So) einen Eintrag mit Start-/Endzeit
+        oder die Markierung als arbeitsfreier Tag.
+
+        Falls noch keine Vorlage gespeichert wurde, wird `404` zurückgegeben.
+      operationId: getWorkingHours
+      responses:
+        '200':
+          description: Arbeitszeit-Vorlage des Nutzers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkingHoursResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [working-hours]
+      summary: Eigene Arbeitszeit-Vorlage speichern oder ersetzen
+      description: |
+        Speichert die wöchentliche Arbeitszeit-Vorlage des eingeloggten Nutzers vollständig.
+        Eine bestehende Vorlage wird dabei atomar ersetzt – es gibt keinen Teilupdate.
+
+        **Regeln:**
+        - Das Array `days` muss **alle 7 Wochentage** (Mo–So) enthalten, jeder genau einmal.
+        - Für Arbeitstage (`isWorkDay: true`) sind `startTime` und `endTime` **Pflichtfelder**.
+        - Für freie Tage (`isWorkDay: false`) werden `startTime` und `endTime` ignoriert bzw.
+          müssen nicht angegeben werden.
+        - `endTime` muss nach `startTime` liegen (Validierung serverseitig).
+        - Pausen werden **separat** über `/breaks` konfiguriert und nicht hier eingetragen.
+
+        Der Planungsalgorithmus (`/schedule/generate`) nutzt diese Vorlage automatisch,
+        um den täglichen Arbeitsrahmen zu bestimmen.
+      operationId: upsertWorkingHours
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertWorkingHoursRequest'
+            example:
+              days:
+                - dayOfWeek: MONDAY
+                  isWorkDay: true
+                  startTime: "08:00"
+                  endTime: "16:00"
+                - dayOfWeek: TUESDAY
+                  isWorkDay: true
+                  startTime: "08:00"
+                  endTime: "16:00"
+                - dayOfWeek: WEDNESDAY
+                  isWorkDay: true
+                  startTime: "08:00"
+                  endTime: "16:00"
+                - dayOfWeek: THURSDAY
+                  isWorkDay: true
+                  startTime: "08:00"
+                  endTime: "16:00"
+                - dayOfWeek: FRIDAY
+                  isWorkDay: true
+                  startTime: "09:00"
+                  endTime: "12:00"
+                - dayOfWeek: SATURDAY
+                  isWorkDay: false
+                - dayOfWeek: SUNDAY
+                  isWorkDay: false
+      responses:
+        '200':
+          description: Arbeitszeit-Vorlage gespeichert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkingHoursResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
   # ════════════════════════════════════════════
   # BREAKS
@@ -1740,6 +1831,55 @@ components:
           example: 1
       required: [type, interval]
 
+    # ── Working Hours ─────────────────────────────────────
+
+    WorkingHoursResponse:
+      type: object
+      description: "Wöchentliche Arbeitszeit-Vorlage des Nutzers"
+      properties:
+        days:
+          type: array
+          minItems: 7
+          maxItems: 7
+          description: "Alle 7 Wochentage (Mo–So), jeder genau einmal"
+          items:
+            $ref: '#/components/schemas/WorkingHoursDayEntry'
+      required: [days]
+
+    UpsertWorkingHoursRequest:
+      type: object
+      properties:
+        days:
+          type: array
+          minItems: 7
+          maxItems: 7
+          description: "Alle 7 Wochentage (Mo–So) müssen angegeben werden, jeder genau einmal"
+          items:
+            $ref: '#/components/schemas/WorkingHoursDayEntry'
+      required: [days]
+
+    WorkingHoursDayEntry:
+      type: object
+      description: "Arbeitszeit-Konfiguration für einen einzelnen Wochentag"
+      properties:
+        dayOfWeek:
+          $ref: '#/components/schemas/DayOfWeek'
+        isWorkDay:
+          type: boolean
+          description: "true = Arbeitstag mit Zeitfenster, false = arbeitsfreier Tag"
+          example: true
+        startTime:
+          type: string
+          pattern: '^([01]\d|2[0-3]):[0-5]\d$'
+          example: "08:00"
+          description: "Arbeitsbeginn im Format HH:mm. Pflicht wenn isWorkDay = true."
+        endTime:
+          type: string
+          pattern: '^([01]\d|2[0-3]):[0-5]\d$'
+          example: "16:00"
+          description: "Arbeitsende im Format HH:mm. Pflicht wenn isWorkDay = true. Muss nach startTime liegen."
+      required: [dayOfWeek, isWorkDay]
+
     # ── Break ─────────────────────────────────────────────
 
     BreakResponse:
@@ -1973,3 +2113,11 @@ components:
         - `DAILY`: Täglich (z.B. E-Mails checken)
         - `WEEKLY`: Wöchentlich
         - `MONTHLY`: Monatlich
+
+    DayOfWeek:
+      type: string
+      enum: [MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY]
+      description: |
+        ISO-8601-Wochentag:
+        - `MONDAY` bis `FRIDAY`: Werktage
+        - `SATURDAY`, `SUNDAY`: Wochenende
