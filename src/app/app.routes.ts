@@ -36,6 +36,13 @@ export const routes: Routes = [
                     import('./features/schedule/schedule.page').then((m) => m.SchedulePage),
             },
             {
+                path: 'tickets',
+                canActivate: [excludeRolesGuard([Role.SuperAdmin], '/app/super-admin')],
+                loadComponent: () =>
+                    import('./features/ticket-view/ticket-view.page')
+                        .then((m) => m.TicketViewPage),
+            },
+            {
                 path: 'organization',
                 canActivate: [roleGuard([Role.Admin])],
                 loadComponent: () =>

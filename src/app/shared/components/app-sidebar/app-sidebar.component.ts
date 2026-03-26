@@ -30,6 +30,11 @@ export class AppSidebarComponent {
             icon: 'pi pi-list-check',
             routerLink: '/app/schedule',
         },
+        {
+            label: 'Ticketansicht',
+            icon: 'pi pi-ticket',
+            routerLink: '/app/tickets',
+        },
     ];
 
     protected settingsItems = computed<MenuItem[]>(() => {
