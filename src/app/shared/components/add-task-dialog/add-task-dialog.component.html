@@ -35,8 +35,10 @@
         <div class="input-row">
           <label>Deadline:</label>
           <p-datepicker
+            id="deadline"
             [ngModel]="formData().deadline"
-            (ngModelChange)="updateFormData('deadline', $event)">
+            (ngModelChange)="updateFormData('deadline', $event)"
+            name="deadline">
           </p-datepicker>
         </div>
 
@@ -59,15 +61,18 @@
           <p-inputnumber
             id="estimatedTime"
             [ngModel]="formData().estimatedTime"
-            (ngModelChange)="updateFormData('estimatedTime', $event)">
+            (ngModelChange)="updateFormData('estimatedTime', $event)"
+            name="estimatedTime">
           </p-inputnumber>
         </div>
 
         <div class="input-row">
           <label>Erfasste Zeit:</label>
           <p-inputnumber
+            id="trackedTime"
             [ngModel]="formData().trackedTime"
-            (ngModelChange)="updateFormData('trackedTime', $event)">
+            (ngModelChange)="updateFormData('trackedTime', $event)"
+            name="trackedTime">
           </p-inputnumber>
         </div>
 
@@ -94,7 +99,7 @@
           (ngModelChange)="updateFormData('scheduleTask', $event)"
           binary="true"
           variant="filled"
-          label="scheduleTask">
+          name="scheduleTask">
         </p-checkbox>
         <label>  Schedule Task</label>
       </div>
@@ -105,18 +110,22 @@
         <div class="input-row">
           <label>Start:</label>
           <p-datepicker
+            id="startDate"
             [ngModel]="formData().startDate"
             (ngModelChange)="updateFormData('startDate', $event)"
-            [disabled]="formData().scheduleTask">
+            [disabled]="formData().scheduleTask"
+            name="startDate">
           </p-datepicker>
         </div>
 
         <div class="input-row">
           <label>Ende:</label>
           <p-datepicker
+            id="endDate"
             [ngModel]="formData().endDate"
             (ngModelChange)="updateFormData('endDate', $event)"
-            [disabled]="formData().scheduleTask">
+            [disabled]="formData().scheduleTask"
+            name="endDate">
           </p-datepicker>
         </div>
       </div>
@@ -129,8 +138,10 @@
         <div class="input-row">
           <label>Anzahl Chunks:</label>
           <p-inputnumber
+            id="numChunks"
             [ngModel]="formData().numChunks"
-            (ngModelChange)="updateFormData('numChunks', $event)">
+            (ngModelChange)="updateFormData('numChunks', $event)"
+            name="numChunks">
           </p-inputnumber>
         </div>
 
@@ -146,7 +157,8 @@
                     type="text"
                     [ngModel]="c"
                     (input)="updateChunk(i, $any($event.target).value)"
-                    placeholder="hh:mm">
+                    placeholder="hh:mm"
+                    name="chunk{{i}}">
                   </p-inputnumber>
                 </div>
               }

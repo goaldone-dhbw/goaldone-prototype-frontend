@@ -57,6 +57,9 @@ export class AddTaskDialog {
   protected formData = signal<TaskModel>(this.getDefaultFormData());
 
   updateFormData(field: keyof TaskModel, value: any) {
+
+    console.log("Updated form", field)
+
     const current = this.formData();
     let updated = { ...current, [field]: value };
 
@@ -73,7 +76,9 @@ export class AddTaskDialog {
   updateChunk(index: number, value: number) {
     const current = this.formData();
     const updatedChunks = [...current.chunks];
-    updatedChunks[index] = value;
+    updatedChunks.push(value)
+
+    console.log(updatedChunks.length)
 
     this.formData.set({
       ...current,
@@ -103,8 +108,8 @@ export class AddTaskDialog {
       endDate: undefined,
       description: '',
       scheduleTask: true,
-      numChunks: 1,
-      chunks: [0]
+      numChunks: 0,
+      chunks: []
     };
   }
 
