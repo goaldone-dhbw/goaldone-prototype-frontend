@@ -2,7 +2,6 @@ import { TaskState} from './task-state.model';
 import { TaskDifficultyModel } from './task-difficulty.model';
 
 export interface TaskModel {
-  id?: number;
   title: string;
   status: TaskState,
   deadline: Date | undefined,
