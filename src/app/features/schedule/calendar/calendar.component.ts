@@ -6,6 +6,8 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import deLocale from '@fullcalendar/core/locales/de';
 import { AddTaskDialog } from '../../../shared/components/add-task-dialog/add-task-dialog.component';
 import { TaskService } from '../../../shared/services/task.service';
+import { CalendarEvent } from '../../../shared/models/calendarevent.model';
+import { DatePointApi } from '@fullcalendar/core';
 
 @Component({
   selector: 'app-calendar',
@@ -21,7 +23,7 @@ export class CalendarComponent implements OnInit {
 
   protected taskArray = this.taskService.loadedTasks;
 
-  protected eventsArray: { title: string; start: string | Date; end: string | Date }[] =
+  protected eventsArray: CalendarEvent[] =
     this.taskArray().map((task) => ({
       title: task.title,
       start: task.startDate!,
@@ -46,24 +48,48 @@ export class CalendarComponent implements OnInit {
     events: this.eventsArray,
 
     // Methods
-    dateClick: (arg: any) => this.handleDateClick(arg),
     eventClick: (arg: any) => this.handleEventClick(arg),
+    dateClick: (arg: any) => this.handleDateClick(arg),
   };
 
   ngOnInit(): void {
     this.taskService.loadTasksFromDB();
   }
 
-  handleEventClick(arg: any) {
-    // Somehow get Task from Event
+  handleEventClick(clickedEvent: any) {
+    const taskFromEvent = this.taskArray().find((task) =>
+        task.title === clickedEvent.title &&
+        task.startDate === clickedEvent.start &&
+        task.endDate === clickedEvent.end,
+    );
 
-    this.addTaskDialog.openDialog(this.taskArray()[0]); // Example task
+    if (!taskFromEvent) {
+      console.error(`Event: ${clickedEvent}\nTasks: ${this.taskArray()}`);
+      alert('Es ist ein Fehler aufgetreten');
+      return;
+    }
+
+    this.addTaskDialog.openDialog(taskFromEvent);
   }
 
-  handleDateClick(arg: any) {
-    datum: String = arg.dateStr;
+  handleDateClick(clickedDate: DatePointApi) {
+    const date = clickedDate.date;
 
-    // event <- AddTaskDialog()
-    //
+    const taskFromDate = this.taskArray().find((task) => {
+      if (!task.startDate || !task.endDate) {
+        console.error("Date:", date);
+        return false;
+      }
+
+      return task.startDate <= date && task.endDate >= date;
+    });
+
+    if (!taskFromDate) {
+      console.error(`Date: ${clickedDate}\nTasks: ${this.taskArray()}`);
+      alert('Es ist ein Fehler aufgetreten');
+      return;
+    }
+
+    this.addTaskDialog.openDialog(taskFromDate);
   }
 }
