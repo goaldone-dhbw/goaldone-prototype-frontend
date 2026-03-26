@@ -1,1 +1,38 @@
-<p>task-view.component works!</p>
+<p-card header="{{ title }}"></p-card>
+
+<br>
+
+<p-card>
+    <p-dataView [value]="visibleTasks()" [paginator]="false">
+        <ng-template #list let-tasks>
+            <div class="task-list">
+                @for (task of tasks; track task.title) {
+                    <p-divider />
+
+                    <div class="task">
+                        <div id="text">
+                            <h4>{{ task.title }}</h4>
+                            <p>{{ task.description }}</p>
+                        </div>
+
+                        <div id="dates">
+                            <h4>Start: {{ formatDate(task.startDate) }}</h4>
+                            <p>End: {{ formatDate(task.endDate) }}</p>
+                        </div>
+
+                        <div id="buttons">
+                            <p-button label="Task bearbeiten" (onClick)="editTask(task)" />
+                            <p-button label="Task löschen" (onClick)="deleteTask(task)" severity="danger" />
+                        </div>
+                    </div>
+                }
+            </div>
+        </ng-template>
+    </p-dataView>
+    <p-paginator
+        (onPageChange)="onPageChange($event)"
+        [first]="first()"
+        [rows]="rowsCount()"
+        [totalRecords]="total()"
+        [rowsPerPageOptions]="[5, 10, 20, 50]" />
+</p-card>

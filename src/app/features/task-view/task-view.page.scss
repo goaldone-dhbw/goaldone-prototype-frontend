@@ -1,0 +1,25 @@
+.task {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#text,
+#dates,
+#buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+#text {
+    align-items: flex-start;
+}
+
+#dates {
+    align-items: center;
+}
+
+#buttons {
+    align-items: flex-end;
+}
