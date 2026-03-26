@@ -19,6 +19,7 @@ import { Checkbox } from 'primeng/checkbox';
 import { TaskModel } from '../../models/task.model';
 import { TaskState } from '../../models/task-state.model';
 import { TaskDifficultyModel } from '../../models/task-difficulty.model';
+import { TaskService } from '../../services/task.service';
 
 @Component({
   selector: 'app-add-task-dialog',
@@ -41,6 +42,7 @@ import { TaskDifficultyModel } from '../../models/task-difficulty.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTaskDialog {
+
   protected taskStates = Object.values(TaskState).map((status) => ({
     label: status,
     value: status,
@@ -51,11 +53,17 @@ export class AddTaskDialog {
     value: difficulty,
   }));
 
-
   protected showDialog = signal(false);
 
   protected formData = signal<TaskModel>(this.getDefaultFormData());
 
+  recurringOptions = [
+    { label: 'Täglich', value: 'daily' },
+    { label: 'Wöchentlich', value: 'weekly' },
+    { label: 'Monatlich', value: 'monthly' }
+  ];
+
+  constructor(private taskService: TaskService) {}
   updateFormData(field: keyof TaskModel, value: any) {
 
     console.log("Updated form", field)
@@ -89,6 +97,9 @@ export class AddTaskDialog {
   onSubmit() {
     console.log('Form eingereicht:', this.formData());
     this.showDialog.set(false);
+
+    this.taskService.saveTaskToDB(this.formData());
+
   }
 
   openDialog(taskData: TaskModel | null) {
@@ -108,6 +119,9 @@ export class AddTaskDialog {
       endDate: undefined,
       description: '',
       scheduleTask: true,
+      recurring: false,
+      recurrenceType: undefined,
+      recurrenceIntervall: undefined,
       numChunks: 1,
       chunks: [0]
     };
