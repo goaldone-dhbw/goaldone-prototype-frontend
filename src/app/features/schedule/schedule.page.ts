@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
-import { CalendarComponent } from './calendar/caelndar.component'
+import { CalendarComponent } from './calendar/calendar.component'
 import { AddTaskDialog } from '../../shared/components/add-task-dialog/add-task-dialog.component';
 
 @Component({
