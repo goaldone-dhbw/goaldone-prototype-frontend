@@ -1,77 +1,98 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { TaskModel } from '../models/task.model';
-import { BaseService } from '../../api/api.base.service';
 import { TaskDifficultyModel } from '../models/task-difficulty.model';
 import { TaskState } from '../models/task-state.model';
-import { HttpClient } from '@angular/common/http';
+import { TasksService as TasksApiService } from '../../api/api/tasks.service';
+import { CreateTaskRequest } from '../../api/model/createTaskRequest';
+import { CognitiveLoad } from '../../api/model/cognitiveLoad';
+import { TaskStatus } from '../../api/model/taskStatus';
+import { TaskResponse } from '../../api/model/taskResponse';
+import { map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class TaskService extends BaseService {
-
+export class TaskService {
   private readonly _loadedTasks = signal<TaskModel[]>([]);
   readonly loadedTasks = this._loadedTasks.asReadonly();
 
-  constructor() {
-    super();
-  }
-
-  private http: HttpClient = inject(HttpClient);
+  private tasksApiService = inject(TasksApiService);
 
   saveTaskToDB(task: TaskModel) {
-    this.http.post(`${this.basePath}/tasks`, task).subscribe()
+    const request: CreateTaskRequest = {
+      title: task.title,
+      description: task.description,
+      estimatedDurationMinutes: task.estimatedTime,
+      cognitiveLoad: this.mapDifficultyToCognitiveLoad(task.difficulty),
+      deadline: task.deadline?.toISOString(),
+    };
+
+    this.tasksApiService.createTask(request).subscribe({
+      next: (response) => {
+        // Optional: Den neu erstellten Task lokal hinzufügen oder die Liste neu laden
+        this.loadTasksFromDB();
+      },
+      error: (err) => {
+        console.error('Error saving task:', err);
+      }
+    });
   }
 
   loadTasksFromDB() {
-    //this.http.get<TaskModel[]>(`${this.basePath}/tasks`).subscribe(tasks => {
-    //  this.loadedTasks.set(tasks);
-    //})
-
-    this._loadedTasks.set([
-      {
-        title: 'Meeting',
-        status: TaskState.Open,
-        deadline: new Date('2026-03-30'),
-        estimatedTime: 120,
-        difficulty: TaskDifficultyModel.Moderate,
-        trackedTime: 0,
-        startDate: new Date('2026-03-23T10:00:00'),
-        endDate: new Date('2026-03-23T12:00:00'),
-        description: 'Description for Meeting',
-        scheduleTask: true,
-        recurring: false,
-        numChunks: 1,
-        chunks: []
-      }, {
-        title: 'Meeting',
-        status: TaskState.Open,
-        deadline: new Date('2026-03-30'),
-        difficulty: TaskDifficultyModel.Moderate,
-        estimatedTime: 120,
-        trackedTime: 0,
-        startDate: new Date('2026-03-26T12:00:00'),
-        endDate: new Date('2026-03-26T15:00:00'),
-        description: 'Description for Task Meeting',
-        scheduleTask: true,
-        recurring: false,
-        numChunks: 1,
-        chunks: []
-      }, {
-        title: 'Lunch',
-        status: TaskState.Open,
-        deadline: new Date('2026-03-31'),
-        difficulty: TaskDifficultyModel.Easy,
-        estimatedTime: 120,
-        trackedTime: 0,
-        startDate: new Date('2026-03-25T11:00:00'),
-        endDate: new Date('2026-03-25T13:00:00'),
-        description: 'Description for Task Lunch',
-        scheduleTask: true,
-        recurring: false,
-        numChunks: 1,
-        chunks: []
+    this.tasksApiService.listTasks().pipe(
+      map(page => page.content?.map(t => this.mapResponseToModel(t)) || [])
+    ).subscribe({
+      next: (tasks) => {
+        this._loadedTasks.set(tasks);
+      },
+      error: (err) => {
+        console.error('Error loading tasks:', err);
       }
-    ])
+    });
+  }
+
+  private mapDifficultyToCognitiveLoad(difficulty: TaskDifficultyModel): CognitiveLoad {
+    switch (difficulty) {
+      case TaskDifficultyModel.Easy: return 'LOW';
+      case TaskDifficultyModel.Moderate: return 'MEDIUM';
+      case TaskDifficultyModel.Difficult: return 'HIGH';
+      default: return 'MEDIUM';
+    }
+  }
+
+  private mapCognitiveLoadToDifficulty(load: CognitiveLoad): TaskDifficultyModel {
+    switch (load) {
+      case 'LOW': return TaskDifficultyModel.Easy;
+      case 'MEDIUM': return TaskDifficultyModel.Moderate;
+      case 'HIGH': return TaskDifficultyModel.Difficult;
+      default: return TaskDifficultyModel.Moderate;
+    }
+  }
+
+  private mapStatusToState(status: TaskStatus): TaskState {
+    switch (status) {
+      case 'OPEN': return TaskState.Open;
+      case 'IN_PROGRESS': return TaskState.Active;
+      case 'DONE': return TaskState.Done;
+      default: return TaskState.Open;
+    }
+  }
+
+  private mapResponseToModel(response: TaskResponse): TaskModel {
+    return {
+      title: response.title,
+      description: response.description ?? undefined,
+      status: this.mapStatusToState(response.status),
+      difficulty: this.mapCognitiveLoadToDifficulty(response.cognitiveLoad),
+      estimatedTime: response.estimatedDurationMinutes,
+      deadline: response.deadline ? new Date(response.deadline) : undefined,
+      trackedTime: 0, // Muss ggf. noch vom Backend kommen
+      startDate: undefined, // Vom Schedule-Service
+      endDate: undefined,   // Vom Schedule-Service
+      scheduleTask: true,
+      recurring: !!response.recurrence,
+      numChunks: 1,
+      chunks: []
+    };
   }
 }
