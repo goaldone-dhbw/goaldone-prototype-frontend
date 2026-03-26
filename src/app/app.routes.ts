@@ -36,11 +36,11 @@ export const routes: Routes = [
                     import('./features/schedule/schedule.page').then((m) => m.SchedulePage),
             },
             {
-                path: 'tickets',
+                path: 'tasks',
                 canActivate: [excludeRolesGuard([Role.SuperAdmin], '/app/super-admin')],
                 loadComponent: () =>
-                    import('./features/ticket-view/ticket-view.page')
-                        .then((m) => m.TicketViewPage),
+                    import('./features/task-view/task-view.page')
+                        .then((m) => m.TaskViewPage),
             },
             {
                 path: 'organization',

@@ -31,9 +31,9 @@ export class AppSidebarComponent {
             routerLink: '/app/schedule',
         },
         {
-            label: 'Ticketansicht',
+            label: 'Taskansicht',
             icon: 'pi pi-ticket',
-            routerLink: '/app/tickets',
+            routerLink: '/app/tasks',
         },
     ];
 
