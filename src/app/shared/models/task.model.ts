@@ -12,6 +12,9 @@ export interface TaskModel {
   endDate?: Date | undefined;
   description?: string;
   scheduleTask: boolean;
+  recurring: boolean;
+  recurrenceType?: string;
+  recurrenceIntervall?: number;
   numChunks: number;
   chunks: (number | null)[];
 }
