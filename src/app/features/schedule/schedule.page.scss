@@ -32,3 +32,22 @@ calendar-wrapper app-calendar {
   display: flex;
   justify-content: space-between; /* verteilt die Elemente an den Enden */
 }
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  text-align: center;
+}
+
+.warnings-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  p-message {
+    display: block;
+    width: 100%;
+  }
+}

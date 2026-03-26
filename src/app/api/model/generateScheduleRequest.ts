@@ -11,11 +11,11 @@
 
 export interface GenerateScheduleRequest { 
     /**
-     * Startdatum des zu planenden Zeitraums
+     * Startdatum des zu planenden Zeitraums (ISO 8601). Empfehlung: immer ein Montag, damit der Algorithmus vollständige Wochen plant. 
      */
     from: string;
     /**
-     * Enddatum des zu planenden Zeitraums
+     * Enddatum des zu planenden Zeitraums (ISO 8601). Der Zeitraum beträgt **immer genau 14 Tage** (`from` + 13 Tage). Kürzere oder längere Fenster werden serverseitig mit `400` abgelehnt. 
      */
     to: string;
     /**

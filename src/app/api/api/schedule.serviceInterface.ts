@@ -13,6 +13,7 @@ import { Observable }                                        from 'rxjs';
 
 import { GenerateScheduleRequest } from '../model/models';
 import { ProblemDetail } from '../model/models';
+import { ScheduleEntry } from '../model/models';
 import { ScheduleResponse } from '../model/models';
 
 
@@ -25,8 +26,16 @@ export interface ScheduleServiceInterface {
     configuration: Configuration;
 
     /**
+     * Einzelnen Kalenderblock als erledigt markieren (Tagesplan-Ansicht)
+     * Markiert einen einzelnen &#x60;ScheduleEntry&#x60; als erledigt (&#x60;isCompleted &#x3D; true&#x60;).  **Unterschied zu &#x60;PATCH /tasks/{taskId}/complete&#x60;:** Dieser Endpunkt operiert auf **Kalenderblock-Ebene**, nicht auf Task-Ebene. - Bei **einmaligen Tasks**: entspricht funktional dem globalen Complete –   der Block ist erledigt, der Task hat keine weiteren Einträge. - Bei **wiederkehrenden Tasks**: nur dieser eine Block wird abgehakt.   Der Haupt-Task (&#x60;TaskResponse.status&#x60;) bleibt &#x60;OPEN&#x60; oder &#x60;IN_PROGRESS&#x60;,   und zukünftige Wiederholungsblöcke bleiben erhalten.  Erledigte Blöcke (&#x60;isCompleted &#x3D; true&#x60;) werden beim erneuten Ausführen des Planungsalgorithmus **nicht gelöscht** und blockieren weiterhin ihre Zeit. 
+     * @endpoint patch /schedule/{entryId}/complete
+     * @param entryId UUID des ScheduleEntry (Kalenderblocks)
+     */
+    completeScheduleEntry(entryId: string, extraHttpRequestParams?: any): Observable<ScheduleEntry>;
+
+    /**
      * Planungsalgorithmus ausführen (synchron)
-     * Führt den Planungsalgorithmus für den angegebenen Zeitraum synchron aus. Der Server antwortet erst, wenn der Plan vollständig generiert ist.  **Algorithmus-Prinzipien (aus Anforderungsdokument):** - Max. ~4h kognitive Arbeit pro Tag (konfigurierbar via &#x60;maxDailyWorkMinutes&#x60;) - Aufgaben werden nach &#x60;cognitiveLoad&#x60; und &#x60;deadline&#x60; priorisiert - Pausen des Nutzers werden berücksichtigt und blockiert - Tasks länger als ein Arbeitstag werden automatisch gesplittet  Der generierte Plan überschreibt den vorherigen Plan für denselben Zeitraum. 
+     * Führt den Planungsalgorithmus für ein **14-Tage-Fenster** synchron aus. Der Server antwortet erst, wenn der Plan vollständig generiert ist.  **Algorithmus-Prinzipien:** - Max. ~4h kognitive Arbeit pro Tag (konfigurierbar via &#x60;maxDailyWorkMinutes&#x60;) - Aufgaben werden nach &#x60;cognitiveLoad&#x60; und &#x60;deadline&#x60; priorisiert - &#x60;HIGH&#x60;-Tasks werden bevorzugt in produktive Morgenstunden gelegt - Tasks mit &#x60;startDate&#x60; werden nicht vor diesem Datum eingeplant - Wiederholende Tasks (&#x60;recurrence&#x60;) erzeugen für jeden passenden Tag   im 14-Tage-Fenster einen eigenen &#x60;ScheduleEntry&#x60;, der auf denselben Haupt-Task verweist - Pausen des Nutzers blockieren Zeit und werden als Einträge mit &#x60;type: BREAK&#x60; eingetragen - Tasks länger als ein Arbeitstag werden automatisch gesplittet  **Selektives Löschen (kein blindes Überschreiben):** Beim erneuten Generieren werden **nur offene, ungepinnte** Einträge gelöscht. Einträge mit &#x60;isCompleted &#x3D; true&#x60; oder &#x60;isPinned &#x3D; true&#x60; bleiben erhalten und blockieren weiterhin ihre Zeitslots – ihre Dauer wird vom verfügbaren Tagesbudget abgezogen, bevor neue Tasks eingeplant werden.  **Transaktionssicherheit:** Der neue Plan wird vollständig im Speicher berechnet, bevor die alten Einträge gelöscht werden. Schlägt die Berechnung fehl, bleibt der alte Plan erhalten (kein halber Plan in der Datenbank).  **Warnungen:** Können Tasks nicht vollständig eingeplant werden oder reißen Deadlines, enthält das &#x60;warnings&#x60;-Array der Response entsprechende Hinweise.  **Pre-Flight Check – Arbeitszeiten:** Bevor der Algorithmus startet, prüft der Server, ob für den Nutzer Arbeitszeiten (&#x60;/users/me/working-hours&#x60;) konfiguriert sind. Fehlen diese, wird sofort mit &#x60;400&#x60; und &#x60;detail: \&quot;working-hours-missing\&quot;&#x60; abgebrochen – ohne dass irgendeine Planung stattfindet. Das Frontend soll diesen Fehler abfangen und den Nutzer zur Arbeitszeit-Konfiguration weiterleiten. 
      * @endpoint post /schedule/generate
      * @param generateScheduleRequest 
      */
@@ -40,5 +49,21 @@ export interface ScheduleServiceInterface {
      * @param to Enddatum (ISO 8601)
      */
     getSchedule(from: string, to: string, extraHttpRequestParams?: any): Observable<ScheduleResponse>;
+
+    /**
+     * Kalenderblock manuell fixieren (pinnen)
+     * Setzt &#x60;isPinned &#x3D; true&#x60; auf einem &#x60;ScheduleEntry&#x60;.  Gepinnte Blöcke werden beim erneuten Ausführen des Planungsalgorithmus **nicht überschrieben** – sie behalten ihre Position und blockieren die Zeit. Dies erlaubt es dem Nutzer, einen Block manuell zu verschieben (clientseitig per Drag &amp; Drop auf ein neues Zeitfenster, dann diesen Endpunkt aufrufen) und ihn gegen automatisches Neueinplanen zu schützen.  Ein gepinnter Block kann durch erneuten Aufruf dieses Endpunkts **nicht** entpinnt werden – dafür existiert &#x60;PATCH /schedule/{entryId}/unpin&#x60;. 
+     * @endpoint patch /schedule/{entryId}/pin
+     * @param entryId UUID des ScheduleEntry (Kalenderblocks)
+     */
+    pinScheduleEntry(entryId: string, extraHttpRequestParams?: any): Observable<ScheduleEntry>;
+
+    /**
+     * Fixierung eines Kalenderblocks aufheben
+     * Setzt &#x60;isPinned &#x3D; false&#x60; auf einem &#x60;ScheduleEntry&#x60;. Der Block kann beim nächsten Ausführen des Planungsalgorithmus wieder überschrieben oder verschoben werden. 
+     * @endpoint patch /schedule/{entryId}/unpin
+     * @param entryId UUID des ScheduleEntry (Kalenderblocks)
+     */
+    unpinScheduleEntry(entryId: string, extraHttpRequestParams?: any): Observable<ScheduleEntry>;
 
 }

@@ -80,6 +80,7 @@ export class TaskService {
 
   private mapResponseToModel(response: TaskResponse): TaskModel {
     return {
+      id: response.id,
       title: response.title,
       description: response.description ?? undefined,
       status: this.mapStatusToState(response.status),

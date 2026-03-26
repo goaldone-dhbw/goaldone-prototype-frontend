@@ -23,6 +23,10 @@ export interface TaskResponse {
      */
     estimatedDurationMinutes: number;
     deadline?: string | null;
+    /**
+     * Frühestes Startdatum des Tasks (optional). Der Planungsalgorithmus plant diesen Task **nicht vor** diesem Datum ein. Nützlich für Tasks, die erst ab einem bestimmten Datum relevant sind (z.B. „nach dem Meeting am Montag starten\"). 
+     */
+    startDate?: string | null;
     recurrence?: RecurrenceRule;
     /**
      * Gesetzt wenn dieser Task durch automatisches Task-Splitting entstanden ist (Ursprungs-Task-Referenz)

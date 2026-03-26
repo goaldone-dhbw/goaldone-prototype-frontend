@@ -1,16 +1,21 @@
+<p-toast></p-toast>
+
 <div class="schedule-page">
   <h1>{{title}}</h1>
+  
   <p-card>
     <div class="button-container">
       <p-button
         [label]="addTaskButton.label"
         [icon]="addTaskButton.icon"
+        severity="success"
         (click)="onAddTask()">
       </p-button>
 
       <p-button
         [label]="scheduleTasksButton.label"
         [icon]="scheduleTasksButton.icon"
+        [loading]="facade.isLoading()"
         (click)="scheduleTasks()">
       </p-button>
     </div>
@@ -18,12 +23,28 @@
 
   <br>
 
-  <p-card class="calendar-card">
-    <div class="calendar-wrapper">
-      <app-calendar></app-calendar>
+  @if (facade.formattedWarnings().length > 0) {
+    <div class="warnings-container">
+      @for (warning of facade.formattedWarnings(); track $index) {
+        <p-message severity="warn" [text]="warning" class="w-full mb-2"></p-message>
+      }
     </div>
-  </p-card>
+    <br>
+  }
+
+  @if (facade.hasSchedule()) {
+    <p-card class="calendar-card">
+      <div class="calendar-wrapper">
+        <app-calendar [entries]="facade.scheduleEntries()"></app-calendar>
+      </div>
+    </p-card>
+  } @else {
+    <p-card>
+      <div class="empty-state">
+        <p-message severity="info" text="Für diese Woche wurde noch kein Zeitplan generiert. Klicke auf 'Planung starten'."></p-message>
+      </div>
+    </p-card>
+  }
 
   <app-add-task-dialog></app-add-task-dialog>
-
 </div>

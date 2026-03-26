@@ -25,4 +25,7 @@ export * from './tasks.serviceInterface';
 export * from './users.service';
 import { UsersService } from './users.service';
 export * from './users.serviceInterface';
-export const APIS = [AdminService, AuthService, BreaksService, InvitationsService, MembersService, OrganizationsService, ScheduleService, TasksService, UsersService];
+export * from './workingHours.service';
+import { WorkingHoursService } from './workingHours.service';
+export * from './workingHours.serviceInterface';
+export const APIS = [AdminService, AuthService, BreaksService, InvitationsService, MembersService, OrganizationsService, ScheduleService, TasksService, UsersService, WorkingHoursService];
