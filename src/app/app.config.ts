@@ -13,9 +13,9 @@ import { ApiModule, AuthService as GoaldoneAuthApi, Configuration, UsersService 
 import { environment } from '../environments/environment';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { authInterceptor } from './core/auth.interceptor';
+import { authInterceptor } from './core/auth/auth.interceptor';
 import { mockInterceptor } from './core/mock/mock.interceptor';
-import { AuthStore } from './core/auth.store';
+import { AuthStore } from './core/auth/auth.store';
 import { catchError, of, switchMap, take, tap } from 'rxjs';
 import { GoaldoneTheme } from './GoaldoneTheme';
 

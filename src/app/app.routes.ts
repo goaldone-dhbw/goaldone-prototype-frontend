@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, guestGuard, roleGuard } from './core/auth.guard';
+import { authGuard, excludeRolesGuard, guestGuard, roleGuard } from './core/auth/auth.guard';
 import { Role } from './api';
 
 export const routes: Routes = [
@@ -23,6 +23,7 @@ export const routes: Routes = [
         children: [
             {
                 path: '',
+                canActivate: [excludeRolesGuard([Role.SuperAdmin], '/app/super-admin')],
                 loadComponent: () =>
                     import('./features/workspace/workspace-home.page').then(
                         (m) => m.WorkspaceHomePage,
@@ -30,6 +31,7 @@ export const routes: Routes = [
             },
             {
                 path: 'schedule',
+                canActivate: [excludeRolesGuard([Role.SuperAdmin], '/app/super-admin')],
                 loadComponent: () =>
                     import('./features/schedule/schedule.page').then((m) => m.SchedulePage),
             },
@@ -45,12 +47,16 @@ export const routes: Routes = [
                 path: 'super-admin',
                 canActivate: [roleGuard([Role.SuperAdmin])],
                 loadComponent: () =>
-                    import('./features/super-admins-settings/super-admin.page').then((m) => m.SuperAdminPage)
+                    import('./features/super-admins-settings/super-admin.page').then(
+                        (m) => m.SuperAdminPage,
+                    ),
             },
             {
                 path: 'settings',
                 loadComponent: () =>
-                    import('./features/settings/settings.page').then((m) => m.SettingsPage),
+                    import('./features/user-settings/user-settings.page').then(
+                        (m) => m.UserSettingsPage,
+                    ),
             },
         ],
     },

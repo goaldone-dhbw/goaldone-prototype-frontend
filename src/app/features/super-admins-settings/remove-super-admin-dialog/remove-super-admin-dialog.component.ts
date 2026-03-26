@@ -5,7 +5,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { BaseDialogComponent } from '../../../shared/components/base-dialog/base-dialog.component';
 import { AdminService, UserResponse } from '../../../api';
-import { AuthStore } from '../../../core/auth.store';
+import { AuthStore } from '../../../core/auth/auth.store';
 import { catchError, finalize, of } from 'rxjs';
 
 @Component({

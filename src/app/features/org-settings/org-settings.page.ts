@@ -21,7 +21,7 @@ import {
     OrganizationsService,
     Role,
 } from '../../api';
-import { AuthStore } from '../../core/auth.store';
+import { AuthStore } from '../../core/auth/auth.store';
 
 @Component({
     selector: 'app-org-settings-page',

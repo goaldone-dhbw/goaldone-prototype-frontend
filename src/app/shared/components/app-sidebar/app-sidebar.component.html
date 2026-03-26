@@ -5,7 +5,9 @@
                      routerLink="/app" />
             <span>Goaldone</span>
         </div>
-        <p-menu [model]="navigationItems"></p-menu>
+        @if(!isSuperAdmin()){
+            <p-menu [model]="navigationItems"></p-menu>
+        }
     </div>
     <div class="menu-navigation-items">
         <p-menu [model]="settingsItems()"></p-menu>

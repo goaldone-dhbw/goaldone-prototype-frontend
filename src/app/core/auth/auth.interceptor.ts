@@ -2,7 +2,7 @@ import { HttpInterceptorFn, HttpRequest, HttpContextToken } from '@angular/commo
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError, BehaviorSubject, filter, take } from 'rxjs';
 import { AuthStore } from './auth.store';
-import { AuthService } from '../api';
+import { AuthService } from '../../api';
 import { Router } from '@angular/router';
 
 export const NEEDS_CREDENTIALS = new HttpContextToken<boolean>(() => false);

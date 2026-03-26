@@ -4,7 +4,7 @@ import { Menu } from 'primeng/menu';
 import { Image } from 'primeng/image';
 import { RouterLink } from '@angular/router';
 import { Role } from '../../../api';
-import { AuthStore } from '../../../core/auth.store';
+import { AuthStore } from '../../../core/auth/auth.store';
 
 @Component({
     selector: 'app-sidebar',
@@ -16,6 +16,8 @@ import { AuthStore } from '../../../core/auth.store';
 })
 export class AppSidebarComponent {
     private authStore = inject(AuthStore);
+
+    isSuperAdmin = computed(() => this.authStore.hasRole(Role.SuperAdmin));
 
     protected readonly navigationItems: MenuItem[] = [
         {
@@ -54,7 +56,7 @@ export class AppSidebarComponent {
                 label: 'Super-Admin',
                 icon: 'pi pi-key',
                 routerLink: '/app/super-admin',
-            })
+            });
         }
 
         return items;
