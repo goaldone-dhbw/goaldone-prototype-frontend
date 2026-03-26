@@ -60,12 +60,14 @@
 
         <div class="input-row">
           <label>Geschätzte Zeit:</label>
-          <p-inputnumber
+
+          <input
+            pInputText
             id="estimatedTime"
-            [ngModel]="formData().estimatedTime"
-            (ngModelChange)="updateFormData('estimatedTime', $event)"
-            name="estimatedTime">
-          </p-inputnumber>
+            [ngModel]="estimatedTimeString()"
+            (ngModelChange)="updateEstimatedTimeString($event)"
+            name="estimatedTime"
+            placeholder="z.B. 2d 1h 30m">
         </div>
 
         <div class="input-row full-width">

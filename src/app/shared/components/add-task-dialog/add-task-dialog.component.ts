@@ -63,6 +63,52 @@ class AddTaskDialog {
 
   protected showDialog = signal(false);
 
+  protected estimatedTimeString = signal<string>('');
+
+  formatEstimatedTime(minutes: number | undefined): string {
+    if (!minutes) return '';
+    const d = Math.floor(minutes / 1440);
+    const h = Math.floor((minutes % 1440) / 60);
+    const m = minutes % 60;
+
+    const parts = [];
+    if (d > 0) parts.push(`${d}d`);
+    if (h > 0) parts.push(`${h}h`);
+    if (m > 0 || parts.length === 0) parts.push(`${m}m`);
+
+    return parts.join(' ');
+  }
+
+  parseEstimatedTime(value: string): number {
+    if (!value) return 0;
+
+    let totalMinutes = 0;
+    const regex = /(\d+)\s*([dhm])/g;
+    let match;
+    let found = false;
+
+    while ((match = regex.exec(value.toLowerCase())) !== null) {
+      found = true;
+      const amount = parseInt(match[1], 10);
+      const unit = match[2];
+
+      if (unit === 'd') totalMinutes += amount * 1440;
+      if (unit === 'h') totalMinutes += amount * 60;
+      if (unit === 'm') totalMinutes += amount;
+    }
+
+    if (!found && !isNaN(Number(value))) {
+      return Number(value);
+    }
+    return totalMinutes;
+  }
+
+  updateEstimatedTimeString(value: string) {
+    this.estimatedTimeString.set(value);
+    const minutes = this.parseEstimatedTime(value);
+    this.updateFormData('estimatedTime', minutes);
+  }
+
   protected formData = signal<TaskModel>(this.getDefaultFormData());
 
   updateFormData(field: keyof TaskModel, value: any) {
@@ -140,6 +186,8 @@ class AddTaskDialog {
     const data = taskData ? { ...base, ...taskData } : base;
 
     const chunks = data.chunks?.length ? data.chunks : ['00:00'];
+
+    this.estimatedTimeString.set(this.formatEstimatedTime(data.estimatedTime));
 
     this.formData.set({
       ...data,
