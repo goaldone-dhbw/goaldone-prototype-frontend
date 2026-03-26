@@ -108,8 +108,8 @@ export class AddTaskDialog {
       endDate: undefined,
       description: '',
       scheduleTask: true,
-      numChunks: 0,
-      chunks: []
+      numChunks: 1,
+      chunks: [0]
     };
   }
 
