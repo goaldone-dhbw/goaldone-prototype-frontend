@@ -1,8 +1,5 @@
 export enum TaskState {
-  Open = 'Open',
-  Active = 'Active',
-  Done = 'Done',
-  NeedsReview = 'Needs Review',
-  InReview = 'In Review',
-  Closed = 'Closed'
+  OPEN = 'Offen',
+  IN_PROGRESS = 'In Bearbeitung',
+  DONE = 'Erledigt',
 }

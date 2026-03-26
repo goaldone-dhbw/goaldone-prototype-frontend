@@ -1,7 +1,7 @@
 <p-dialog
   [visible]="showDialog()"
   (visibleChange)="showDialog.set($event)"
-  header="Aufgabe bearbeiten"
+  header="Aufgabe hinzufügen"
   [modal]="true"
   [style]="{ width: '60rem' }"
   [closable]="false">
@@ -10,7 +10,7 @@
     <p-card class="form-grid">
       <div class="general">
         <div class="input-row">
-          <label>Name:</label>
+          <label>Titel:</label>
           <input
             pInputText
             id="title"
@@ -34,7 +34,7 @@
         </div>
 
         <div class="input-row">
-          <label>Deadline:</label>
+          <label>Frist:</label>
           <p-datepicker
             id="deadline"
             [showTime]="true"
@@ -45,7 +45,7 @@
         </div>
 
         <div class="input-row">
-          <label>Kognitiver Anspruch</label>
+          <label>Kognitiver Anspruch:</label>
           <p-select
             id="difficulty"
             [options]="taskDifficulty"
@@ -68,18 +68,8 @@
           </p-inputnumber>
         </div>
 
-        <div class="input-row">
-          <label>Erfasste Zeit:</label>
-          <p-inputnumber
-            id="trackedTime"
-            [ngModel]="formData().trackedTime"
-            (ngModelChange)="updateFormData('trackedTime', $event)"
-            name="trackedTime">
-          </p-inputnumber>
-        </div>
-
         <div class="input-row full-width">
-          <label>Beschreibung</label>
+          <label>Beschreibung:</label>
           <textarea
             pTextarea
             rows="3"
@@ -91,47 +81,40 @@
         </div>
       </div>
 
+      <br>
+      <hr>
+      <br>
+      <div class="schedule">
+        <div class="input-row">
+          <label>Nicht planen vor:</label>
+          <br>
+          <p-datepicker
+            [showClear]="true"
+            id="scheduleStartDate"
+            [showTime]="true"
+            [ngModel]="formData().scheduleStartDate"
+            (ngModelChange)="updateFormData('scheduleStartDate', $event)"
+            name="scheduleStartDate">
+          </p-datepicker>
+        </div>
+      </div>
 
       <br>
       <hr>
       <br>
 
-      <div>
-        <p-checkbox
-          [ngModel]="formData().scheduleTask"
-          (ngModelChange)="updateFormData('scheduleTask', $event)"
-          binary="true"
-          variant="filled"
-          name="scheduleTask">
-        </p-checkbox>
-        <label>  Schedule Task</label>
-      </div>
-
-      <br>
-
       <div class="schedule">
-        <div class="input-row">
-          <label>Start:</label>
-          <p-datepicker
-            id="startDate"
-            [showTime]="true"
-            [ngModel]="formData().startDate"
-            (ngModelChange)="updateFormData('startDate', $event)"
-            [disabled]="formData().scheduleTask"
-            name="startDate">
-          </p-datepicker>
-        </div>
 
         <div class="input-row">
-          <label>Ende:</label>
-          <p-datepicker
-            id="endDate"
-            [showTime]="true"
-            [ngModel]="formData().endDate"
-            (ngModelChange)="updateFormData('endDate', $event)"
-            [disabled]="formData().scheduleTask"
-            name="endDate">
-          </p-datepicker>
+          <label>Wiederkehrende Aufgaben:</label>
+          <br>
+          <p-select
+            [options]="recurrenceTypes"
+            optionLabel="label"
+            optionValue="value"
+            [ngModel]="formData().recurrence?.type"
+            (ngModelChange)="updateRecurrence('type', $event)">
+          </p-select>
         </div>
       </div>
 
@@ -184,38 +167,42 @@
       <br>
 
       <div class="chunk">
-        <div class="input-row">
-          <label>Anzahl Chunks:</label>
-          <p-inputnumber
-            id="numChunks"
-            [ngModel]="formData().numChunks"
-            (ngModelChange)="updateFormData('numChunks', $event)"
-            name="numChunks">
-          </p-inputnumber>
+
+        <!-- Bis jetzt noch nicht implementiert im Backend -->
+        <div class="input-row full-width">
+          <p-button
+            label="Arbeitspaket hinzufügen"
+            icon="pi pi-plus"
+            (click)="addChunk()">
+          </p-button>
         </div>
 
-        @if (formData().numChunks) {
-          <div class="input-row full-width">
-            <div class="chunk-list">
+        <div class="input-row full-width">
+          <div class="chunk-list">
 
-              @if (formData().chunks.length >= 2) {
-                @for (c of formData().chunks; track $index; let i = $index) {
-                  <div class="chunk-item">
-                    <label>{{ i + 1 }}.</label>
+            @for (c of formData().chunks; track $index; let i = $index) {
+              <div class="chunk-item">
+                <label>{{ i + 1 }}.</label>
 
-                    <p-inputnumber
-                      type="text"
-                      [ngModel]="c"
-                      (input)="updateChunk(i, $any($event.target).value)"
-                      placeholder="hh:mm"
-                      name="chunk{{i}}">
-                    </p-inputnumber>
-                  </div>
-                }
-              }
-            </div>
+                <input
+                  pInputText
+                  [ngModel]="c"
+                  (ngModelChange)="updateChunk(i, $event)"
+                  [class.ng-invalid]="!isValidTime(c) && c"
+                  placeholder="hh:mm"
+                  name="chunk{{i}}">
+
+                <p-button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  (click)="removeChunk(i)">
+                </p-button>
+              </div>
+            }
+
           </div>
-        }
+        </div>
+
       </div>
 
       <br>

@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 import { DialogModule } from 'primeng/dialog';
 import { FormsModule } from '@angular/forms';
@@ -13,18 +14,18 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 
 import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
-import { DatePicker } from 'primeng/datepicker';
-import { Checkbox } from 'primeng/checkbox';
+import { DatePickerModule } from 'primeng/datepicker';
+import { CheckboxModule } from 'primeng/checkbox';
 
-import { TaskModel } from '../../models/task.model';
+import { Recurrence, TaskModel } from '../../models/task.model';
 import { TaskState } from '../../models/task-state.model';
 import { TaskDifficultyModel } from '../../models/task-difficulty.model';
-import { TaskService } from '../../services/task.service';
 
 @Component({
   selector: 'app-add-task-dialog',
   standalone: true,
   imports: [
+    CommonModule,
     CardModule,
     ButtonModule,
     DialogModule,
@@ -34,15 +35,14 @@ import { TaskService } from '../../services/task.service';
     SelectModule,
     InputNumberModule,
     FloatLabelModule,
-    DatePicker,
-    Checkbox,
+    DatePickerModule,
+    CheckboxModule,
   ],
   templateUrl: './add-task-dialog.component.html',
   styleUrls: ['./add-task-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddTaskDialog {
-
+class AddTaskDialog {
   protected taskStates = Object.values(TaskState).map((status) => ({
     label: status,
     value: status,
@@ -53,40 +53,28 @@ export class AddTaskDialog {
     value: difficulty,
   }));
 
+  isValidTime(value: string | null): boolean {
+    if (!value) return false;
+
+    const regex = /^([0-1]?\d|2[0-3]):[0-5]\d$/;
+    return regex.test(value);
+  }
+
   protected showDialog = signal(false);
 
   protected formData = signal<TaskModel>(this.getDefaultFormData());
 
-  recurringOptions = [
-    { label: 'Täglich', value: 'daily' },
-    { label: 'Wöchentlich', value: 'weekly' },
-    { label: 'Monatlich', value: 'monthly' }
-  ];
-
-  constructor(private taskService: TaskService) {}
   updateFormData(field: keyof TaskModel, value: any) {
-
-    console.log("Updated form", field)
-
     const current = this.formData();
-    let updated = { ...current, [field]: value };
-
-    if (field === 'numChunks') {
-      updated.chunks = Array.from(
-        { length: value },
-        (_, i) => current.chunks[i] ?? null
-      );
-    }
-
+    const updated = { ...current, [field]: value };
     this.formData.set(updated);
   }
 
-  updateChunk(index: number, value: number) {
+  updateChunk(index: number, value: string) {
     const current = this.formData();
     const updatedChunks = [...current.chunks];
-    updatedChunks.push(value)
 
-    console.log(updatedChunks.length)
+    updatedChunks[index] = value;
 
     this.formData.set({
       ...current,
@@ -97,9 +85,6 @@ export class AddTaskDialog {
   onSubmit() {
     console.log('Form eingereicht:', this.formData());
     this.showDialog.set(false);
-
-    this.taskService.saveTaskToDB(this.formData());
-
   }
 
   openDialog(taskData: TaskModel | null) {
@@ -110,7 +95,7 @@ export class AddTaskDialog {
   private getDefaultFormData(): TaskModel {
     return {
       title: '',
-      status: TaskState.Open,
+      status: TaskState.OPEN,
       deadline: undefined,
       difficulty: TaskDifficultyModel.Easy,
       estimatedTime: 0,
@@ -119,31 +104,83 @@ export class AddTaskDialog {
       endDate: undefined,
       description: '',
       scheduleTask: true,
-      recurring: false,
-      recurrenceType: undefined,
-      recurrenceIntervall: undefined,
-      numChunks: 1,
-      chunks: [0]
+      chunks: ['00:00'],
+      enableScheduleStart: false,
+      scheduleStartDate: undefined,
+      recurrence: {
+        isRecurring: false,
+        type: 'daily',
+        interval: 1,
+        daysOfWeek: [],
+        endType: 'never',
+        occurrences: 1,
+        endDate: undefined,
+      },
     };
+  }
+
+  addChunk() {
+    const current = this.formData();
+
+    this.formData.set({
+      ...current,
+      chunks: [...current.chunks, '00:00'],
+    });
+  }
+
+  removeChunk(index: number) {
+    const current = this.formData();
+
+    const updatedChunks = current.chunks.filter((_, i) => i !== index);
+
+    this.formData.set({
+      ...current,
+      chunks: updatedChunks,
+    });
   }
 
   setData(taskData: TaskModel | null) {
     const base = this.getDefaultFormData();
+    const data = taskData ? { ...base, ...taskData } : base;
 
-    // Set available data
-    const data = taskData
-      ? { ...base, ...taskData }
-      : base;
-
-    // Update chunks based on numChunks
-    const chunks = Array.from(
-      { length: data.numChunks },
-      (_, i) => data.chunks?.[i] ?? null
-    );
+    const chunks = data.chunks?.length ? data.chunks : ['00:00'];
 
     this.formData.set({
       ...data,
       chunks,
+      enableScheduleStart: data.enableScheduleStart ?? false,
+      scheduleStartDate: data.scheduleStartDate ?? undefined,
     });
   }
+
+  protected recurrenceTypes = [
+    { label: 'Nie', value: 'never' },
+    { label: 'Täglich', value: 'daily' },
+    { label: 'Wöchentlich', value: 'weekly' },
+    { label: 'Monatlich', value: 'monthly' },
+  ];
+
+  updateRecurrence<K extends keyof Recurrence>(field: K, value: Recurrence[K]) {
+    this.formData.update((fd) => {
+      const rec = { ...fd.recurrence!, [field]: value };
+
+      if (field === 'endType') {
+        if (value === 'after') rec.endDate = undefined;
+        if (value === 'date') rec.occurrences = 1;
+      }
+
+      return { ...fd, recurrence: rec };
+    });
+  }
+
+  toggleWeekday(day: string) {
+    const current = this.formData();
+    const days = current.recurrence?.daysOfWeek || [];
+
+    const updated = days.includes(day) ? days.filter((d) => d !== day) : [...days, day];
+
+    this.updateRecurrence('daysOfWeek', updated);
+  }
 }
+
+export default AddTaskDialog;

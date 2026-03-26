@@ -62,3 +62,37 @@
 .chunk-item label {
   width: 30px;
 }
+
+.schedule {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.input-row label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+:host ::ng-deep .p-checkbox label {
+  margin-left: 0.5rem;
+}
+
+.weekday-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.schedule {
+  margin-top: 0.5rem;
+}
+
+.toggle-field {
+  display: none;
+}
+.toggle-field.active {
+  display: grid;
+}
