@@ -25,6 +25,7 @@ export class TaskService {
       estimatedDurationMinutes: task.estimatedTime,
       cognitiveLoad: this.mapDifficultyToCognitiveLoad(task.difficulty),
       deadline: task.deadline?.toISOString(),
+      recurrence: task.recurrence,
     };
 
     this.tasksApiService.createTask(request).subscribe({
@@ -71,10 +72,10 @@ export class TaskService {
 
   private mapStatusToState(status: TaskStatus): TaskState {
     switch (status) {
-      case 'OPEN': return TaskState.Open;
-      case 'IN_PROGRESS': return TaskState.Active;
-      case 'DONE': return TaskState.Done;
-      default: return TaskState.Open;
+      case 'OPEN': return TaskState.OPEN;
+      case 'IN_PROGRESS': return TaskState.IN_PROGRESS;
+      case 'DONE': return TaskState.DONE;
+      default: return TaskState.OPEN;
     }
   }
 
@@ -91,8 +92,7 @@ export class TaskService {
       startDate: undefined, // Vom Schedule-Service
       endDate: undefined,   // Vom Schedule-Service
       scheduleTask: true,
-      recurring: !!response.recurrence,
-      numChunks: 1,
+      recurrence: response.recurrence,
       chunks: []
     };
   }

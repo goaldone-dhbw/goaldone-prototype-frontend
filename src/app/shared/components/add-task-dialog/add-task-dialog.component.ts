@@ -17,9 +17,10 @@ import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { CheckboxModule } from 'primeng/checkbox';
 
-import { Recurrence, TaskModel } from '../../models/task.model';
+import { TaskModel } from '../../models/task.model';
 import { TaskState } from '../../models/task-state.model';
 import { TaskDifficultyModel } from '../../models/task-difficulty.model';
+import { RecurrenceRule, RecurrenceType } from '../../../api';
 
 @Component({
   selector: 'app-add-task-dialog',
@@ -108,13 +109,8 @@ class AddTaskDialog {
       enableScheduleStart: false,
       scheduleStartDate: undefined,
       recurrence: {
-        isRecurring: false,
-        type: 'daily',
+        type: RecurrenceType.Daily,
         interval: 1,
-        daysOfWeek: [],
-        endType: 'never',
-        occurrences: 1,
-        endDate: undefined,
       },
     };
   }
@@ -154,33 +150,19 @@ class AddTaskDialog {
   }
 
   protected recurrenceTypes = [
-    { label: 'Nie', value: 'never' },
-    { label: 'Täglich', value: 'daily' },
-    { label: 'Wöchentlich', value: 'weekly' },
-    { label: 'Monatlich', value: 'monthly' },
+    { label: 'Täglich', value: RecurrenceType.Daily },
+    { label: 'Wöchentlich', value: RecurrenceType.Weekly },
+    { label: 'Monatlich', value: RecurrenceType.Monthly },
   ];
 
-  updateRecurrence<K extends keyof Recurrence>(field: K, value: Recurrence[K]) {
+  updateRecurrence<K extends keyof RecurrenceRule>(field: K, value: RecurrenceRule[K]) {
     this.formData.update((fd) => {
       const rec = { ...fd.recurrence!, [field]: value };
-
-      if (field === 'endType') {
-        if (value === 'after') rec.endDate = undefined;
-        if (value === 'date') rec.occurrences = 1;
-      }
 
       return { ...fd, recurrence: rec };
     });
   }
 
-  toggleWeekday(day: string) {
-    const current = this.formData();
-    const days = current.recurrence?.daysOfWeek || [];
-
-    const updated = days.includes(day) ? days.filter((d) => d !== day) : [...days, day];
-
-    this.updateRecurrence('daysOfWeek', updated);
-  }
 }
 
 export default AddTaskDialog;

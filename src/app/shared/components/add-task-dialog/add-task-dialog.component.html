@@ -107,7 +107,6 @@
 
         <div class="input-row">
           <label>Wiederkehrende Aufgaben:</label>
-          <br>
           <p-select
             [options]="recurrenceTypes"
             optionLabel="label"
@@ -117,50 +116,6 @@
           </p-select>
         </div>
       </div>
-
-      <br>
-      <hr>
-      <br>
-
-
-      <div>
-        <p-checkbox
-          [ngModel]="formData().recurring"
-          (ngModelChange)="updateFormData('recurring', $event)"
-          binary="true"
-          variant="filled"
-          name="recurring">
-        </p-checkbox>
-        <label> Recurring Task</label>
-      </div>
-
-      @if (formData().recurring) {
-        <div class="recurring">
-
-          <div class="input-row">
-            <label>Wiederholung:</label>
-            <p-select
-              [options]="recurringOptions"
-              optionLabel="label"
-              optionValue="value"
-              [ngModel]="formData().recurrenceType"
-              (ngModelChange)="updateFormData('recurrenceType', $event)"
-              name="recurringType"
-              placeholder="Wiederholung wählen">
-            </p-select>
-          </div>
-
-          <div class="input-row">
-            <label>Intervall:</label>
-            <p-inputnumber
-              [ngModel]="formData().recurrenceIntervall"
-              (ngModelChange)="updateFormData('recurrenceIntervall', $event)"
-              name="recurringInterval">
-            </p-inputnumber>
-          </div>
-
-        </div>
-      }
 
       <br>
       <hr>

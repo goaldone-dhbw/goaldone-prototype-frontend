@@ -1,80 +1,51 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, computed, effect, inject, input, OnInit, ViewChild } from '@angular/core';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import deLocale from '@fullcalendar/core/locales/de';
+import { TaskService } from '../../../shared/services/task.service';
+import { ScheduleEntry } from '../../../api';
 import AddTaskDialog from '../../../shared/components/add-task-dialog/add-task-dialog.component';
-import { TaskModel } from '../../../shared/models/task.model';
-import { TaskState } from '../../../shared/models/task-state.model';
-import { TaskDifficultyModel } from '../../../shared/models/task-difficulty.model';
-
 
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [FullCalendarModule],
+  imports: [FullCalendarModule, AddTaskDialog],
   templateUrl: 'calendar.component.html',
   styleUrl: 'calendar.component.scss',
 })
-export class CalendarComponent {
+export class CalendarComponent implements OnInit {
   @ViewChild(AddTaskDialog) addTaskDialog!: AddTaskDialog;
 
-  protected taskArray: TaskModel[] = [
-    {
-      title: 'Meeting',
-      status: TaskState.OPEN,
-      deadline: new Date('2026-03-30'),
-      estimatedTime: 120,
-      difficulty: TaskDifficultyModel.Moderate,
-      trackedTime: 0,
-      startDate: new Date('2026-03-23T10:00:00'),
-      endDate: new Date('2026-03-23T12:00:00'),
-      description: 'Description for Meeting',
-      scheduleTask: true,
-      chunks: ['00:00'],
-    },
-    {
-      title: 'Meeting',
-      status: TaskState.OPEN,
-      deadline: new Date('2026-03-30'),
-      difficulty: TaskDifficultyModel.Moderate,
-      estimatedTime: 120,
-      trackedTime: 0,
-      startDate: new Date('2026-03-26T12:00:00'),
-      endDate: new Date('2026-03-26T15:00:00'),
-      description: 'Description for Task Meeting',
-      scheduleTask: true,
-      chunks: ['00:00'],
-    },
-    {
-      title: 'Lunch',
-      status: TaskState.OPEN,
-      deadline: new Date('2026-03-31'),
-      difficulty: TaskDifficultyModel.Easy,
-      estimatedTime: 120,
-      trackedTime: 0,
-      startDate: new Date('2026-03-25T11:00:00'),
-      endDate: new Date('2026-03-25T13:00:00'),
-      description: 'Description for Task Lunch',
-      scheduleTask: true,
-      chunks: ['00:00'],
-    },
-  ];
+  private taskService = inject(TaskService);
 
-  protected eventsArray: { title: string; start: string | Date; end: string | Date }[] =
-    this.taskArray.map((task) => ({
-      title: task.title,
-      start: task.startDate!,
-      end: task.endDate!,
+  // Input Signal für ScheduleEntries
+  entries = input<ScheduleEntry[]>([]);
+
+  // Computed Signal für FullCalendar Events
+  calendarEvents = computed(() => {
+    return this.entries().map((entry) => ({
+      id: entry.id,
+      title:
+        entry.type === 'TASK'
+          ? entry.taskTitle || 'Unbenannte Aufgabe'
+          : entry.breakLabel || 'Pause',
+      start: `${entry.date}T${entry.startTime}`,
+      end: `${entry.date}T${entry.endTime}`,
+      backgroundColor: entry.type === 'TASK' ? '#63729c' : '#10b981',
+      borderColor: entry.type === 'TASK' ? '#505c7c' : '#059669',
+      extendedProps: { ...entry },
     }));
+  });
 
-  calendarOptions = {
+  calendarOptions: any = {
     // Format
     locale: deLocale,
     contentHeight: 'auto',
     slotMinTime: '06:00:00',
     slotMaxTime: '21:00:00',
+    allDaySlot: false,
 
     // Design
     initialView: 'timeGridWeek',
@@ -84,23 +55,42 @@ export class CalendarComponent {
       center: 'title',
       right: 'timeGridWeek,timeGridDay',
     },
-    events: this.eventsArray,
+
+    // Wir nutzen ein Effect oder binden direkt an [events] im HTML
+    // Hier setzen wir es initial leer, und im HTML binden wir es dynamisch
+    events: [],
 
     // Methods
-    dateClick: (arg: any) => this.handleDateClick(arg),
     eventClick: (arg: any) => this.handleEventClick(arg),
   };
 
-  handleEventClick(arg: any) {
-    // Somehow get Task from Event
-
-    this.addTaskDialog.openDialog(this.taskArray[0]); // Example task
+  constructor() {
+    // Falls FullCalendar die Events nicht reaktiv über [options] übernimmt,
+    // können wir sie hier im effect an calendarOptions zuweisen
+    effect(() => {
+      this.calendarOptions = {
+        ...this.calendarOptions,
+        events: this.calendarEvents(),
+      };
+    });
   }
 
-  handleDateClick(arg: any) {
-    datum: String = arg.dateStr;
+  ngOnInit(): void {
+    this.taskService.loadTasksFromDB();
+  }
 
-    // event <- AddTaskDialog()
-    //
+  handleEventClick(arg: any) {
+    const entry = arg.event.extendedProps as ScheduleEntry;
+
+    if (entry.type === 'TASK' && entry.taskId) {
+      // Suche den Task im TaskService, um die Details für den Dialog zu haben
+      const task = this.taskService.loadedTasks().find((t) => t.id === entry.taskId);
+
+      if (task) {
+        this.addTaskDialog.openDialog(task);
+      } else {
+        console.warn(`Task mit ID ${entry.taskId} nicht gefunden.`);
+      }
+    }
   }
 }
