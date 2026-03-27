@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}=== Goaldone Demo Setup Script (v2: 35h Week & Breaks) ===${NC}"
+echo -e "${BLUE}=== Goaldone Demo Setup Script (v3: Recurring Templates & Enhanced Breaks) ===${NC}"
 
 # 1. Login as Superadmin
 echo -e "${YELLOW}Logging in as Superadmin...${NC}"
@@ -90,8 +90,8 @@ curl -s -X PUT "$BASE_URL/users/me/working-hours" \
   -H "Authorization: Bearer $USER_ACCESS_TOKEN" \
   -d "$WORKING_HOURS_DATA" > /dev/null
 
-# 6. Create Breaks (Monday and Friday)
-echo -e "${YELLOW}Adding breaks for Monday and Friday...${NC}"
+# 6. Create Breaks with different types
+echo -e "${YELLOW}Adding breaks: recurring daily breaks and bounded recurring for Monday meetings...${NC}"
 
 create_break() {
     curl -s -X POST "$BASE_URL/breaks" \
@@ -100,21 +100,94 @@ create_break() {
       -d "$1" > /dev/null
 }
 
-# Monday Lunch (Daily recurrence but we could also model it specifically)
+# Recurring daily lunch break (every day forever)
+echo " - Recurring: Daily Lunch Break"
 create_break '{
-  "label": "Mittagspause (Mo)",
+  "label": "Mittagspause (täglich)",
   "startTime": "12:00",
-  "endTime": "12:45"
+  "endTime": "13:00",
+  "breakType": "RECURRING",
+  "recurrence": { "type": "DAILY", "interval": 1 }
 }'
 
+# Recurring daily morning coffee break (every day forever)
+echo " - Recurring: Daily Morning Coffee"
 create_break '{
-  "label": "Kaffeepause (Fr)",
-  "startTime": "09:30",
-  "endTime": "09:45"
+  "label": "Kaffeepause (täglich)",
+  "startTime": "10:00",
+  "endTime": "10:15",
+  "breakType": "RECURRING",
+  "recurrence": { "type": "DAILY", "interval": 1 }
 }'
 
-# 7. Create Demo Tasks
-echo -e "${YELLOW}Creating demo tasks (including 3 recurring ones)...${NC}"
+# Bounded recurring break only on Mondays for this week
+MONDAY=$(date -v+0d +%Y-%m-%d)
+FRIDAY=$(date -v+4d +%Y-%m-%d)
+echo " - Bounded Recurring: Monday Team Sync (Mo-Fr of current week)"
+create_break '{
+  "label": "Wöchentliches Team-Sync (Mo 11:00)",
+  "startTime": "11:00",
+  "endTime": "12:00",
+  "breakType": "BOUNDED_RECURRING",
+  "recurrence": { "type": "WEEKLY", "interval": 1 },
+  "validFrom": "'$MONDAY'",
+  "validUntil": "'$FRIDAY'"
+}'
+
+# One-time break for today (e.g., dentist appointment)
+echo " - One-Time: Dentist Appointment Today"
+TODAY=$(date +%Y-%m-%d)
+create_break '{
+  "label": "Zahnarzt-Termin",
+  "startTime": "14:00",
+  "endTime": "15:00",
+  "breakType": "ONE_TIME",
+  "date": "'$TODAY'"
+}'
+
+# 7. Create Recurring Templates
+echo -e "${YELLOW}Creating recurring task templates...${NC}"
+
+create_recurring_template() {
+    RESPONSE=$(curl -s -X POST "$BASE_URL/recurring-templates" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer $USER_ACCESS_TOKEN" \
+      -d "$1")
+    TEMPLATE_ID=$(echo $RESPONSE | jq -r '.id // empty')
+    echo $TEMPLATE_ID
+}
+
+# Daily Standup
+echo " - Recurring Template: Daily Standup (15 min daily at 09:00)"
+STANDUP_ID=$(create_recurring_template '{
+  "title": "Tägliches Standup",
+  "cognitiveLoad": "LOW",
+  "durationMinutes": 15,
+  "preferredStartTime": "09:00",
+  "recurrenceRule": { "type": "DAILY", "interval": 1 }
+}')
+
+# Weekly Team Sync
+echo " - Recurring Template: Weekly Team Sync (90 min weekly on Monday)"
+SYNC_ID=$(create_recurring_template '{
+  "title": "Wöchentliches Team-Sync",
+  "cognitiveLoad": "MEDIUM",
+  "durationMinutes": 90,
+  "preferredStartTime": "14:00",
+  "recurrenceRule": { "type": "WEEKLY", "interval": 1 }
+}')
+
+# Monthly Reporting
+echo " - Recurring Template: Monthly Reporting (120 min monthly)"
+REPORT_ID=$(create_recurring_template '{
+  "title": "Monatsabschluss-Analyse",
+  "cognitiveLoad": "HIGH",
+  "durationMinutes": 120,
+  "recurrenceRule": { "type": "MONTHLY", "interval": 1 }
+}')
+
+# 8. Create Demo Tasks (One-time tasks)
+echo -e "${YELLOW}Creating demo one-time tasks...${NC}"
 
 create_task() {
     curl -s -X POST "$BASE_URL/tasks" \
@@ -123,33 +196,8 @@ create_task() {
       -d "$1" > /dev/null
 }
 
-# Recurring Tasks
-echo " - Recurring 1: Daily Standup"
-create_task '{
-  "title": "Tägliches Standup",
-  "cognitiveLoad": "LOW",
-  "estimatedDurationMinutes": 15,
-  "recurrence": { "type": "DAILY", "interval": 1 }
-}'
-
-echo " - Recurring 2: Weekly Team Sync"
-create_task '{
-  "title": "Weekly Team Sync",
-  "cognitiveLoad": "MEDIUM",
-  "estimatedDurationMinutes": 90,
-  "recurrence": { "type": "WEEKLY", "interval": 1 }
-}'
-
-echo " - Recurring 3: Monthly Reporting"
-create_task '{
-  "title": "Monatsabschluss-Analyse",
-  "cognitiveLoad": "HIGH",
-  "estimatedDurationMinutes": 120,
-  "recurrence": { "type": "MONTHLY", "interval": 1 }
-}'
-
-# Algorithm Strengths/Edge Cases
-echo " - Demo: High Load Morning Task"
+# Demo: High Load Morning Task
+echo " - Demo: High Cognitive Load Task (Architektur-Entwurf, 180 min)"
 create_task '{
   "title": "Architektur-Entwurf (Konzentrationsphase)",
   "cognitiveLoad": "HIGH",
@@ -157,7 +205,8 @@ create_task '{
   "deadline": "'$(date -v+3d +%Y-%m-%d)'"
 }'
 
-echo " - Demo: Splitting Task (12h)"
+# Demo: Long Task that should be split
+echo " - Demo: Long Task (720 min = 12h, should be split by algorithm)"
 create_task '{
   "title": "Jahresbericht schreiben",
   "cognitiveLoad": "MEDIUM",
@@ -165,7 +214,39 @@ create_task '{
   "deadline": "'$(date -v+7d +%Y-%m-%d)'"
 }'
 
+# Demo: Medium task with start date constraint
+echo " - Demo: Medium Task with Start Date (200 min, starts after Wed)"
+create_task '{
+  "title": "Anforderungsanalyse fertigstellen",
+  "cognitiveLoad": "MEDIUM",
+  "estimatedDurationMinutes": 200,
+  "deadline": "'$(date -v+5d +%Y-%m-%d)'",
+  "startDate": "'$(date -v+2d +%Y-%m-%d)'"
+}'
+
+# Demo: Quick task without deadline (Low priority)
+echo " - Demo: Quick Task (LOW priority, no deadline)"
+create_task '{
+  "title": "E-Mail-Antworten",
+  "cognitiveLoad": "LOW",
+  "estimatedDurationMinutes": 60
+}'
+
+# Demo: Another HIGH cognitive task
+echo " - Demo: Another High Load Task (Code Review, 120 min, deadline tomorrow)"
+create_task '{
+  "title": "Code Review durchführen",
+  "cognitiveLoad": "HIGH",
+  "estimatedDurationMinutes": 120,
+  "deadline": "'$(date -v+1d +%Y-%m-%d)'"
+}'
+
 echo -e "${BLUE}------------------------------------------------------------${NC}"
 echo -e "${GREEN}Setup complete!${NC}"
 echo -e "Weekly Budget: ${BLUE}35h${NC}"
-echo -e "Highlights: High-Load Mornings, 12h Splitting, 3 Recurring Tasks, Friday Early-Off (11:00)"
+echo -e "Highlights:"
+echo -e "  • 3 Recurring Templates (Daily Standup, Weekly Sync, Monthly Report)"
+echo -e "  • 4 Different Break Types (Recurring, Bounded, One-Time)"
+echo -e "  • 5 One-Time Tasks with varying cognitive load and deadlines"
+echo -e "  • High-Load Morning Tasks, Task Splitting, Task Start-Date Constraints"
+echo -e "  • Friday Early-Off (11:00)"
