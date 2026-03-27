@@ -26,7 +26,7 @@ export class TaskService {
       estimatedDurationMinutes: task.estimatedTime,
       cognitiveLoad: this.mapDifficultyToCognitiveLoad(task.difficulty),
       deadline: task.deadline?.toISOString(),
-      recurrence: task.recurrence,
+      startDate: task.scheduleStartDate?.toISOString(),
     };
 
     return this.tasksApiService.createTask(request).pipe(
@@ -48,7 +48,7 @@ export class TaskService {
       estimatedDurationMinutes: task.estimatedTime,
       cognitiveLoad: this.mapDifficultyToCognitiveLoad(task.difficulty),
       deadline: task.deadline?.toISOString(),
-      recurrence: task.recurrence,
+      startDate: task.scheduleStartDate?.toISOString(),
     };
 
     return this.tasksApiService.updateTask(task.id, request).pipe(
@@ -120,7 +120,7 @@ export class TaskService {
       startDate: undefined, // Vom Schedule-Service
       endDate: undefined,   // Vom Schedule-Service
       scheduleTask: true,
-      recurrence: response.recurrence,
+      scheduleStartDate: response.startDate ? new Date(response.startDate) : undefined,
       chunks: []
     };
   }

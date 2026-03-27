@@ -4,6 +4,16 @@
   gap: 1rem;
 }
 
+.toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  background-color: var(--surface-50);
+  border-radius: 6px;
+  border: 1px solid var(--surface-200);
+}
+
 .full-width {
   grid-column: 1 / -1;
 }

@@ -17,6 +17,5 @@ export interface TaskModel {
   chunks: string[];
   enableScheduleStart?: boolean;
   scheduleStartDate?: Date;
-  recurrence?: RecurrenceRule;
 }
 

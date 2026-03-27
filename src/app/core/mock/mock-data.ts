@@ -126,6 +126,7 @@ export const MOCK_MEMBERS: MemberResponse[] = [
 export const MOCK_BREAKS: BreakResponse[] = [
   {
     id: 'b-1',
+    breakType: 'RECURRING',
     label: 'Lunch Break',
     startTime: '12:00',
     endTime: '13:00',
@@ -136,6 +137,7 @@ export const MOCK_BREAKS: BreakResponse[] = [
   },
   {
     id: 'b-2',
+    breakType: 'RECURRING',
     label: 'Coffee Break',
     startTime: '15:00',
     endTime: '15:15',
@@ -157,7 +159,8 @@ export const MOCK_SCHEDULE: ScheduleResponse = {
   ],
   entries: [
     {
-      id: 'e-1',
+      source: 'ONE_TIME',
+      entryId: 'e-1',
       date: formatIsoDate(MONDAY),
       startTime: '09:00',
       endTime: '12:00',
@@ -168,7 +171,8 @@ export const MOCK_SCHEDULE: ScheduleResponse = {
       isPinned: false,
     },
     {
-      id: 'e-2',
+      source: 'ONE_TIME',
+      entryId: 'e-2',
       date: formatIsoDate(MONDAY),
       startTime: '12:00',
       endTime: '13:00',
@@ -179,7 +183,8 @@ export const MOCK_SCHEDULE: ScheduleResponse = {
       isPinned: false,
     },
     {
-      id: 'e-3',
+      source: 'ONE_TIME',
+      entryId: 'e-3',
       date: formatIsoDate(MONDAY),
       startTime: '13:00',
       endTime: '17:00',
@@ -190,7 +195,8 @@ export const MOCK_SCHEDULE: ScheduleResponse = {
       isPinned: false,
     },
     {
-      id: 'e-4',
+      source: 'ONE_TIME',
+      entryId: 'e-4',
       date: formatIsoDate(new Date(MONDAY.getTime() + 86400000)), // Dienstag
       startTime: '09:00',
       endTime: '10:30',

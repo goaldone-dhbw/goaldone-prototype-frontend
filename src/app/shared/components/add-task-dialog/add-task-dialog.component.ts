@@ -17,12 +17,15 @@ import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { CheckboxModule } from 'primeng/checkbox';
 import { MessageModule } from 'primeng/message';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
 import { TaskModel } from '../../models/task.model';
 import { TaskState } from '../../models/task-state.model';
 import { TaskDifficultyModel } from '../../models/task-difficulty.model';
 import { RecurrenceRule, RecurrenceType } from '../../../api';
 import { TaskService } from '../../services/task.service';
+import { RecurringTemplateService } from '../../services/recurring-template.service';
+import { RecurringTemplateModel } from '../../models/recurring-template.model';
 
 @Component({
   selector: 'app-add-task-dialog',
@@ -41,13 +44,15 @@ import { TaskService } from '../../services/task.service';
     DatePickerModule,
     CheckboxModule,
     MessageModule,
+    ToggleSwitchModule,
   ],
   templateUrl: './add-task-dialog.component.html',
   styleUrls: ['./add-task-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-class AddTaskDialog {
+export class AddTaskDialogComponent {
   private taskService = inject(TaskService);
+  private routineService = inject(RecurringTemplateService);
 
   protected taskStates = Object.values(TaskState).map((status) => ({
     label: status,
@@ -64,6 +69,7 @@ class AddTaskDialog {
   protected errorMessage = signal<string | undefined>(undefined);
   protected isSubmitting = signal(false);
   protected isEditMode = signal(false);
+  protected isRoutine = signal(false);
   protected selectedRecurrenceType = signal<RecurrenceType | null>(null);
 
   isValidTime(value: string | null): boolean {
@@ -117,9 +123,9 @@ class AddTaskDialog {
     this.updateFormData('estimatedTime', minutes);
   }
 
-  protected formData = signal<TaskModel>(this.getDefaultFormData());
+  protected formData = signal<any>(this.getDefaultTaskData());
 
-  updateFormData(field: keyof TaskModel, value: any) {
+  updateFormData(field: string, value: any) {
     const current = this.formData();
     const updated = { ...current, [field]: value };
     this.formData.set(updated);
@@ -140,17 +146,25 @@ class AddTaskDialog {
   private validateForm(): string | undefined {
     const formData = this.formData();
 
-    // Check required fields
     if (!formData.title || formData.title.trim() === '') {
       return 'Titel ist erforderlich';
     }
 
-    if (!formData.status) {
+    if (!this.isRoutine() && !formData.status) {
       return 'Status ist erforderlich';
     }
 
     if (formData.estimatedTime <= 0) {
       return 'Geschätzte Zeit muss größer als 0 Minuten sein';
+    }
+
+    if (this.isRoutine()) {
+      if (!this.selectedRecurrenceType()) {
+        return 'Wiederholungs-Typ ist erforderlich für Routinen';
+      }
+      if (formData.preferredStartTime && !this.isValidTime(formData.preferredStartTime)) {
+        return 'Bevorzugte Startzeit muss im Format HH:mm sein';
+      }
     }
 
     return undefined;
@@ -166,62 +180,100 @@ class AddTaskDialog {
     }
 
     this.isSubmitting.set(true);
-    const formData = this.formData();
-    const submitObservable = this.isEditMode()
-      ? this.taskService.updateTaskInDB(formData)
-      : this.taskService.saveTaskToDB(formData);
+    const data = this.formData();
 
-    submitObservable.subscribe({
+    if (this.isRoutine()) {
+      const routineData: RecurringTemplateModel = {
+        id: data.id,
+        title: data.title,
+        description: data.description,
+        difficulty: data.difficulty,
+        estimatedTime: data.estimatedTime,
+        recurrenceRule: {
+          type: this.selectedRecurrenceType()!,
+          interval: data.recurrenceRule?.interval || 1
+        },
+        preferredStartTime: data.preferredStartTime
+      };
+
+      const submitObservable = this.isEditMode()
+        ? this.routineService.updateTemplateInDB(routineData)
+        : this.routineService.saveTemplateToDB(routineData);
+
+      this.handleResponse(submitObservable);
+    } else {
+      const taskData: TaskModel = {
+        ...data,
+        recurrence: undefined // Ensure no recurrence for one-time tasks
+      };
+
+      const submitObservable = this.isEditMode()
+        ? this.taskService.updateTaskInDB(taskData)
+        : this.taskService.saveTaskToDB(taskData);
+
+      this.handleResponse(submitObservable);
+    }
+  }
+
+  private handleResponse(observable: any) {
+    observable.subscribe({
       next: () => {
         this.isSubmitting.set(false);
         this.showDialog.set(false);
-        this.setData(null);
         this.isEditMode.set(false);
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isSubmitting.set(false);
-        const errorMsg = err?.error?.detail || 'Fehler beim Speichern der Aufgabe';
+        const errorMsg = err?.error?.detail || 'Fehler beim Speichern';
         this.errorMessage.set(errorMsg);
-        console.error('Error saving task:', err);
+        console.error('Error saving:', err);
       }
     });
   }
 
-  openDialog(taskData: TaskModel | null) {
-    this.isEditMode.set(taskData !== null);
-    this.setData(taskData);
+  openDialog(data: any | null) {
+    this.isEditMode.set(data !== null);
+    if (data) {
+      // Check if it's a routine (has recurrenceRule) or a task
+      this.isRoutine.set('recurrenceRule' in data);
+    } else {
+      this.isRoutine.set(false);
+    }
+    this.setData(data);
     this.showDialog.set(true);
   }
 
   onDelete() {
-    const taskId = this.formData().id;
-    if (!taskId) {
-      this.errorMessage.set('Task-ID nicht gefunden');
+    const id = this.formData().id;
+    if (!id) {
+      this.errorMessage.set('ID nicht gefunden');
       return;
     }
 
-    if (!confirm('Möchten Sie diese Aufgabe wirklich löschen?')) {
+    if (!confirm('Wirklich löschen?')) {
       return;
     }
 
     this.isSubmitting.set(true);
-    this.taskService.deleteTaskFromDB(taskId).subscribe({
+    const deleteObservable = this.isRoutine()
+      ? this.routineService.deleteTemplateFromDB(id)
+      : this.taskService.deleteTaskFromDB(id);
+
+    deleteObservable.subscribe({
       next: () => {
         this.isSubmitting.set(false);
         this.showDialog.set(false);
-        this.setData(null);
         this.isEditMode.set(false);
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isSubmitting.set(false);
-        const errorMsg = err?.error?.detail || 'Fehler beim Löschen der Aufgabe';
+        const errorMsg = err?.error?.detail || 'Fehler beim Löschen';
         this.errorMessage.set(errorMsg);
-        console.error('Error deleting task:', err);
       }
     });
   }
 
-  private getDefaultFormData(): TaskModel {
+  private getDefaultTaskData(): TaskModel {
     return {
       title: '',
       status: TaskState.OPEN,
@@ -230,18 +282,40 @@ class AddTaskDialog {
       estimatedTime: 0,
       trackedTime: 0,
       startDate: undefined,
-      endDate: undefined,
       description: '',
       scheduleTask: true,
       chunks: ['00:00'],
       enableScheduleStart: false,
       scheduleStartDate: undefined,
-      recurrence: undefined,
     };
+  }
+
+  private getDefaultRoutineData(): RecurringTemplateModel {
+    return {
+      title: '',
+      description: '',
+      difficulty: TaskDifficultyModel.Easy,
+      estimatedTime: 0,
+      recurrenceRule: { type: RecurrenceType.Daily, interval: 1 },
+      preferredStartTime: undefined
+    };
+  }
+
+  onRoutineToggle(val: boolean) {
+    this.isRoutine.set(val);
+    const current = this.formData();
+    if (val) {
+      this.formData.set({ ...this.getDefaultRoutineData(), title: current.title, description: current.description, difficulty: current.difficulty, estimatedTime: current.estimatedTime });
+      this.selectedRecurrenceType.set(RecurrenceType.Daily);
+    } else {
+      this.formData.set({ ...this.getDefaultTaskData(), title: current.title, description: current.description, difficulty: current.difficulty, estimatedTime: current.estimatedTime });
+      this.selectedRecurrenceType.set(null);
+    }
   }
 
   addChunk() {
     const current = this.formData();
+    if (!current.chunks) return;
 
     this.formData.set({
       ...current,
@@ -251,8 +325,9 @@ class AddTaskDialog {
 
   removeChunk(index: number) {
     const current = this.formData();
+    if (!current.chunks) return;
 
-    const updatedChunks = current.chunks.filter((_, i) => i !== index);
+    const updatedChunks = current.chunks.filter((_: any, i: number) => i !== index);
 
     this.formData.set({
       ...current,
@@ -260,49 +335,33 @@ class AddTaskDialog {
     });
   }
 
-  setData(taskData: TaskModel | null) {
-    const base = this.getDefaultFormData();
-    const data = taskData ? { ...base, ...taskData } : base;
+  setData(data: any | null) {
+    if (!data) {
+      this.formData.set(this.isRoutine() ? this.getDefaultRoutineData() : this.getDefaultTaskData());
+      this.estimatedTimeString.set('');
+      this.selectedRecurrenceType.set(this.isRoutine() ? RecurrenceType.Daily : null);
+      return;
+    }
 
-    const chunks = data.chunks?.length ? data.chunks : ['00:00'];
+    this.formData.set({ ...data });
+    this.estimatedTimeString.set(this.formatEstimatedTime(data.estimatedTime || data.durationMinutes));
 
-    this.estimatedTimeString.set(this.formatEstimatedTime(data.estimatedTime));
-    this.selectedRecurrenceType.set(data.recurrence?.type ?? null);
-
-    this.formData.set({
-      ...data,
-      chunks,
-      enableScheduleStart: data.enableScheduleStart ?? false,
-      scheduleStartDate: data.scheduleStartDate ?? undefined,
-    });
+    if (this.isRoutine()) {
+      this.selectedRecurrenceType.set(data.recurrenceRule?.type ?? RecurrenceType.Daily);
+    } else {
+      this.selectedRecurrenceType.set(null);
+    }
   }
 
   protected recurrenceTypes = [
-    { label: 'Keine Wiederholung', value: null },
     { label: 'Täglich', value: RecurrenceType.Daily },
     { label: 'Wöchentlich', value: RecurrenceType.Weekly },
     { label: 'Monatlich', value: RecurrenceType.Monthly },
   ];
 
-  updateRecurrence(type: RecurrenceType | null) {
+  updateRecurrence(type: RecurrenceType) {
     this.selectedRecurrenceType.set(type);
-
-    this.formData.update((fd) => {
-      if (type === null) {
-        return { ...fd, recurrence: undefined };
-      }
-
-      const currentRecurrence = fd.recurrence || { type, interval: 1 };
-      return {
-        ...fd,
-        recurrence: {
-          ...currentRecurrence,
-          type,
-        }
-      };
-    });
+    this.updateFormData('recurrenceRule', { ...this.formData().recurrenceRule, type });
   }
 
 }
-
-export default AddTaskDialog;

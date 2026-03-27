@@ -81,12 +81,12 @@ export class ScheduleFacadeService {
   public generateSchedule() {
     const monday = this.getMonday(new Date());
     const from = monday.toISOString().split('T')[0];
-    
+
     const sundayTwoWeeksLater = new Date(monday);
     sundayTwoWeeksLater.setDate(monday.getDate() + 13);
     const to = sundayTwoWeeksLater.toISOString().split('T')[0];
 
-    const request: GenerateScheduleRequest = { from, to };
+    const request: GenerateScheduleRequest = { from };
 
     this._isLoading.set(true);
     return this.scheduleService.generateSchedule(request)
