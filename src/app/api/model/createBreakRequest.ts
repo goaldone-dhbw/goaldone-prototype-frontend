@@ -8,12 +8,32 @@
  * Do not edit the class manually.
  */
 import { RecurrenceRule } from './recurrenceRule';
+import { BreakType } from './breakType';
 
 
+/**
+ * Drei Typen über `breakType` steuerbar: - `ONE_TIME`: einmalige Pause. `date` ist Pflicht, `recurrence`/`validFrom`/`validUntil` müssen null sein. - `RECURRING`: unbegrenzt wiederkehrende Pause. `recurrence` ist Pflicht, alle Datumsfelder null. - `BOUNDED_RECURRING`: wiederkehrende Pause in einem Zeitraum. `recurrence`, `validFrom`   und `validUntil` sind Pflicht. `validFrom` muss vor oder gleich `validUntil` liegen. 
+ */
 export interface CreateBreakRequest { 
     label: string;
     startTime: string;
     endTime: string;
-    recurrence: RecurrenceRule;
+    breakType: BreakType;
+    recurrence?: RecurrenceRule;
+    /**
+     * Pflicht bei ONE_TIME. Null bei RECURRING und BOUNDED_RECURRING.
+     */
+    date?: string | null;
+    /**
+     * Pflicht bei BOUNDED_RECURRING. Null bei ONE_TIME und RECURRING.
+     */
+    validFrom?: string | null;
+    /**
+     * Pflicht bei BOUNDED_RECURRING. Muss >= validFrom sein.
+     */
+    validUntil?: string | null;
 }
+export namespace CreateBreakRequest {
+}
+
 

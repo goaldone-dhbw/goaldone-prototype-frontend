@@ -7,7 +7,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { RecurrenceRule } from './recurrenceRule';
 import { CognitiveLoad } from './cognitiveLoad';
 
 
@@ -24,7 +23,6 @@ export interface CreateTaskRequest {
      * Frühestes Startdatum (optional). Der Algorithmus plant den Task nicht vor diesem Datum ein.
      */
     startDate?: string | null;
-    recurrence?: RecurrenceRule;
 }
 export namespace CreateTaskRequest {
 }
