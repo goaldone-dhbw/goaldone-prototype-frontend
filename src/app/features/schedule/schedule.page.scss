@@ -1,3 +1,13 @@
+.schedule-page {
+  padding: 2em;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  h1 {
+    margin-bottom: 2rem;
+    color: var(--p-text-color);
+  }
+}
 :host {
   display: block;
 }
@@ -21,4 +31,23 @@ calendar-wrapper app-calendar {
 .button-container {
   display: flex;
   justify-content: space-between; /* verteilt die Elemente an den Enden */
+}
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  text-align: center;
+}
+
+.warnings-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  p-message {
+    display: block;
+    width: 100%;
+  }
 }

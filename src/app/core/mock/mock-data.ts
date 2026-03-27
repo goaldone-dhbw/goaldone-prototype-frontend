@@ -1,5 +1,18 @@
 import { Role, UserResponse, TaskResponse, OrganizationResponse, MemberResponse, TaskStatus, BreakResponse, RecurrenceType, ScheduleResponse, SuperAdminInvitationResponse, CognitiveLoad, ScheduleEntry } from '../../api';
 
+// Hilfsfunktion für das aktuelle Datum (Montag der Woche)
+const getMonday = (date: Date): Date => {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  d.setDate(diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+
+const MONDAY = getMonday(new Date());
+const formatIsoDate = (d: Date) => d.toISOString().split('T')[0];
+
 export const MOCK_USERS: Record<string, UserResponse> = {
   'user@goaldone.de': {
     id: 'u-1',
@@ -36,7 +49,7 @@ export const MOCK_TASKS: TaskResponse[] = [
     description: 'Explore the workspace and create your first task.',
     status: TaskStatus.Open,
     cognitiveLoad: CognitiveLoad.Medium,
-    estimatedDurationMinutes: 30,
+    estimatedDurationMinutes: 180,
     ownerId: 'u-1',
     organizationId: 'org-1',
     createdAt: new Date().toISOString(),
@@ -48,7 +61,7 @@ export const MOCK_TASKS: TaskResponse[] = [
     description: 'Set up your weekly goals.',
     status: TaskStatus.InProgress,
     cognitiveLoad: CognitiveLoad.High,
-    estimatedDurationMinutes: 60,
+    estimatedDurationMinutes: 240,
     ownerId: 'u-1',
     organizationId: 'org-1',
     createdAt: new Date().toISOString(),
@@ -135,35 +148,59 @@ export const MOCK_BREAKS: BreakResponse[] = [
 
 export const MOCK_SCHEDULE: ScheduleResponse = {
   generatedAt: new Date().toISOString(),
-  from: new Date().toISOString(),
-  to: new Date(Date.now() + 86400000).toISOString(),
+  from: formatIsoDate(MONDAY),
+  to: formatIsoDate(new Date(MONDAY.getTime() + 13 * 86400000)),
   totalWorkMinutes: 480,
+  warnings: [
+    'unschedulable-task:t-1',
+    'task-budget-exceeded:t-2'
+  ],
   entries: [
     {
-      date: new Date().toISOString().split('T')[0],
+      id: 'e-1',
+      date: formatIsoDate(MONDAY),
       startTime: '09:00',
       endTime: '12:00',
       taskTitle: 'Welcome to Goaldone',
       type: ScheduleEntry.TypeEnum.Task,
-      taskId: 't-1'
+      taskId: 't-1',
+      isCompleted: false,
+      isPinned: false,
     },
     {
-      date: new Date().toISOString().split('T')[0],
+      id: 'e-2',
+      date: formatIsoDate(MONDAY),
       startTime: '12:00',
       endTime: '13:00',
       breakLabel: 'Lunch Break',
       type: ScheduleEntry.TypeEnum.Break,
-      breakId: 'b-1'
+      breakId: 'b-1',
+      isCompleted: false,
+      isPinned: false,
     },
     {
-      date: new Date().toISOString().split('T')[0],
+      id: 'e-3',
+      date: formatIsoDate(MONDAY),
       startTime: '13:00',
       endTime: '17:00',
       taskTitle: 'Plan your week',
       type: ScheduleEntry.TypeEnum.Task,
-      taskId: 't-2'
+      taskId: 't-2',
+      isCompleted: false,
+      isPinned: false,
+    },
+    {
+      id: 'e-4',
+      date: formatIsoDate(new Date(MONDAY.getTime() + 86400000)), // Dienstag
+      startTime: '09:00',
+      endTime: '10:30',
+      taskTitle: 'Review Sprint',
+      type: ScheduleEntry.TypeEnum.Task,
+      taskId: 't-3',
+      isCompleted: false,
+      isPinned: false,
     }
-  ]
+  ],
 };
 
 export const MOCK_SUPERADMIN_INVITATIONS: SuperAdminInvitationResponse[] = [

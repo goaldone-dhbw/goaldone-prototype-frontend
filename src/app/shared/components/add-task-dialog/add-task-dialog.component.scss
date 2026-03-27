@@ -1,5 +1,112 @@
-:host {
+.general, .schedule, .chunk {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.input-row label {
   display: block;
-  width: 50vh;
-  max-width: 400px;
+  margin-bottom: 0.5rem;
+}
+
+.input-row p-inputtext,
+.input-row p-select,
+.input-row p-datepicker,
+.input-row p-inputnumber,
+.input-row textarea,
+.input-row input {
+  width: 100%;
+}
+
+:host ::ng-deep textarea {
+  width: 100%;
+  resize: none;
+}
+
+
+/* Buttons */
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.button-group-left {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.button-group-right {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+:host ::ng-deep .button {
+  width: 100%;
+}
+
+:host ::ng-deep .button-row .p-button {
+  width: auto;
+}
+
+:host ::ng-deep .button-row .p-button button {
+  width: 100%;
+}
+
+.chunk-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.chunk-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chunk-item label {
+  width: 30px;
+}
+
+.schedule {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.input-row label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+:host ::ng-deep .p-checkbox label {
+  margin-left: 0.5rem;
+}
+
+.weekday-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.schedule {
+  margin-top: 0.5rem;
+}
+
+.toggle-field {
+  display: none;
+}
+.toggle-field.active {
+  display: grid;
 }

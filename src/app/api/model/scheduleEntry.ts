@@ -13,10 +13,22 @@
  * Ein eingeplanter Zeitblock im Plan (Task-Block oder Pause)
  */
 export interface ScheduleEntry { 
+    /**
+     * Eindeutige ID dieses Kalenderblocks. Wird für PATCH /schedule/{entryId}/complete und /pin benötigt.
+     */
+    id: string;
     date: string;
     startTime: string;
     endTime: string;
     type: ScheduleEntry.TypeEnum;
+    /**
+     * Gibt an, ob dieser spezifische Kalenderblock abgehakt wurde. Wird über `PATCH /schedule/{entryId}/complete` gesetzt. Bei wiederkehrenden Tasks: nur dieser Block ist erledigt, der Haupt-Task und zukünftige Blöcke bleiben unverändert. 
+     */
+    isCompleted: boolean;
+    /**
+     * Gibt an, ob dieser Block manuell fixiert wurde (`PATCH /schedule/{entryId}/pin`). Gepinnte Blöcke werden beim erneuten Ausführen des Planungsalgorithmus **nicht** überschrieben – sie blockieren weiterhin die entsprechende Zeit. 
+     */
+    isPinned: boolean;
     /**
      * Gesetzt wenn type = TASK
      */

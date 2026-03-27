@@ -21,6 +21,8 @@ api/tasks.service.ts
 api/tasks.serviceInterface.ts
 api/users.service.ts
 api/users.serviceInterface.ts
+api/workingHours.service.ts
+api/workingHours.serviceInterface.ts
 configuration.ts
 encoder.ts
 git_push.sh
@@ -34,6 +36,7 @@ model/createBreakRequest.ts
 model/createInvitationRequest.ts
 model/createOrganizationRequest.ts
 model/createTaskRequest.ts
+model/dayOfWeek.ts
 model/fieldError.ts
 model/generateScheduleRequest.ts
 model/invitationPage.ts
@@ -63,7 +66,10 @@ model/updateMemberRoleRequest.ts
 model/updateOrganizationSettingsRequest.ts
 model/updateTaskRequest.ts
 model/updateUserRequest.ts
+model/upsertWorkingHoursRequest.ts
 model/userResponse.ts
+model/workingHoursDayEntry.ts
+model/workingHoursResponse.ts
 param.ts
 provide-api.ts
 query.params.ts

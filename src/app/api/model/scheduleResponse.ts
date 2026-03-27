@@ -21,6 +21,10 @@ export interface ScheduleResponse {
      * Summe aller eingeplanten Arbeitsminuten im Zeitraum
      */
     totalWorkMinutes: number;
+    /**
+     * Warnungen des Planungsalgorithmus. Leer wenn kein Problem erkannt wurde. Mögliche Einträge (Beispiele): - `\"task-budget-exceeded:uuid\"` – Task passt nicht vollständig ins Tagesbudget - `\"deadline-at-risk:uuid\"` – Task-Deadline kann mit aktuellem Budget nicht eingehalten werden - `\"unschedulable-task:uuid\"` – Task konnte im Zeitraum gar nicht eingeplant werden 
+     */
+    warnings: Array<string>;
     entries: Array<ScheduleEntry>;
 }
 

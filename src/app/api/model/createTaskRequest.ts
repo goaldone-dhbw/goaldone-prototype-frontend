@@ -20,6 +20,10 @@ export interface CreateTaskRequest {
      */
     estimatedDurationMinutes: number;
     deadline?: string | null;
+    /**
+     * Frühestes Startdatum (optional). Der Algorithmus plant den Task nicht vor diesem Datum ein.
+     */
+    startDate?: string | null;
     recurrence?: RecurrenceRule;
 }
 export namespace CreateTaskRequest {
