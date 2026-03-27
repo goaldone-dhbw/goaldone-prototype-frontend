@@ -35,7 +35,10 @@
   @if (facade.hasSchedule()) {
     <p-card class="calendar-card">
       <div class="calendar-wrapper">
-        <app-calendar [entries]="facade.scheduleEntries()"></app-calendar>
+        <app-calendar
+          [entries]="facade.scheduleEntries()"
+          (weekChanged)="onWeekChanged($event)">
+        </app-calendar>
       </div>
     </p-card>
   } @else {

@@ -1,12 +1,20 @@
 <p-dialog
   [visible]="showDialog()"
   (visibleChange)="showDialog.set($event)"
-  header="Aufgabe hinzufügen"
+  [header]="isEditMode() ? 'Aufgabe bearbeiten' : 'Aufgabe hinzufügen'"
   [modal]="true"
   [style]="{ width: '60rem' }"
   [closable]="false">
 
   <form (ngSubmit)="onSubmit()">
+    @if (errorMessage()) {
+      <p-message
+        severity="error"
+        [text]="errorMessage()"
+        styleClass="w-full mb-3">
+      </p-message>
+    }
+
     <p-card class="form-grid">
       <div class="general">
         <div class="input-row">
@@ -113,8 +121,9 @@
             [options]="recurrenceTypes"
             optionLabel="label"
             optionValue="value"
-            [ngModel]="formData().recurrence?.type"
-            (ngModelChange)="updateRecurrence('type', $event)">
+            [(ngModel)]="selectedRecurrenceType"
+            (ngModelChange)="updateRecurrence($event)"
+            [showClear]="false">
           </p-select>
         </div>
       </div>
@@ -167,8 +176,31 @@
       <br>
 
       <div class="button-row full-width">
-        <p-button label="Abbrechen" (click)="showDialog.set(false)"></p-button>
-        <p-button label="Speichern" type="submit" severity="success"></p-button>
+        <div class="button-group-left">
+          @if (isEditMode()) {
+            <p-button
+              label="Löschen"
+              severity="danger"
+              (click)="onDelete()"
+              [disabled]="isSubmitting()"
+              [loading]="isSubmitting()">
+            </p-button>
+          }
+        </div>
+        <div class="button-group-right">
+          <p-button
+            label="Abbrechen"
+            (click)="showDialog.set(false)"
+            [disabled]="isSubmitting()">
+          </p-button>
+          <p-button
+            label="Speichern"
+            type="submit"
+            severity="success"
+            [disabled]="isSubmitting()"
+            [loading]="isSubmitting()">
+          </p-button>
+        </div>
       </div>
     </p-card>
   </form>

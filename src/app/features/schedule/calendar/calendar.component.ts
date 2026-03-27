@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, OnInit, ViewChild } from '@angular/core';
+import { Component, computed, effect, inject, input, OnInit, output, signal, ViewChild } from '@angular/core';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -19,9 +19,13 @@ export class CalendarComponent implements OnInit {
   @ViewChild(AddTaskDialog) addTaskDialog!: AddTaskDialog;
 
   private taskService = inject(TaskService);
+  private lastEmittedRange = signal<{ from: string; to: string } | null>(null);
 
   // Input Signal für ScheduleEntries
   entries = input<ScheduleEntry[]>([]);
+
+  // Output event when week changes
+  weekChanged = output<{ from: string; to: string }>();
 
   // Computed Signal für FullCalendar Events
   calendarEvents = computed(() => {
@@ -62,6 +66,7 @@ export class CalendarComponent implements OnInit {
 
     // Methods
     eventClick: (arg: any) => this.handleEventClick(arg),
+    datesSet: (arg: any) => this.handleDatesSet(arg),
   };
 
   constructor() {
@@ -92,5 +97,26 @@ export class CalendarComponent implements OnInit {
         console.warn(`Task mit ID ${entry.taskId} nicht gefunden.`);
       }
     }
+  }
+
+  handleDatesSet(arg: any) {
+    // Get the start and end dates of the current view
+    // Extract just the date part (YYYY-MM-DD) to ensure consistent format for the backend
+    const from = this.formatDateString(arg.startStr);
+    const to = this.formatDateString(arg.endStr);
+    const currentRange = { from, to };
+    const lastRange = this.lastEmittedRange();
+
+    // Only emit if the range has actually changed (prevent duplicate API calls)
+    if (!lastRange || lastRange.from !== from || lastRange.to !== to) {
+      this.lastEmittedRange.set(currentRange);
+      this.weekChanged.emit(currentRange);
+    }
+  }
+
+  private formatDateString(dateString: string): string {
+    // Extract just the date part (YYYY-MM-DD) from any date format
+    // Handles both "2026-03-30" and "2026-03-30T00:00:00+02:00"
+    return dateString.split('T')[0];
   }
 }

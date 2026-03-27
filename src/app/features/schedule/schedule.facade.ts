@@ -51,14 +51,21 @@ export class ScheduleFacadeService {
    */
   public loadCurrentWeek() {
     const { from, to } = this.getCurrentWeekRange();
+    return this.loadWeek(from, to);
+  }
+
+  /**
+   * Lädt den Plan für eine spezifische Woche
+   */
+  public loadWeek(from: string, to: string) {
     this._isLoading.set(true);
-    
+
     return this.scheduleService.getSchedule(from, to)
       .pipe(
         tap(response => {
           this._scheduleEntries.set(response.entries || []);
           // Warnungen nur aktualisieren, wenn die API explizit welche zurückgibt.
-          // Das verhindert, dass Warnungen aus einer vorherigen Generierung 
+          // Das verhindert, dass Warnungen aus einer vorherigen Generierung
           // durch eine leere Liste der Wochenansicht gelöscht werden.
           if (response.warnings && response.warnings.length > 0) {
             this._warnings.set(response.warnings);

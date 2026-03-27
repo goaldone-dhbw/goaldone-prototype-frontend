@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { DialogModule } from 'primeng/dialog';
@@ -16,11 +16,13 @@ import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { CheckboxModule } from 'primeng/checkbox';
+import { MessageModule } from 'primeng/message';
 
 import { TaskModel } from '../../models/task.model';
 import { TaskState } from '../../models/task-state.model';
 import { TaskDifficultyModel } from '../../models/task-difficulty.model';
 import { RecurrenceRule, RecurrenceType } from '../../../api';
+import { TaskService } from '../../services/task.service';
 
 @Component({
   selector: 'app-add-task-dialog',
@@ -38,12 +40,15 @@ import { RecurrenceRule, RecurrenceType } from '../../../api';
     FloatLabelModule,
     DatePickerModule,
     CheckboxModule,
+    MessageModule,
   ],
   templateUrl: './add-task-dialog.component.html',
   styleUrls: ['./add-task-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 class AddTaskDialog {
+  private taskService = inject(TaskService);
+
   protected taskStates = Object.values(TaskState).map((status) => ({
     label: status,
     value: status,
@@ -54,16 +59,19 @@ class AddTaskDialog {
     value: difficulty,
   }));
 
+  protected showDialog = signal(false);
+  protected estimatedTimeString = signal<string>('');
+  protected errorMessage = signal<string | undefined>(undefined);
+  protected isSubmitting = signal(false);
+  protected isEditMode = signal(false);
+  protected selectedRecurrenceType = signal<RecurrenceType | null>(null);
+
   isValidTime(value: string | null): boolean {
     if (!value) return false;
 
     const regex = /^([0-1]?\d|2[0-3]):[0-5]\d$/;
     return regex.test(value);
   }
-
-  protected showDialog = signal(false);
-
-  protected estimatedTimeString = signal<string>('');
 
   formatEstimatedTime(minutes: number | undefined): string {
     if (!minutes) return '';
@@ -129,14 +137,88 @@ class AddTaskDialog {
     });
   }
 
+  private validateForm(): string | undefined {
+    const formData = this.formData();
+
+    // Check required fields
+    if (!formData.title || formData.title.trim() === '') {
+      return 'Titel ist erforderlich';
+    }
+
+    if (!formData.status) {
+      return 'Status ist erforderlich';
+    }
+
+    if (formData.estimatedTime <= 0) {
+      return 'Geschätzte Zeit muss größer als 0 Minuten sein';
+    }
+
+    return undefined;
+  }
+
   onSubmit() {
-    console.log('Form eingereicht:', this.formData());
-    this.showDialog.set(false);
+    this.errorMessage.set(undefined);
+
+    const validationError = this.validateForm();
+    if (validationError) {
+      this.errorMessage.set(validationError);
+      return;
+    }
+
+    this.isSubmitting.set(true);
+    const formData = this.formData();
+    const submitObservable = this.isEditMode()
+      ? this.taskService.updateTaskInDB(formData)
+      : this.taskService.saveTaskToDB(formData);
+
+    submitObservable.subscribe({
+      next: () => {
+        this.isSubmitting.set(false);
+        this.showDialog.set(false);
+        this.setData(null);
+        this.isEditMode.set(false);
+      },
+      error: (err) => {
+        this.isSubmitting.set(false);
+        const errorMsg = err?.error?.detail || 'Fehler beim Speichern der Aufgabe';
+        this.errorMessage.set(errorMsg);
+        console.error('Error saving task:', err);
+      }
+    });
   }
 
   openDialog(taskData: TaskModel | null) {
+    this.isEditMode.set(taskData !== null);
     this.setData(taskData);
     this.showDialog.set(true);
+  }
+
+  onDelete() {
+    const taskId = this.formData().id;
+    if (!taskId) {
+      this.errorMessage.set('Task-ID nicht gefunden');
+      return;
+    }
+
+    if (!confirm('Möchten Sie diese Aufgabe wirklich löschen?')) {
+      return;
+    }
+
+    this.isSubmitting.set(true);
+    this.taskService.deleteTaskFromDB(taskId).subscribe({
+      next: () => {
+        this.isSubmitting.set(false);
+        this.showDialog.set(false);
+        this.setData(null);
+        this.isEditMode.set(false);
+      },
+      error: (err) => {
+        this.isSubmitting.set(false);
+        const errorMsg = err?.error?.detail || 'Fehler beim Löschen der Aufgabe';
+        this.errorMessage.set(errorMsg);
+        console.error('Error deleting task:', err);
+      }
+    });
   }
 
   private getDefaultFormData(): TaskModel {
@@ -154,10 +236,7 @@ class AddTaskDialog {
       chunks: ['00:00'],
       enableScheduleStart: false,
       scheduleStartDate: undefined,
-      recurrence: {
-        type: RecurrenceType.Daily,
-        interval: 1,
-      },
+      recurrence: undefined,
     };
   }
 
@@ -188,6 +267,7 @@ class AddTaskDialog {
     const chunks = data.chunks?.length ? data.chunks : ['00:00'];
 
     this.estimatedTimeString.set(this.formatEstimatedTime(data.estimatedTime));
+    this.selectedRecurrenceType.set(data.recurrence?.type ?? null);
 
     this.formData.set({
       ...data,
@@ -198,16 +278,28 @@ class AddTaskDialog {
   }
 
   protected recurrenceTypes = [
+    { label: 'Keine Wiederholung', value: null },
     { label: 'Täglich', value: RecurrenceType.Daily },
     { label: 'Wöchentlich', value: RecurrenceType.Weekly },
     { label: 'Monatlich', value: RecurrenceType.Monthly },
   ];
 
-  updateRecurrence<K extends keyof RecurrenceRule>(field: K, value: RecurrenceRule[K]) {
-    this.formData.update((fd) => {
-      const rec = { ...fd.recurrence!, [field]: value };
+  updateRecurrence(type: RecurrenceType | null) {
+    this.selectedRecurrenceType.set(type);
 
-      return { ...fd, recurrence: rec };
+    this.formData.update((fd) => {
+      if (type === null) {
+        return { ...fd, recurrence: undefined };
+      }
+
+      const currentRecurrence = fd.recurrence || { type, interval: 1 };
+      return {
+        ...fd,
+        recurrence: {
+          ...currentRecurrence,
+          type,
+        }
+      };
     });
   }
 

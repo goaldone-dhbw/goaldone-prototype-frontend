@@ -4,6 +4,7 @@ import { TaskDifficultyModel } from '../models/task-difficulty.model';
 import { TaskState } from '../models/task-state.model';
 import { TasksService as TasksApiService } from '../../api/api/tasks.service';
 import { CreateTaskRequest } from '../../api/model/createTaskRequest';
+import { UpdateTaskRequest } from '../../api/model/updateTaskRequest';
 import { CognitiveLoad } from '../../api/model/cognitiveLoad';
 import { TaskStatus } from '../../api/model/taskStatus';
 import { TaskResponse } from '../../api/model/taskResponse';
@@ -28,15 +29,42 @@ export class TaskService {
       recurrence: task.recurrence,
     };
 
-    this.tasksApiService.createTask(request).subscribe({
-      next: (response) => {
-        // Optional: Den neu erstellten Task lokal hinzufügen oder die Liste neu laden
+    return this.tasksApiService.createTask(request).pipe(
+      map((response) => {
         this.loadTasksFromDB();
-      },
-      error: (err) => {
-        console.error('Error saving task:', err);
-      }
-    });
+        return response;
+      })
+    );
+  }
+
+  updateTaskInDB(task: TaskModel) {
+    if (!task.id) {
+      throw new Error('Task ID is required for update');
+    }
+
+    const request: UpdateTaskRequest = {
+      title: task.title,
+      description: task.description,
+      estimatedDurationMinutes: task.estimatedTime,
+      cognitiveLoad: this.mapDifficultyToCognitiveLoad(task.difficulty),
+      deadline: task.deadline?.toISOString(),
+      recurrence: task.recurrence,
+    };
+
+    return this.tasksApiService.updateTask(task.id, request).pipe(
+      map((response) => {
+        this.loadTasksFromDB();
+        return response;
+      })
+    );
+  }
+
+  deleteTaskFromDB(taskId: string) {
+    return this.tasksApiService.deleteTask(taskId).pipe(
+      map(() => {
+        this.loadTasksFromDB();
+      })
+    );
   }
 
   loadTasksFromDB() {
