@@ -11,15 +11,11 @@
 
 export interface GenerateScheduleRequest { 
     /**
-     * Startdatum des zu planenden Zeitraums (ISO 8601). Empfehlung: immer ein Montag, damit der Algorithmus vollständige Wochen plant. 
+     * Startdatum der Planung (ISO 8601). Der Algorithmus plant ab diesem Datum so viele Tage wie nötig, bis alle einmaligen Tasks eingeplant sind. Das Enddatum ergibt sich dynamisch aus der Response (`to`-Feld). Empfehlung: Montag, damit vollständige Wochen geplant werden. 
      */
     from: string;
     /**
-     * Enddatum des zu planenden Zeitraums (ISO 8601). Der Zeitraum beträgt **immer genau 14 Tage** (`from` + 13 Tage). Kürzere oder längere Fenster werden serverseitig mit `400` abgelehnt. 
-     */
-    to: string;
-    /**
-     * Maximale kognitive Arbeitszeit pro Tag in Minuten. Default: 240 (4h, basierend auf wissenschaftlicher Empfehlung aus Anforderungsdokument)
+     * Maximale kognitive Arbeitszeit pro Tag in Minuten (Default: 240 = 4h). RecurringTemplate-Dauer wird zusätzlich abgezogen – das effektive Budget für einmalige Tasks kann also kleiner sein. 
      */
     maxDailyWorkMinutes?: number;
 }

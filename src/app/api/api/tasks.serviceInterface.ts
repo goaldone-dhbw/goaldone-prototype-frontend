@@ -29,7 +29,7 @@ export interface TasksServiceInterface {
 
     /**
      * Task global als erledigt markieren (Backlog-Ansicht)
-     * Setzt den Status des Tasks auf &#x60;DONE&#x60; und setzt &#x60;completedAt&#x60;.  **Wichtiger Unterschied zur Entry-Completion:** Dieser Endpunkt markiert den **gesamten Task** dauerhaft als erledigt – unabhängig davon, ob er wiederkehrend ist. Bei wiederkehrenden Tasks sollte stattdessen &#x60;PATCH /schedule/{entryId}/complete&#x60; verwendet werden, um nur einen einzelnen Kalenderblock abzuhaken und den Task für die Zukunft zu erhalten.  Dieser Endpunkt ist primär für die **Backlog-Ansicht** gedacht (z.B. um einen Task manuell zu schließen, ohne ihn im Tagesplan abzuhaken). 
+     * Setzt den Status des Tasks auf &#x60;DONE&#x60; und setzt &#x60;completedAt&#x60;.  Einmalige Tasks können hierüber dauerhaft als erledigt markiert werden. Für wiederkehrende Aufgaben existiert kein &#x60;Task&#x60;-Objekt mehr – einzelne Vorkommen werden über &#x60;POST /schedule/recurring/{templateId}/exceptions&#x60; mit &#x60;type: COMPLETED&#x60; abgehakt.  Dieser Endpunkt ist primär für die **Backlog-Ansicht** gedacht (z.B. um einen Task manuell zu schließen, ohne ihn im Tagesplan abzuhaken). 
      * @endpoint patch /tasks/{taskId}/complete
      * @param taskId UUID des Tasks
      */

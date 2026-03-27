@@ -42,14 +42,14 @@ export interface BreaksServiceInterface {
 
     /**
      * Eigene Pausen abrufen
-     * Gibt alle konfigurierten Pausen des eingeloggten Nutzers zurück.
+     * Erstellt eine neue Pause. Das Verhalten hängt vom &#x60;breakType&#x60; ab: - &#x60;ONE_TIME&#x60; – einmalig an &#x60;date&#x60;, keine Wiederholung. - &#x60;RECURRING&#x60; – wiederkehrend ohne Enddatum. - &#x60;BOUNDED_RECURRING&#x60; – wiederkehrend nur zwischen &#x60;validFrom&#x60; und &#x60;validUntil&#x60;.  Der Planungsalgorithmus berücksichtigt die Pause ab dem nächsten &#x60;POST /schedule/generate&#x60; automatisch als Budgetabzug. 
      * @endpoint get /breaks
      */
     listBreaks(extraHttpRequestParams?: any): Observable<Array<BreakResponse>>;
 
     /**
      * Pause aktualisieren
-     * 
+     * Ersetzt eine Pause vollständig (PUT-Semantik). &#x60;breakType&#x60; kann geändert werden – dabei müssen alle Felder des neuen Typs gesetzt und die alten auf null gesetzt werden. 
      * @endpoint put /breaks/{breakId}
      * @param breakId UUID der Pause
      * @param createBreakRequest 

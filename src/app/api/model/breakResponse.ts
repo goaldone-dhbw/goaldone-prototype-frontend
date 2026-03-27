@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 import { RecurrenceRule } from './recurrenceRule';
+import { BreakType } from './breakType';
 
 
 export interface BreakResponse { 
@@ -21,6 +22,22 @@ export interface BreakResponse {
      * Uhrzeit im Format HH:mm
      */
     endTime: string;
-    recurrence: RecurrenceRule;
+    breakType: BreakType;
+    recurrence?: RecurrenceRule;
+    /**
+     * Nur gesetzt wenn breakType = ONE_TIME. Datum des einmaligen Vorkommens. 
+     */
+    date?: string | null;
+    /**
+     * Nur gesetzt wenn breakType = BOUNDED_RECURRING. Erster Tag, an dem die Pause gilt (inklusiv). 
+     */
+    validFrom?: string | null;
+    /**
+     * Nur gesetzt wenn breakType = BOUNDED_RECURRING. Letzter Tag, an dem die Pause gilt (inklusiv). 
+     */
+    validUntil?: string | null;
 }
+export namespace BreakResponse {
+}
+
 

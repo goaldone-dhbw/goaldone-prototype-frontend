@@ -10,23 +10,38 @@
 
 
 /**
- * Ein eingeplanter Zeitblock im Plan (Task-Block oder Pause)
+ * Ein Zeitblock im Kalender. Kann ein echter DB-Eintrag (`source: ONE_TIME`) oder ein virtuell berechnetes Vorkommen eines RecurringTemplate (`source: RECURRING`) sein. Das `source`-Feld bestimmt, welche Felder gesetzt sind und welche Endpunkte das Frontend für Aktionen aufrufen muss. 
  */
 export interface ScheduleEntry { 
     /**
-     * Eindeutige ID dieses Kalenderblocks. Wird für PATCH /schedule/{entryId}/complete und /pin benötigt.
+     * Diskriminator-Feld. - `ONE_TIME`: echter ScheduleEntry in der DB. `entryId` ist gesetzt.   Aktionen über `PATCH /schedule/{entryId}/complete|pin|unpin`. - `RECURRING`: virtuelles Vorkommen, on-the-fly berechnet. `templateId`   und `occurrenceDate` sind gesetzt.   Aktionen über `POST /schedule/recurring/{templateId}/exceptions`. 
      */
-    id: string;
+    source: ScheduleEntry.SourceEnum;
+    /**
+     * Nur gesetzt wenn `source = ONE_TIME`. Wird für `PATCH /schedule/{entryId}/complete`, `/pin` und `/unpin` benötigt. 
+     */
+    entryId?: string | null;
+    /**
+     * Nur gesetzt wenn `source = RECURRING`. Wird für `POST /schedule/recurring/{templateId}/exceptions` benötigt. 
+     */
+    templateId?: string | null;
+    /**
+     * Nur gesetzt wenn `source = RECURRING`. Identifiziert das konkrete Vorkommen für RecurringException-Operationen. 
+     */
+    occurrenceDate?: string | null;
+    /**
+     * Datum des Eintrags (bei RESCHEDULED das neue Datum)
+     */
     date: string;
     startTime: string;
     endTime: string;
     type: ScheduleEntry.TypeEnum;
     /**
-     * Gibt an, ob dieser spezifische Kalenderblock abgehakt wurde. Wird über `PATCH /schedule/{entryId}/complete` gesetzt. Bei wiederkehrenden Tasks: nur dieser Block ist erledigt, der Haupt-Task und zukünftige Blöcke bleiben unverändert. 
+     * Gibt an, ob dieser Block abgehakt wurde. - `ONE_TIME`: gesetzt via `PATCH /schedule/{entryId}/complete` - `RECURRING`: gesetzt via `POST /schedule/recurring/{templateId}/exceptions`   mit `type: COMPLETED` 
      */
     isCompleted: boolean;
     /**
-     * Gibt an, ob dieser Block manuell fixiert wurde (`PATCH /schedule/{entryId}/pin`). Gepinnte Blöcke werden beim erneuten Ausführen des Planungsalgorithmus **nicht** überschrieben – sie blockieren weiterhin die entsprechende Zeit. 
+     * Gibt an, ob dieser Block fixiert wurde. - `ONE_TIME`: gesetzt via `PATCH /schedule/{entryId}/pin` - `RECURRING`: gesetzt via `POST /schedule/recurring/{templateId}/exceptions`   mit `type: PINNED` 
      */
     isPinned: boolean;
     /**
@@ -38,15 +53,24 @@ export interface ScheduleEntry {
      */
     taskTitle?: string | null;
     /**
-     * Gesetzt wenn type = BREAK
+     * Gesetzt wenn type = BREAK (nur bei source = ONE_TIME)
      */
     breakId?: string | null;
     /**
      * Gesetzt wenn type = BREAK (Convenience-Feld)
      */
     breakLabel?: string | null;
+    /**
+     * Nur gesetzt wenn source = RECURRING (Convenience-Feld)
+     */
+    templateTitle?: string | null;
 }
 export namespace ScheduleEntry {
+    export const SourceEnum = {
+        OneTime: 'ONE_TIME',
+        Recurring: 'RECURRING'
+    } as const;
+    export type SourceEnum = typeof SourceEnum[keyof typeof SourceEnum];
     export const TypeEnum = {
         Task: 'TASK',
         Break: 'BREAK'
