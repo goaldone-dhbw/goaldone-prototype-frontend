@@ -3,15 +3,20 @@ import { Role, UserResponse, TaskResponse, OrganizationResponse, MemberResponse,
 // Hilfsfunktion für das aktuelle Datum (Montag der Woche)
 const getMonday = (date: Date): Date => {
   const d = new Date(date);
-  const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-  d.setDate(diff);
   d.setHours(0, 0, 0, 0);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
   return d;
 };
 
 const MONDAY = getMonday(new Date());
 const formatIsoDate = (d: Date) => d.toISOString().split('T')[0];
+const relativeDate = (days: number) => {
+  const d = new Date(MONDAY);
+  d.setDate(MONDAY.getDate() + days);
+  return formatIsoDate(d);
+};
 
 export const MOCK_USERS: Record<string, UserResponse> = {
   'user@goaldone.de': {
@@ -151,7 +156,7 @@ export const MOCK_BREAKS: BreakResponse[] = [
 export const MOCK_SCHEDULE: ScheduleResponse = {
   generatedAt: new Date().toISOString(),
   from: formatIsoDate(MONDAY),
-  to: formatIsoDate(new Date(MONDAY.getTime() + 13 * 86400000)),
+  to: relativeDate(13),
   totalWorkMinutes: 480,
   warnings: [
     'unschedulable-task:t-1',
@@ -161,7 +166,7 @@ export const MOCK_SCHEDULE: ScheduleResponse = {
     {
       source: 'ONE_TIME',
       entryId: 'e-1',
-      date: formatIsoDate(MONDAY),
+      date: relativeDate(0),
       startTime: '09:00',
       endTime: '12:00',
       taskTitle: 'Welcome to Goaldone',
@@ -173,7 +178,7 @@ export const MOCK_SCHEDULE: ScheduleResponse = {
     {
       source: 'ONE_TIME',
       entryId: 'e-2',
-      date: formatIsoDate(MONDAY),
+      date: relativeDate(0),
       startTime: '12:00',
       endTime: '13:00',
       breakLabel: 'Lunch Break',
@@ -185,7 +190,7 @@ export const MOCK_SCHEDULE: ScheduleResponse = {
     {
       source: 'ONE_TIME',
       entryId: 'e-3',
-      date: formatIsoDate(MONDAY),
+      date: relativeDate(0),
       startTime: '13:00',
       endTime: '17:00',
       taskTitle: 'Plan your week',
@@ -197,7 +202,7 @@ export const MOCK_SCHEDULE: ScheduleResponse = {
     {
       source: 'ONE_TIME',
       entryId: 'e-4',
-      date: formatIsoDate(new Date(MONDAY.getTime() + 86400000)), // Dienstag
+      date: relativeDate(1), // Dienstag
       startTime: '09:00',
       endTime: '10:30',
       taskTitle: 'Review Sprint',

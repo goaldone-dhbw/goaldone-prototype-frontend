@@ -1,26 +1,25 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Card } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DatePicker } from 'primeng/datepicker';
 import { Select } from 'primeng/select';
+import { CheckboxModule } from 'primeng/checkbox';
 import { WorkingHoursModel } from '../../shared/models/working-hours.model';
-import { DayOfWeek} from '../../api';
-
+import { DayOfWeek } from '../../api';
 import { WorkingHoursService } from '../../shared/services/working-hours.service';
-
 
 @Component({
   selector: 'app-working-hours-page',
   standalone: true,
-  imports: [Card, ButtonModule, ReactiveFormsModule, FormsModule, DatePicker, Select],
+  imports: [Card, ButtonModule, ReactiveFormsModule, FormsModule, DatePicker, Select, CheckboxModule],
   styleUrl: 'working-hours.page.scss',
   templateUrl: 'working-hours.page.html',
 })
-export class WorkingHoursPage {
+export class WorkingHoursPage implements OnInit {
   title: string = 'Arbeitszeiten und Pausen';
 
-  service = inject(WorkingHoursService)
+  service = inject(WorkingHoursService);
 
   workingHours: WorkingHoursModel[] = [];
 
@@ -30,15 +29,26 @@ export class WorkingHoursPage {
 
   days = Object.values(DayOfWeek).map(dayOfWeek => ({
     label: this.capitalize(dayOfWeek),
-    value: this.capitalize(dayOfWeek),
-  }))
+    value: dayOfWeek,
+  }));
+
+  ngOnInit() {
+    this.service.getWorkingHours().subscribe({
+      next: (hours) => {
+        this.workingHours = hours;
+      },
+      error: (err) => {
+        console.error('Error loading working hours:', err);
+      }
+    });
+  }
 
   addWorkingHours() {
     this.workingHours.push({
-      startDay: null,
-      endDay: null,
-      startHour: null,
-      endHour: null,
+      startTime: null,
+      endTime: null,
+      isWorkDay: true,
+      dayOfWeek: null,
     });
   }
 
@@ -47,6 +57,13 @@ export class WorkingHoursPage {
   }
 
   protected saveWorkingHours() {
-    this.service.saveWorkingHours(this.workingHours);
+    this.service.saveWorkingHours(this.workingHours).subscribe({
+      next: () => {
+        console.log('Working hours saved successfully');
+      },
+      error: (err) => {
+        console.error('Error saving working hours:', err);
+      }
+    });
   }
 }

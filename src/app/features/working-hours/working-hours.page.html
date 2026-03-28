@@ -25,37 +25,40 @@
 
           <label>{{ i + 1 }}.</label>
 
-          <!-- Start Day -->
+          <!-- Day of Week -->
           <p-select
             [options]="days"
-            [(ngModel)]="c.startDay"
-            placeholder="Starttag"
+            [(ngModel)]="c.dayOfWeek"
+            placeholder="Wochentag"
             optionLabel="label"
             optionValue="value">
           </p-select>
 
-          <!-- End Day -->
-          <p-select
-            [options]="days"
-            [(ngModel)]="c.endDay"
-            placeholder="Endtag"
-            optionLabel="label"
-            optionValue="value">
-          </p-select>
+          <!-- Is Work Day -->
+          <div class="flex items-center gap-2">
+            <p-checkbox
+              [(ngModel)]="c.isWorkDay"
+              [binary]="true"
+              inputId="isWorkDay{{i}}">
+            </p-checkbox>
+            <label for="isWorkDay{{i}}">Arbeitstag</label>
+          </div>
 
           <!-- Start Hour -->
           <p-datePicker
-            [(ngModel)]="c.startHour"
+            [(ngModel)]="c.startTime"
             [timeOnly]="true"
             hourFormat="24"
+            [disabled]="!c.isWorkDay"
             placeholder="Startzeit">
           </p-datePicker>
 
           <!-- End Hour -->
           <p-datePicker
-            [(ngModel)]="c.endHour"
+            [(ngModel)]="c.endTime"
             [timeOnly]="true"
             hourFormat="24"
+            [disabled]="!c.isWorkDay"
             placeholder="Endzeit">
           </p-datePicker>
 
@@ -75,5 +78,6 @@
   <br>
 
   <p-card class="breaks-container" header="Pausen">
+    <p>Pausen werden in Kürze hier konfiguriert.</p>
   </p-card>
 </div>

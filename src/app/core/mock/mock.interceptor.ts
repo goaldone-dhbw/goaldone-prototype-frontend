@@ -96,6 +96,16 @@ export function mockInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
   }
 
   if (url.endsWith('/schedule') && method === 'GET') {
+    const from = req.params.get('from');
+    const to = req.params.get('to');
+
+    if (from && to) {
+      const filteredEntries = MOCK_SCHEDULE.entries.filter(entry => {
+        return entry.date >= from && entry.date <= to;
+      });
+      return ok({ ...MOCK_SCHEDULE, entries: filteredEntries, from, to });
+    }
+
     return ok(MOCK_SCHEDULE);
   }
 

@@ -18,9 +18,9 @@
 .working-hour-item {
   display: grid;
   grid-template-columns:
-    auto        /* Nummer */
-    1fr         /* Start Day */
-    1fr         /* End Day */
+    30px        /* Nummer */
+    1.5fr       /* Day of Week */
+    1fr         /* Is Work Day */
     1fr         /* Start Time */
     1fr         /* End Time */
     auto;       /* Delete Button */
@@ -36,11 +36,16 @@
   align-items: center;
 }
 
+.flex {
+  display: flex;
+}
 
-.working-hour-item label {
-  width: 30px;
-  display: inline-block;
-  text-align: center;
+.items-center {
+  align-items: center;
+}
+
+.gap-2 {
+  gap: 0.5rem;
 }
 
 p-select,
