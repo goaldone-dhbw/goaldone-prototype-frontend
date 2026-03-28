@@ -34,6 +34,12 @@ export const routes: Routes = [
                     import('./features/schedule/schedule.page').then((m) => m.SchedulePage),
             },
             {
+              path: 'working-hours',
+              canActivate: [excludeRolesGuard([Role.SuperAdmin], '/app/super-admin')],
+              loadComponent: () =>
+                import('./features/working-hours/working-hours.page').then((m) => m.WorkingHoursPage),
+            },
+            {
                 path: 'organization',
                 canActivate: [roleGuard([Role.Admin])],
                 loadComponent: () =>

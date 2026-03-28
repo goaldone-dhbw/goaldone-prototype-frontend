@@ -30,6 +30,11 @@ export class AppSidebarComponent {
             icon: 'pi pi-list-check',
             routerLink: '/app/schedule',
         },
+        {
+          label: 'Arbeitszeiten & Pausen',
+          icon: 'pi pi-clock',
+          routerLink: '/app/working-hours',
+        }
     ];
 
     protected settingsItems = computed<MenuItem[]>(() => {
