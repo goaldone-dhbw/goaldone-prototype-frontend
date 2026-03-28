@@ -1,12 +1,34 @@
 <main class="landing-wrapper">
-  <p-card header="Goaldone" subheader="Landingpage ohne Sidebar">
-    <p>
-      Die Sidebar wird nur im App-Bereich gerendert. Von hier aus kommst du in den
-      Bereich mit Child-Routing.
-    </p>
 
-    <ng-template pTemplate="footer">
-      <p-button label="Zur App" icon="pi pi-arrow-right" routerLink="/app"></p-button>
-    </ng-template>
-  </p-card>
+  <section class="header">
+    <h1 class="title">Goaldone</h1>
+    <p class="subtitle">
+      Intelligente Aufgabenplanung für strukturierte Arbeitstage und mehr Überblick.
+    </p>
+  </section>
+
+  <section class="image-section">
+
+    <p-card class="image-card">
+      <img src="/landingpage/landingpage-mainpage.jpg" alt="Mainpage" />
+    </p-card>
+
+    <p-card class="image-card">
+      <img src="/landingpage/landingpage-wochenplan.jpg" alt="Wochenplan" />
+    </p-card>
+
+  </section>
+
+  <section class="cta">
+    <p class="cta-text">Hier geht's zu deinem persönlichen Arbeitsbereich</p>
+
+    <p-button
+      label="Zur App"
+      icon="pi pi-arrow-right"
+      routerLink="/app"
+      styleClass="cta-button"
+    ></p-button>
+  </section>
+
 </main>
+

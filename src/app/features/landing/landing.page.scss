@@ -1,17 +1,128 @@
 :host {
   display: block;
-  min-height: 100dvh;
-  background: var(--p-surface-ground);
+  height: 100dvh; /* volle Bildschirmhöhe */
+  overflow: hidden; /* kein Scrollen */
+  background: linear-gradient(
+      to bottom,
+      var(--p-surface-ground),
+      var(--p-surface-100)
+  );
 }
 
 .landing-wrapper {
-  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between; /* verteilt Header, Images, CTA gleichmäßig */
+  padding: 1rem; /* kleinerer Padding für kleine Bildschirme */
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* HERO */
+.header {
+  text-align: center;
+  max-width: 700px;
+  flex-shrink: 0; /* Header schrumpft nicht zu stark */
+}
+
+.title {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 700;
+  margin: 0;
+  color: var(--p-text-color);
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  margin-top: 0.5rem;
+  font-size: clamp(0.8rem, 1.2vw, 1rem);
+  color: var(--p-text-color-secondary);
+  line-height: 1.4;
+}
+
+/* IMAGE SECTION */
+.image-section {
   display: grid;
-  place-items: center;
-  padding: 1.5rem;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(0.5rem, 2vw, 2rem);
+  width: 90%;
+  flex-grow: 1; /* nimmt den mittleren Raum ein */
+  align-items: center;
+  justify-items: center;
+  min-height: 0; /* wichtig, damit flex-grow korrekt skaliert */
 }
 
-:host ::ng-deep .p-card {
-  max-width: 36rem;
+.image-card {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--p-border-radius-xl);
+  box-shadow: var(--p-shadow-3);
+  overflow: hidden;
+  transition: all 0.25s ease;
+  position: relative;
+  background: var(--p-surface-0);
+  border: 1px solid var(--p-surface-200);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.image-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.image-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--p-shadow-4);
+}
+
+/* CTA */
+.cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.5rem, 1vw, 0.8rem);
+  flex-shrink: 0; /* CTA immer sichtbar */
+}
+
+.cta-text {
+  font-size: clamp(0.9rem, 1vw, 1.05rem);
+  color: var(--p-text-color);
+  font-weight: 500;
+}
+
+.cta-button {
+  border-radius: var(--p-border-radius-lg);
+  box-shadow: var(--p-shadow-2);
+  padding: clamp(0.5rem, 1vw, 0.7rem) clamp(1rem, 2vw, 1.6rem);
+  font-size: clamp(0.8rem, 1vw, 0.95rem);
+  transition: all 0.2s ease;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--p-shadow-3);
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .image-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .landing-wrapper {
+    padding: 0.5rem;
+    gap: 1rem;
+  }
+
+  .title {
+    font-size: clamp(1.2rem, 5vw, 2rem);
+  }
+}
