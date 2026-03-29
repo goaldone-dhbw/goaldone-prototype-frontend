@@ -74,7 +74,6 @@ export class WorkingHoursPage {
     this.workingHours.update((hours) => hours.filter((_, i) => i !== index));
   }
 
-  // ...existing code...
 
   saveWorkingHours() {
     if (this.validate()) {
@@ -91,7 +90,7 @@ export class WorkingHoursPage {
     for (let i = 0; i < this.workingHours().length; i++) {
       const entry = this.workingHours()[i];
 
-      // 1. Prüfen auf fehlende Eingaben
+      // Check missing entries
       if (!entry.startDay || !entry.endDay || !entry.startHour || !entry.endHour) {
         this.messageService.add({
           severity: 'error',
@@ -102,7 +101,7 @@ export class WorkingHoursPage {
         continue;
       }
 
-      // 2. Prüfen, ob Startzeit vor Endzeit liegt
+      // Check order of time
       const startTime = entry.startHour.getHours() * 60 + entry.startHour.getMinutes();
       const endTime = entry.endHour.getHours() * 60 + entry.endHour.getMinutes();
 
@@ -115,7 +114,7 @@ export class WorkingHoursPage {
         isValid = false;
       }
 
-      // 3. Prüfen auf Dopplungen von Tagen
+      // Check order of days
       const startIndex = daysOfWeek.indexOf(entry.startDay);
       const endIndex = daysOfWeek.indexOf(entry.endDay);
 
@@ -132,7 +131,7 @@ export class WorkingHoursPage {
         coveredDays.add(currentDay);
 
         if (currentDay === endIndex) break;
-        currentDay = (currentDay + 1) % 7; // Wraparound am Wochenende (Sonntag zu Montag)
+        currentDay = (currentDay + 1) % 7; // Wraparound for weekends
       }
     }
 
