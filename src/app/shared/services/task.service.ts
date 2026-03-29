@@ -57,9 +57,9 @@ export class TaskService {
       switchMap((response) => {
         const currentStatus = this.mapStatusToState(response.status);
         if (task.status === TaskState.DONE && currentStatus !== TaskState.DONE) {
-          return this.tasksApiService.completeTask(task.id!).pipe(map(r => r));
-        } else if (task.status === TaskState.OPEN && currentStatus === TaskState.DONE) {
-          return this.tasksApiService.reopenTask(task.id!).pipe(map(r => r));
+          return this.tasksApiService.completeTask(task.id!);
+        } else if (task.status !== TaskState.DONE && currentStatus === TaskState.DONE) {
+          return this.tasksApiService.reopenTask(task.id!);
         }
         return of(response);
       }),

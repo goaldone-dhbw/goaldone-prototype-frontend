@@ -37,7 +37,8 @@
       <div class="calendar-wrapper">
         <app-calendar
           [entries]="facade.scheduleEntries()"
-          (weekChanged)="onWeekChanged($event)">
+          (weekChanged)="onWeekChanged($event)"
+          (saved)="onTaskSaved($event)">
         </app-calendar>
       </div>
     </p-card>

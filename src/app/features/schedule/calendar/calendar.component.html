@@ -1,7 +1,8 @@
 <div>
   <full-calendar
-    [options]="calendarOptions">
+    [options]="calendarOptions"
+    [events]="calendarEvents()">
   </full-calendar>
 </div>
 
-<app-add-task-dialog></app-add-task-dialog>
+<app-add-task-dialog (saved)="onDialogSaved()"></app-add-task-dialog>

@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, OnInit, output, signal, ViewChild } from '@angular/core';
+import { Component, computed, inject, input, OnInit, output, signal, ViewChild } from '@angular/core';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -8,6 +8,7 @@ import { TaskService } from '../../../shared/services/task.service';
 import { RecurringTemplateService } from '../../../shared/services/recurring-template.service';
 import { ScheduleEntry } from '../../../api';
 import { AddTaskDialogComponent } from '../../../shared/components/add-task-dialog/add-task-dialog.component';
+import { TaskState } from '../../../shared/models/task-state.model';
 
 @Component({
   selector: 'app-calendar',
@@ -26,23 +27,37 @@ export class CalendarComponent implements OnInit {
   // Input Signal für ScheduleEntries
   entries = input<ScheduleEntry[]>([]);
 
-  // Output event when week changes
+  // Output events
   weekChanged = output<{ from: string; to: string }>();
+  saved = output<{ from: string; to: string }>();
+
+  // Lookup: taskId → TaskState für Farbbestimmung
+  private taskStatusMap = computed(() => {
+    const map = new Map<string, TaskState>();
+    for (const task of this.taskService.loadedTasks()) {
+      if (task.id) map.set(task.id, task.status);
+    }
+    return map;
+  });
 
   // Computed Signal für FullCalendar Events
   calendarEvents = computed(() => {
-    return this.entries().map((entry) => ({
-      id: entry.source === 'ONE_TIME' ? entry.entryId : `${entry.templateId}-${entry.occurrenceDate}`,
-      title:
-        entry.type === 'TASK'
-          ? entry.taskTitle || entry.templateTitle || 'Unbenannte Aufgabe'
-          : entry.breakLabel || 'Pause',
-      start: `${entry.date}T${entry.startTime}`,
-      end: `${entry.date}T${entry.endTime}`,
-      backgroundColor: entry.type === 'TASK' ? '#63729c' : '#10b981',
-      borderColor: entry.type === 'TASK' ? '#505c7c' : '#059669',
-      extendedProps: { ...entry },
-    }));
+    const statusMap = this.taskStatusMap();
+    return this.entries().map((entry) => {
+      const colors = this.getEntryColors(entry, statusMap);
+      return {
+        id: entry.source === 'ONE_TIME' ? (entry.entryId ?? undefined) : `${entry.templateId}-${entry.occurrenceDate}`,
+        title:
+          entry.type === 'TASK'
+            ? entry.taskTitle || entry.templateTitle || 'Unbenannte Aufgabe'
+            : entry.breakLabel || 'Pause',
+        start: `${entry.date}T${entry.startTime}`,
+        end: `${entry.date}T${entry.endTime}`,
+        backgroundColor: colors.bg,
+        borderColor: colors.border,
+        extendedProps: { ...entry },
+      };
+    });
   });
 
   calendarOptions: any = {
@@ -62,29 +77,23 @@ export class CalendarComponent implements OnInit {
       right: 'timeGridWeek,timeGridDay',
     },
 
-    // Wir nutzen ein Effect oder binden direkt an [events] im HTML
-    // Hier setzen wir es initial leer, und im HTML binden wir es dynamisch
-    events: [],
-
     // Methods
     eventClick: (arg: any) => this.handleEventClick(arg),
     datesSet: (arg: any) => this.handleDatesSet(arg),
   };
 
-  constructor() {
-    // Falls FullCalendar die Events nicht reaktiv über [options] übernimmt,
-    // können wir sie hier im effect an calendarOptions zuweisen
-    effect(() => {
-      this.calendarOptions = {
-        ...this.calendarOptions,
-        events: this.calendarEvents(),
-      };
-    });
-  }
-
   ngOnInit(): void {
     this.taskService.loadTasksFromDB();
     this.recurringTemplateService.loadTemplatesFromDB();
+  }
+
+  onDialogSaved() {
+    this.taskService.loadTasksFromDB();
+    this.recurringTemplateService.loadTemplatesFromDB();
+    const range = this.lastEmittedRange();
+    if (range) {
+      this.saved.emit(range);
+    }
   }
 
   handleEventClick(arg: any) {
@@ -112,23 +121,45 @@ export class CalendarComponent implements OnInit {
   }
 
   handleDatesSet(arg: any) {
-    // Get the start and end dates of the current view
-    // Extract just the date part (YYYY-MM-DD) to ensure consistent format for the backend
     const from = this.formatDateString(arg.startStr);
     const to = this.formatDateString(arg.endStr);
     const currentRange = { from, to };
     const lastRange = this.lastEmittedRange();
 
-    // Only emit if the range has actually changed (prevent duplicate API calls)
     if (!lastRange || lastRange.from !== from || lastRange.to !== to) {
       this.lastEmittedRange.set(currentRange);
       this.weekChanged.emit(currentRange);
     }
   }
 
+  private getEntryColors(entry: ScheduleEntry, statusMap: Map<string, TaskState>): { bg: string; border: string } {
+    if (entry.type === 'BREAK') {
+      return { bg: '#10b981', border: '#059669' };
+    }
+
+    // Schedule-Entry-Level Flags (via /schedule/{id}/complete bzw. recurring exceptions)
+    if (entry.isCompleted) {
+      return { bg: '#22c55e', border: '#16a34a' };
+    }
+    if (entry.isPinned) {
+      return { bg: '#f59e0b', border: '#d97706' };
+    }
+
+    // Task-Status aus loadedTasks (via /tasks/{id}/complete — Backlog-Ansicht)
+    if (entry.taskId) {
+      const status = statusMap.get(entry.taskId);
+      if (status === TaskState.DONE) {
+        return { bg: '#22c55e', border: '#16a34a' };
+      }
+      if (status === TaskState.IN_PROGRESS) {
+        return { bg: '#3b82f6', border: '#2563eb' };
+      }
+    }
+
+    return { bg: '#63729c', border: '#505c7c' };
+  }
+
   private formatDateString(dateString: string): string {
-    // Extract just the date part (YYYY-MM-DD) from any date format
-    // Handles both "2026-03-30" and "2026-03-30T00:00:00+02:00"
     return dateString.split('T')[0];
   }
 }
