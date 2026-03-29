@@ -6,15 +6,9 @@
   [style]="{ width: '60rem' }"
   [closable]="false">
 
-  <form (ngSubmit)="onSubmit()">
-    @if (errorMessage()) {
-      <p-message
-        severity="error"
-        [text]="errorMessage()"
-        styleClass="w-full mb-3">
-      </p-message>
-    }
+  <p-toast></p-toast>
 
+  <form (ngSubmit)="onSubmit()">
     <p-card class="form-grid">
       <div class="toggle-container mb-4">
         <label class="mr-2">Ist dies eine wiederkehrende Routine?</label>
@@ -156,7 +150,7 @@
             <label>Intervall (alle N Einheiten):</label>
             <p-inputnumber
               [ngModel]="formData().recurrenceRule?.interval"
-              (ngModelChange)="updateFormData('recurrenceRule', { ...formData().recurrenceRule, interval: $event })"
+              (ngModelChange)="updateInterval($event)"
               [min]="1"
               name="interval">
             </p-inputnumber>

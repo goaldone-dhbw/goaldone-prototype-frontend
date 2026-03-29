@@ -91,6 +91,13 @@ if ([string]::IsNullOrWhiteSpace($USER_ACCESS_TOKEN)) {
 }
 Write-Host "User account setup complete." -ForegroundColor Green
 
+# Confirmation Prompt
+$CONFIRM = Read-Host "Do you want to create demo data (working hours, breaks, templates, tasks)? (Y/n)"
+if ($CONFIRM -match '^[Nn]$') {
+    Write-Host "Skipping demo data creation. Setup complete!" -ForegroundColor Green
+    exit
+}
+
 # Header für alle folgenden User-Requests
 $userHeaders = @{
   "Authorization" = "Bearer $USER_ACCESS_TOKEN"
@@ -154,9 +161,9 @@ Create-Break @"
 }
 "@
 
-$MONDAY = (Get-Date).ToString("yyyy-MM-dd")
-$FRIDAY = (Get-Date).AddDays(4).ToString("yyyy-MM-dd")
-Write-Host " - Bounded Recurring: Monday Team Sync (Mo-Fr of current week)"
+$START_DATE = (Get-Date).AddDays(1).ToString("yyyy-MM-dd")
+$END_DATE = (Get-Date).AddDays(28).ToString("yyyy-MM-dd")
+Write-Host " - Bounded Recurring: Monday Team Sync (starting from tomorrow for 4 weeks)"
 Create-Break @"
 {
   "label": "Wöchentliches Team-Sync (Mo 11:00)",
@@ -164,20 +171,20 @@ Create-Break @"
   "endTime": "12:00",
   "breakType": "BOUNDED_RECURRING",
   "recurrence": { "type": "WEEKLY", "interval": 1 },
-  "validFrom": "$MONDAY",
-  "validUntil": "$FRIDAY"
+  "validFrom": "$START_DATE",
+  "validUntil": "$END_DATE"
 }
 "@
 
-$TODAY = (Get-Date).ToString("yyyy-MM-dd")
-Write-Host " - One-Time: Dentist Appointment Today"
+$TOMORROW = (Get-Date).AddDays(1).ToString("yyyy-MM-dd")
+Write-Host " - One-Time: Dentist Appointment Tomorrow"
 Create-Break @"
 {
   "label": "Zahnarzt-Termin",
   "startTime": "14:00",
   "endTime": "15:00",
   "breakType": "ONE_TIME",
-  "date": "$TODAY"
+  "date": "$TOMORROW"
 }
 "@
 
