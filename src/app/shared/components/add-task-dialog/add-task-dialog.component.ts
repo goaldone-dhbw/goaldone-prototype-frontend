@@ -370,4 +370,8 @@ export class AddTaskDialogComponent {
     this.updateFormData('recurrenceRule', { ...this.formData().recurrenceRule, type });
   }
 
+  updateInterval(interval: number) {
+    this.updateFormData('recurrenceRule', { ...this.formData().recurrenceRule, interval });
+  }
+
 }
