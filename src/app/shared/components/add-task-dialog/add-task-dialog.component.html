@@ -6,15 +6,9 @@
   [style]="{ width: '60rem' }"
   [closable]="false">
 
-  <form (ngSubmit)="onSubmit()">
-    @if (errorMessage()) {
-      <p-message
-        severity="error"
-        [text]="errorMessage()"
-        styleClass="w-full mb-3">
-      </p-message>
-    }
+  <p-toast></p-toast>
 
+  <form (ngSubmit)="onSubmit()">
     <p-card class="form-grid">
       <div class="toggle-container mb-4">
         <label class="mr-2">Ist dies eine wiederkehrende Routine?</label>

@@ -40,6 +40,8 @@ export class ScheduleFacadeService {
           return `Aufgabe ${taskTitle} passt nicht vollständig in das verfügbare Tagesbudget.`;
         case 'deadline-at-risk':
           return `Die Deadline für Aufgabe ${taskTitle} ist gefährdet.`;
+        case 'deadline-missed':
+          return `Die Deadline für Aufgabe ${taskTitle} wurde bereits überschritten.`;
         default:
           return `${type}: ${taskTitle}`;
       }

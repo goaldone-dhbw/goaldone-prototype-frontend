@@ -33,7 +33,7 @@ export class CalendarComponent implements OnInit {
       id: entry.source === 'ONE_TIME' ? entry.entryId : `${entry.templateId}-${entry.occurrenceDate}`,
       title:
         entry.type === 'TASK'
-          ? entry.taskTitle || 'Unbenannte Aufgabe'
+          ? entry.taskTitle || entry.templateTitle || 'Unbenannte Aufgabe'
           : entry.breakLabel || 'Pause',
       start: `${entry.date}T${entry.startTime}`,
       end: `${entry.date}T${entry.endTime}`,

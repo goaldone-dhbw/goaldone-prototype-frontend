@@ -70,6 +70,14 @@ if [ "$USER_ACCESS_TOKEN" == "null" ] || [ -z "$USER_ACCESS_TOKEN" ]; then
 fi
 echo -e "${GREEN}User account setup complete.${NC}"
 
+# Confirmation Prompt
+echo -e "${YELLOW}Do you want to create demo data (working hours, breaks, templates, tasks)? (Y/n)${NC}"
+read -p "> " CONFIRM
+if [[ "$CONFIRM" =~ ^[Nn]$ ]]; then
+    echo -e "${GREEN}Skipping demo data creation. Setup complete!${NC}"
+    exit 0
+fi
+
 # 5. Setup 35h Working Week
 # Mo-Do: 8h (08:00 - 16:00), Fr: 3h (08:00 - 11:00)
 echo -e "${YELLOW}Configuring 35h working week (Mo-Do 8h, Fr 3h starting 08:00)...${NC}"
@@ -120,29 +128,29 @@ create_break '{
   "recurrence": { "type": "DAILY", "interval": 1 }
 }'
 
-# Bounded recurring break only on Mondays for this week
-MONDAY=$(date -v+0d +%Y-%m-%d)
-FRIDAY=$(date -v+4d +%Y-%m-%d)
-echo " - Bounded Recurring: Monday Team Sync (Mo-Fr of current week)"
+# Bounded recurring break only on Mondays for the next 4 weeks
+START_DATE=$(date -v+1d +%Y-%m-%d)
+END_DATE=$(date -v+28d +%Y-%m-%d)
+echo " - Bounded Recurring: Monday Team Sync (starting from tomorrow for 4 weeks)"
 create_break '{
   "label": "Wöchentliches Team-Sync (Mo 11:00)",
   "startTime": "11:00",
   "endTime": "12:00",
   "breakType": "BOUNDED_RECURRING",
   "recurrence": { "type": "WEEKLY", "interval": 1 },
-  "validFrom": "'$MONDAY'",
-  "validUntil": "'$FRIDAY'"
+  "validFrom": "'$START_DATE'",
+  "validUntil": "'$END_DATE'"
 }'
 
-# One-time break for today (e.g., dentist appointment)
-echo " - One-Time: Dentist Appointment Today"
-TODAY=$(date +%Y-%m-%d)
+# One-time break for tomorrow (e.g., dentist appointment)
+echo " - One-Time: Dentist Appointment Tomorrow"
+TOMORROW=$(date -v+1d +%Y-%m-%d)
 create_break '{
   "label": "Zahnarzt-Termin",
   "startTime": "14:00",
   "endTime": "15:00",
   "breakType": "ONE_TIME",
-  "date": "'$TODAY'"
+  "date": "'$TOMORROW'"
 }'
 
 # 7. Create Recurring Templates
