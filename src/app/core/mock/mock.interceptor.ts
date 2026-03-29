@@ -1,8 +1,10 @@
-import { Role } from '../../api';
+import { Role, WorkingHoursResponse } from '../../api';
 import { HttpEvent, HttpHandlerFn, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Observable, delay, of } from 'rxjs';
-import { MOCK_USERS, MOCK_TASKS, MOCK_ORGANIZATIONS, MOCK_MEMBERS, MOCK_BREAKS, MOCK_SCHEDULE, MOCK_SUPERADMIN_INVITATIONS } from './mock-data';
+import { MOCK_USERS, MOCK_TASKS, MOCK_ORGANIZATIONS, MOCK_MEMBERS, MOCK_BREAKS, MOCK_SCHEDULE, MOCK_SUPERADMIN_INVITATIONS, MOCK_WORKING_HOURS } from './mock-data';
 import { environment } from '../../../environments/environment';
+
+let MOCK_WORKING_HOURS_STORE = { ...MOCK_WORKING_HOURS };
 
 export function mockInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
   // Only intercept if the URL starts with our apiBasePath and we are in mock mode
@@ -101,6 +103,17 @@ export function mockInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
 
   if (url.endsWith('/schedule/generate') && method === 'POST') {
     return ok(MOCK_SCHEDULE);
+  }
+
+  // --- Working Hours Endpoints ---
+
+  if (url.endsWith('/working-hours') && method === 'GET') {
+    return ok(MOCK_WORKING_HOURS_STORE);
+  }
+
+  if (url.endsWith('/working-hours') && method === 'PUT') {
+    MOCK_WORKING_HOURS_STORE = body as WorkingHoursResponse;
+    return ok(MOCK_WORKING_HOURS_STORE);
   }
 
   // --- Admin Endpoints (Super Admin) ---

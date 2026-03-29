@@ -1,4 +1,5 @@
 import { Component, inject, signal, ChangeDetectionStrategy, effect } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Card } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -10,7 +11,6 @@ import { WorkingHoursService } from '../../shared/services/working-hours.service
 import { DayOfWeek } from '../../api';
 import { MessageService } from 'primeng/api';
 import { Toast } from 'primeng/toast';
-import { HttpErrorResponse } from '@angular/common/http';
 
 
 @Component({
@@ -87,8 +87,23 @@ export class WorkingHoursPage {
 
   saveWorkingHours() {
     if (this.validate()) {
-      this.service.saveWorkingHours(this.workingHours());
-      this.messageService.add({ severity: 'success', summary: 'Erfolg', detail: 'Arbeitszeiten wurden gespeichert.' });
+      this.service.saveWorkingHours(this.workingHours()).subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Erfolg',
+            detail: 'Arbeitszeiten wurden gespeichert.',
+          });
+        },
+        error: (err: HttpErrorResponse) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Fehler',
+            detail: 'Arbeitszeiten konnten nicht gespeichert werden.',
+          });
+          this.loadWorkingHours();
+        },
+      });
     }
   }
 

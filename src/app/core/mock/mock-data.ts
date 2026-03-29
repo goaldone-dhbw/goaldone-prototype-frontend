@@ -1,4 +1,18 @@
-import { Role, UserResponse, TaskResponse, OrganizationResponse, MemberResponse, TaskStatus, BreakResponse, RecurrenceType, ScheduleResponse, SuperAdminInvitationResponse, CognitiveLoad, ScheduleEntry } from '../../api';
+import {
+  Role,
+  UserResponse,
+  TaskResponse,
+  OrganizationResponse,
+  MemberResponse,
+  TaskStatus,
+  BreakResponse,
+  RecurrenceType,
+  ScheduleResponse,
+  SuperAdminInvitationResponse,
+  CognitiveLoad,
+  ScheduleEntry,
+  WorkingHoursResponse,
+} from '../../api';
 
 // Hilfsfunktion für das aktuelle Datum (Montag der Woche)
 const getMonday = (date: Date): Date => {
@@ -206,6 +220,18 @@ export const MOCK_SCHEDULE: ScheduleResponse = {
       isCompleted: false,
       isPinned: false,
     }
+  ],
+};
+
+export const MOCK_WORKING_HOURS: WorkingHoursResponse = {
+  days: [
+    { dayOfWeek: 'MONDAY', isWorkDay: true, startTime: '08:00', endTime: '17:00' },
+    { dayOfWeek: 'TUESDAY', isWorkDay: true, startTime: '08:00', endTime: '17:00' },
+    { dayOfWeek: 'WEDNESDAY', isWorkDay: true, startTime: '08:00', endTime: '17:00' },
+    { dayOfWeek: 'THURSDAY', isWorkDay: true, startTime: '08:00', endTime: '17:00' },
+    { dayOfWeek: 'FRIDAY', isWorkDay: true, startTime: '08:00', endTime: '15:00' },
+    { dayOfWeek: 'SATURDAY', isWorkDay: false },
+    { dayOfWeek: 'SUNDAY', isWorkDay: false },
   ],
 };
 
