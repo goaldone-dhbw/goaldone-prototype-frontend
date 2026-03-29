@@ -20,7 +20,7 @@
 
     <div class="working-hours-list">
 
-      @for (c of workingHours; track $index; let i = $index) {
+      @for (c of workingHours(); track $index; let i = $index) {
         <div class="working-hour-item">
 
           <label>{{ i + 1 }}.</label>
@@ -71,6 +71,7 @@
 
     </div>
   </p-card>
+  <p-toast></p-toast>
 
   <br>
 

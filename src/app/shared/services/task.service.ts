@@ -3,12 +3,14 @@ import { TaskModel } from '../models/task.model';
 import { TaskDifficultyModel } from '../models/task-difficulty.model';
 import { TaskState } from '../models/task-state.model';
 import { TasksService as TasksApiService } from '../../api/api/tasks.service';
-import { CreateTaskRequest } from '../../api/model/createTaskRequest';
-import { UpdateTaskRequest } from '../../api/model/updateTaskRequest';
-import { CognitiveLoad } from '../../api/model/cognitiveLoad';
-import { TaskStatus } from '../../api/model/taskStatus';
-import { TaskResponse } from '../../api/model/taskResponse';
 import { map } from 'rxjs';
+import {
+  CognitiveLoad,
+  CreateTaskRequest,
+  TaskResponse,
+  TaskStatus,
+  UpdateTaskRequest,
+} from '../../api';
 
 @Injectable({
   providedIn: 'root',

@@ -22,10 +22,10 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { TaskModel } from '../../models/task.model';
 import { TaskState } from '../../models/task-state.model';
 import { TaskDifficultyModel } from '../../models/task-difficulty.model';
-import { RecurrenceRule, RecurrenceType } from '../../../api';
 import { TaskService } from '../../services/task.service';
 import { RecurringTemplateService } from '../../services/recurring-template.service';
 import { RecurringTemplateModel } from '../../models/recurring-template.model';
+import { RecurrenceType } from '../../../api';
 
 @Component({
   selector: 'app-add-task-dialog',

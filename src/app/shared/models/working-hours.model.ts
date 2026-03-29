@@ -1,5 +1,6 @@
 import { DayOfWeek } from '../../api';
 
+
 export interface WorkingHoursModel {
   startDay: DayOfWeek | null;
   endDay: DayOfWeek | null;
