@@ -1,0 +1,160 @@
+<p-dialog
+  [visible]="showDialog()"
+  (visibleChange)="showDialog.set($event)"
+  [modal]="true"
+  [style]="{ width: '60rem' }"
+  [closable]="false"
+  header="Pause hinzufügen">
+
+  <form class="form-container" (ngSubmit)="onSubmit()">
+
+    @if (errorMessage()) {
+      <p-message severity="error" [text]="errorMessage()" styleClass="w-full mb-3" />
+    }
+
+    <p-card class="form-card" header="Pauseninformationen">
+      <div class="form-grid">
+
+        <div class="form-field full-width">
+          <label>Pausenbezeichnung</label>
+          <input
+            class="input-full"
+            pInputText
+            [(ngModel)]="breakForm().label"
+            (ngModelChange)="updateForm('label',$event)"
+            name="label"
+            required />
+        </div>
+
+        <div class="form-field half">
+          <label>Startzeit</label>
+          <p-datePicker
+            class="input-full"
+            timeOnly="true"
+            [(ngModel)]="breakForm().startTime"
+            (ngModelChange)="updateForm('startTime',$event)"
+            name="startTime"
+            required />
+        </div>
+
+        <div class="form-field half">
+          <label>Endzeit</label>
+          <p-datePicker
+            class="input-full"
+            timeOnly="true"
+            [(ngModel)]="breakForm().endTime"
+            (ngModelChange)="updateForm('endTime',$event)"
+            name="endTime"
+            required />
+        </div>
+
+      </div>
+    </p-card>
+
+    <p-card class="form-card" header="Art der Pause">
+      <div class="form-grid">
+
+        <div class="form-field full-width">
+          <label>Pausentyp</label>
+          <p-select
+            class="input-full"
+            [(ngModel)]="breakForm().breakType"
+            (ngModelChange)="updateForm('breakType',$event)"
+            [options]="breakTypeOptions"
+            optionLabel="label"
+            optionValue="value"
+            name="breakType"/>
+        </div>
+
+        @if (breakForm().breakType === BreakType.OneTime) {
+          <div class="form-field full-width">
+            <label>Datum</label>
+            <p-datePicker
+              class="input-full"
+              [(ngModel)]="breakForm().date"
+              (ngModelChange)="updateForm('date',$event)"
+              name="date"
+              dateFormat="dd.mm.yyyy">
+            </p-datePicker>
+          </div>
+        }
+
+        @if (breakForm().breakType === BreakType.Recurring) {
+          <div class="form-field two-thirds">
+            <label>Wiederholungstyp</label>
+            <p-select
+              class="input-full"
+              [(ngModel)]="breakForm().recurrence.type"
+              (ngModelChange)="updateForm('recurrence.type',$event)"
+              [options]="recurrenceTypeOptions"
+              optionLabel="label"
+              optionValue="value"
+              name="recurrenceType"/>
+          </div>
+
+          <div class="form-field one-third">
+            <label>Intervall</label>
+            <p-inputNumber
+              class="input-full"
+              [(ngModel)]="breakForm().recurrence.interval"
+              (ngModelChange)="updateForm('recurrence.interval',$event)"
+              name="recurrenceInterval"
+              [min]="1"/>
+          </div>
+        }
+
+        @if (breakForm().breakType === BreakType.BoundedRecurring) {
+
+          <div class="form-field two-thirds">
+            <label>Wiederholungstyp</label>
+            <p-select
+              class="input-full"
+              [(ngModel)]="breakForm().recurrence.type"
+              (ngModelChange)="updateForm('recurrence.type',$event)"
+              [options]="recurrenceTypeOptions"
+              optionLabel="label"
+              optionValue="value"
+              name="recurrenceTypeBounded"/>
+          </div>
+
+          <div class="form-field one-third">
+            <label>Intervall</label>
+            <p-inputNumber
+              class="input-full"
+              [(ngModel)]="breakForm().recurrence.interval"
+              (ngModelChange)="updateForm('recurrence.interval',$event)"
+              name="recurrenceIntervalBounded"
+              [min]="1"/>
+          </div>
+          <div class="form-field half">
+            <label>Gültig von</label>
+            <p-datePicker
+              class="input-full"
+              [(ngModel)]="breakForm().validFrom"
+              (ngModelChange)="updateForm('validFrom',$event)"
+              name="validFrom"
+              dateFormat="dd.mm.yyyy">
+            </p-datePicker>
+          </div>
+
+          <div class="form-field half">
+            <label>Gültig bis</label>
+            <p-datePicker
+              class="input-full"
+              [(ngModel)]="breakForm().validUntil"
+              (ngModelChange)="updateForm('validUntil',$event)"
+              name="validUntil"
+              dateFormat="dd.mm.yyyy">
+            </p-datePicker>
+          </div>
+        }
+
+      </div>
+    </p-card>
+
+    <div class="button-group">
+      <p-button label="Abbrechen" (click)="showDialog.set(false)" severity="secondary" />
+      <p-button label="Speichern" type="submit" severity="success" />
+    </div>
+  </form>
+</p-dialog>

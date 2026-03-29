@@ -1,13 +1,17 @@
-import { DayOfWeek } from '../../api';
+import { BreakType } from '../../api';
 import { RecurrenceType } from '../../api';
-import { RecurrenceRule} from '../../api';
 
 
 export interface BreaksModel {
-  startDay: DayOfWeek;
-  endDay: DayOfWeek;
-  startHour: Date;
-  endHour: Date;
-  recurrenceType: RecurrenceType;
-  recurrenceRule: RecurrenceRule;
+  label: string,
+  startTime: string,
+  endTime: string,
+  breakType: BreakType,
+  recurrence: {
+    type: RecurrenceType,
+    interval: number,
+  },
+  date: Date | null,
+  validFrom: Date | null,
+  validUntil: Date | null,
 }

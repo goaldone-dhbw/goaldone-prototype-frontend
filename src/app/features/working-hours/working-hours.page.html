@@ -47,8 +47,7 @@
           <p-datePicker
             [(ngModel)]="c.startHour"
             [timeOnly]="true"
-            hourFormat="24"
-            placeholder="Startzeit">
+            hourFormat="24">
           </p-datePicker>
 
           <!-- End Hour -->
@@ -76,5 +75,70 @@
   <br>
 
   <p-card class="breaks-container" header="Pausen">
+    <div class="button-wrapper">
+      <p-button
+        label="Pause hinzufügen"
+        icon="pi pi-plus"
+        (click)="addBreak()">
+      </p-button>
+      <p-button
+        label="Speichern"
+        icon="pi pi-save"
+        (click)="saveWorkingHours()">
+      </p-button>
+    </div>
+
+    @if (breaks().length > 0) {
+      <div class="breaks-list">
+        @for (b of breaks(); track $index; let _ = $index) {
+          <div class="break-item">
+
+            <!-- Break Label -->
+            <input
+              pInputText
+              [(ngModel)]="b.label"
+              readonly
+              placeholder="Bezeichnung">
+
+            <!-- Break Type -->
+            <input
+              pInputText
+              [ngModel]="mapBreakTypes(b.breakType)"
+              [readonly]="true"
+              readonly
+              placeholder="Pausentyp">
+
+
+            <!-- Break Start -->
+            <p-datePicker
+              [(ngModel)]="b.startTime"
+              [timeOnly]="true"
+              [disabled]="true"
+              hourFormat="24"
+              placeholder="Startzeit">
+            </p-datePicker>
+
+
+            <!-- Break End -->
+            <p-datePicker
+              [(ngModel)]="b.endTime"
+              [timeOnly]="true"
+              [disabled]="true"
+              hourFormat="24"
+              placeholder="Endzeit">
+            </p-datePicker>
+
+            <!-- Delete Button -->
+            <p-button
+              icon="pi pi-trash"
+              severity="danger"
+              (click)="deleteBreak(b.id)">
+            </p-button>
+          </div>
+        }
+      </div>
+    }
   </p-card>
 </div>
+
+<app-add-break-dialog></app-add-break-dialog>

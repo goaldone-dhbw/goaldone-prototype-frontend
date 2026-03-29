@@ -47,3 +47,43 @@ p-select,
 p-datePicker {
   min-width: 150px;
 }
+
+.breaks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.break-item {
+  display: grid;
+  grid-template-columns:
+    2fr          /* Label */
+    1.5fr        /* Break Type */
+    1fr          /* Start Time */
+    1fr          /* End Time */
+    auto;        /* Delete Button */
+  gap: 0.5rem;
+  width: 100%;
+  align-items: center;
+  padding: 0.5rem;
+}
+
+.break-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  p-label {
+    font-weight: 500;
+  }
+
+  p-label:last-child {
+    font-size: 0.875rem;
+    color: var(--p-text-color-secondary);
+  }
+}
+
+.break-actions {
+  display: flex;
+  gap: 0.5rem;
+}

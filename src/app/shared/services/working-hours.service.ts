@@ -35,8 +35,10 @@ export class WorkingHoursService {
         const startIndex = daysOfWeek.indexOf(model.startDay);
         const endIndex = daysOfWeek.indexOf(model.endDay);
 
+
         // Check if current day is between start and end (inclusive)
         if (startIndex <= endIndex) {
+          console.log("Check 1")
           if (dayIndex >= startIndex && dayIndex <= endIndex) {
             isWorkDay = true;
             startTime = this.parseDateToString(model.startHour);
@@ -44,6 +46,7 @@ export class WorkingHoursService {
             break;
           }
         } else {
+          console.log("Check 2")
           // Range wraps around the week
           if (dayIndex >= startIndex || dayIndex <= endIndex) {
             isWorkDay = true;
@@ -61,6 +64,7 @@ export class WorkingHoursService {
         endTime
       });
     }
+    console.log(resultDays);
 
     return this.workingHoursApiService.upsertWorkingHours({ days: resultDays });
   }
