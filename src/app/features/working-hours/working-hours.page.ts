@@ -10,6 +10,7 @@ import { WorkingHoursService } from '../../shared/services/working-hours.service
 import { DayOfWeek } from '../../api';
 import { MessageService } from 'primeng/api';
 import { Toast } from 'primeng/toast';
+import { HttpErrorResponse } from '@angular/common/http';
 
 
 @Component({
@@ -39,12 +40,21 @@ export class WorkingHoursPage {
       next: (hours) => {
         this.workingHours.set(hours);
       },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Fehler',
-          detail: 'Arbeitszeiten konnten nicht geladen werden.',
-        });
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 404) {
+          this.messageService.add({
+            severity: 'info',
+            summary: 'Hinweis',
+            detail: 'Bitte lege deine Arbeitszeiten fest.',
+          });
+          this.workingHours.set([]);
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Fehler',
+            detail: 'Arbeitszeiten konnten nicht geladen werden.',
+          });
+        }
       },
     });
   }
