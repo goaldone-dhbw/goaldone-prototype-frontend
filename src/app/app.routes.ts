@@ -28,6 +28,12 @@ export const routes: Routes = [
                     import('./features/mainpage/mainpage').then((m) => m.MainpageComponent),
             },
             {
+                path: 'tasks',
+                canActivate: [excludeRolesGuard([Role.SuperAdmin], '/app/super-admin')],
+                loadComponent: () =>
+                    import('./features/tasks/tasks.page').then((m) => m.TasksPage),
+            },
+            {
                 path: 'schedule',
                 canActivate: [excludeRolesGuard([Role.SuperAdmin], '/app/super-admin')],
                 loadComponent: () =>

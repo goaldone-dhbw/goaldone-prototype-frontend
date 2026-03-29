@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { DialogModule } from 'primeng/dialog';
@@ -66,6 +66,8 @@ export class AddTaskDialogComponent {
     label: difficulty,
     value: difficulty,
   }));
+
+  saved = output<void>();
 
   protected showDialog = signal(false);
   protected estimatedTimeString = signal<string>('');
@@ -227,6 +229,7 @@ export class AddTaskDialogComponent {
         this.isSubmitting.set(false);
         this.showDialog.set(false);
         this.isEditMode.set(false);
+        this.saved.emit();
       },
       error: (err: any) => {
         this.isSubmitting.set(false);
@@ -270,6 +273,7 @@ export class AddTaskDialogComponent {
         this.isSubmitting.set(false);
         this.showDialog.set(false);
         this.isEditMode.set(false);
+        this.saved.emit();
       },
       error: (err: any) => {
         this.isSubmitting.set(false);
