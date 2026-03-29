@@ -61,11 +61,16 @@ p-datePicker {
     1.5fr        /* Break Type */
     1fr          /* Start Time */
     1fr          /* End Time */
+    auto         /* Edit Button */
     auto;        /* Delete Button */
   gap: 0.5rem;
   width: 100%;
   align-items: center;
-  padding: 0.5rem;
+  padding-block: 0.5rem;
+
+  > * {
+    min-width: 0;
+  }
 }
 
 .break-info {

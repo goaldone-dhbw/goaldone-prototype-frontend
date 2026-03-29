@@ -235,11 +235,22 @@ export class AddBreakDialog {
     return true;
   }
 
-  private isValidTimeFormat(time: string): boolean {
-    console.log(`Validating time format for: ${time}`);
+  private isValidTimeFormat(time: any): boolean {
+    if (!time) return false;
+    
+    let timeStr = time;
+    if (time instanceof Date) {
+      const hours = String(time.getHours()).padStart(2, '0');
+      const minutes = String(time.getMinutes()).padStart(2, '0');
+      timeStr = `${hours}:${minutes}`;
+    }
+
+    if (typeof timeStr !== 'string') return false;
+
+    console.log(`Validating time format for: ${timeStr}`);
 
     const regex = /^([01]\d|2[0-3]):[0-5]\d$/;
-    return regex.test(time);
+    return regex.test(timeStr);
   }
 
   private buildRequest(): CreateBreakRequest {
@@ -321,6 +332,13 @@ export class AddBreakDialog {
 
       this.breakForm.set(updated);
       return;
+    }
+
+    // Handle Date to string conversion for time fields
+    if ((field === 'startTime' || field === 'endTime') && value instanceof Date) {
+      const hours = String(value.getHours()).padStart(2, '0');
+      const minutes = String(value.getMinutes()).padStart(2, '0');
+      value = `${hours}:${minutes}`;
     }
 
     this.breakForm.set({
