@@ -87,7 +87,10 @@ export class ScheduleFacadeService {
     const sundayTwoWeeksLater = new Date(monday);
     sundayTwoWeeksLater.setDate(monday.getDate() + 13);
 
-    const request: GenerateScheduleRequest = { from };
+    const request: GenerateScheduleRequest = { 
+      from,
+      maxDailyWorkMinutes: 480 // 8 Stunden kognitives Budget
+    };
 
     this._isLoading.set(true);
     return this.scheduleService.generateSchedule(request)
