@@ -16,8 +16,9 @@ import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { CheckboxModule } from 'primeng/checkbox';
-import { MessageModule } from 'primeng/message';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 import { TaskModel } from '../../models/task.model';
 import { TaskState } from '../../models/task-state.model';
@@ -43,16 +44,18 @@ import { RecurrenceType } from '../../../api';
     FloatLabelModule,
     DatePickerModule,
     CheckboxModule,
-    MessageModule,
     ToggleSwitchModule,
+    ToastModule,
   ],
   templateUrl: './add-task-dialog.component.html',
   styleUrls: ['./add-task-dialog.component.scss'],
+  providers: [MessageService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTaskDialogComponent {
   private taskService = inject(TaskService);
   private routineService = inject(RecurringTemplateService);
+  private messageService = inject(MessageService);
 
   protected taskStates = Object.values(TaskState).map((status) => ({
     label: status,
@@ -66,7 +69,6 @@ export class AddTaskDialogComponent {
 
   protected showDialog = signal(false);
   protected estimatedTimeString = signal<string>('');
-  protected errorMessage = signal<string | undefined>(undefined);
   protected isSubmitting = signal(false);
   protected isEditMode = signal(false);
   protected isRoutine = signal(false);
@@ -158,6 +160,12 @@ export class AddTaskDialogComponent {
       return 'Geschätzte Zeit muss größer als 0 Minuten sein';
     }
 
+    if (!this.isRoutine() && formData.deadline && formData.scheduleStartDate) {
+      if (new Date(formData.deadline) < new Date(formData.scheduleStartDate)) {
+        return 'Die Frist darf nicht vor dem "Nicht planen vor"-Datum liegen';
+      }
+    }
+
     if (this.isRoutine()) {
       if (!this.selectedRecurrenceType()) {
         return 'Wiederholungs-Typ ist erforderlich für Routinen';
@@ -171,11 +179,9 @@ export class AddTaskDialogComponent {
   }
 
   onSubmit() {
-    this.errorMessage.set(undefined);
-
     const validationError = this.validateForm();
     if (validationError) {
-      this.errorMessage.set(validationError);
+      this.messageService.add({ severity: 'error', summary: 'Fehler', detail: validationError });
       return;
     }
 
@@ -225,7 +231,7 @@ export class AddTaskDialogComponent {
       error: (err: any) => {
         this.isSubmitting.set(false);
         const errorMsg = err?.error?.detail || 'Fehler beim Speichern';
-        this.errorMessage.set(errorMsg);
+        this.messageService.add({ severity: 'error', summary: 'Fehler', detail: errorMsg });
         console.error('Error saving:', err);
       }
     });
@@ -246,7 +252,7 @@ export class AddTaskDialogComponent {
   onDelete() {
     const id = this.formData().id;
     if (!id) {
-      this.errorMessage.set('ID nicht gefunden');
+      this.messageService.add({ severity: 'error', summary: 'Fehler', detail: 'ID nicht gefunden' });
       return;
     }
 
@@ -268,7 +274,7 @@ export class AddTaskDialogComponent {
       error: (err: any) => {
         this.isSubmitting.set(false);
         const errorMsg = err?.error?.detail || 'Fehler beim Löschen';
-        this.errorMessage.set(errorMsg);
+        this.messageService.add({ severity: 'error', summary: 'Fehler', detail: errorMsg });
       }
     });
   }
@@ -362,6 +368,10 @@ export class AddTaskDialogComponent {
   updateRecurrence(type: RecurrenceType) {
     this.selectedRecurrenceType.set(type);
     this.updateFormData('recurrenceRule', { ...this.formData().recurrenceRule, type });
+  }
+
+  updateInterval(interval: number) {
+    this.updateFormData('recurrenceRule', { ...this.formData().recurrenceRule, interval });
   }
 
 }

@@ -5,6 +5,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import deLocale from '@fullcalendar/core/locales/de';
 import { TaskService } from '../../../shared/services/task.service';
+import { RecurringTemplateService } from '../../../shared/services/recurring-template.service';
 import { ScheduleEntry } from '../../../api';
 import { AddTaskDialogComponent } from '../../../shared/components/add-task-dialog/add-task-dialog.component';
 
@@ -19,6 +20,7 @@ export class CalendarComponent implements OnInit {
   @ViewChild(AddTaskDialogComponent) addTaskDialog!: AddTaskDialogComponent;
 
   private taskService = inject(TaskService);
+  private recurringTemplateService = inject(RecurringTemplateService);
   private lastEmittedRange = signal<{ from: string; to: string } | null>(null);
 
   // Input Signal für ScheduleEntries
@@ -33,7 +35,7 @@ export class CalendarComponent implements OnInit {
       id: entry.source === 'ONE_TIME' ? entry.entryId : `${entry.templateId}-${entry.occurrenceDate}`,
       title:
         entry.type === 'TASK'
-          ? entry.taskTitle || 'Unbenannte Aufgabe'
+          ? entry.taskTitle || entry.templateTitle || 'Unbenannte Aufgabe'
           : entry.breakLabel || 'Pause',
       start: `${entry.date}T${entry.startTime}`,
       end: `${entry.date}T${entry.endTime}`,
@@ -82,20 +84,30 @@ export class CalendarComponent implements OnInit {
 
   ngOnInit(): void {
     this.taskService.loadTasksFromDB();
+    this.recurringTemplateService.loadTemplatesFromDB();
   }
 
   handleEventClick(arg: any) {
     const entry = arg.event.extendedProps as ScheduleEntry;
 
-    if (entry.type === 'TASK' && entry.taskId) {
-      // Suche den Task im TaskService, um die Details für den Dialog zu haben
-      const task = this.taskService.loadedTasks().find((t) => t.id === entry.taskId);
-
-      if (task) {
-        this.addTaskDialog.openDialog(task);
-      } else {
-        console.warn(`Task mit ID ${entry.taskId} nicht gefunden.`);
+    if (entry.type === 'TASK') {
+      if (entry.taskId) {
+        const task = this.taskService.loadedTasks().find((t) => t.id === entry.taskId);
+        if (task) {
+          this.addTaskDialog.openDialog(task);
+          return;
+        }
       }
+
+      if (entry.templateId) {
+        const template = this.recurringTemplateService.loadedTemplates().find((t) => t.id === entry.templateId);
+        if (template) {
+          this.addTaskDialog.openDialog(template);
+          return;
+        }
+      }
+
+      console.warn(`Weder Task noch Template für ID ${entry.taskId || entry.templateId} gefunden.`);
     }
   }
 

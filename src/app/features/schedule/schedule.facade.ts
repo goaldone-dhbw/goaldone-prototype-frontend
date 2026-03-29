@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { ScheduleService } from '../../api/api/schedule.service';
-import { ScheduleEntry } from '../../api/model/scheduleEntry';
-import { GenerateScheduleRequest } from '../../api/model/generateScheduleRequest';
+import { ScheduleService } from '../../api';
+import { ScheduleEntry } from '../../api';
+import { GenerateScheduleRequest } from '../../api';
 import { finalize, switchMap, tap } from 'rxjs';
 import { TaskService } from '../../shared/services/task.service';
 
@@ -40,6 +40,8 @@ export class ScheduleFacadeService {
           return `Aufgabe ${taskTitle} passt nicht vollständig in das verfügbare Tagesbudget.`;
         case 'deadline-at-risk':
           return `Die Deadline für Aufgabe ${taskTitle} ist gefährdet.`;
+        case 'deadline-missed':
+          return `Die Deadline für Aufgabe ${taskTitle} wurde bereits überschritten.`;
         default:
           return `${type}: ${taskTitle}`;
       }
@@ -84,7 +86,6 @@ export class ScheduleFacadeService {
 
     const sundayTwoWeeksLater = new Date(monday);
     sundayTwoWeeksLater.setDate(monday.getDate() + 13);
-    const to = sundayTwoWeeksLater.toISOString().split('T')[0];
 
     const request: GenerateScheduleRequest = { 
       from,
