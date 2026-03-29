@@ -15,6 +15,10 @@ api/members.service.ts
 api/members.serviceInterface.ts
 api/organizations.service.ts
 api/organizations.serviceInterface.ts
+api/recurringSchedule.service.ts
+api/recurringSchedule.serviceInterface.ts
+api/recurringTemplates.service.ts
+api/recurringTemplates.serviceInterface.ts
 api/schedule.service.ts
 api/schedule.serviceInterface.ts
 api/tasks.service.ts
@@ -30,11 +34,13 @@ index.ts
 model/acceptInvitationRequest.ts
 model/addSuperAdminRequest.ts
 model/breakResponse.ts
+model/breakType.ts
 model/changePasswordRequest.ts
 model/cognitiveLoad.ts
 model/createBreakRequest.ts
 model/createInvitationRequest.ts
 model/createOrganizationRequest.ts
+model/createRecurringTemplateRequest.ts
 model/createTaskRequest.ts
 model/dayOfWeek.ts
 model/fieldError.ts
@@ -53,6 +59,11 @@ model/pageMetadata.ts
 model/problemDetail.ts
 model/recurrenceRule.ts
 model/recurrenceType.ts
+model/recurringExceptionRequest.ts
+model/recurringExceptionResponse.ts
+model/recurringExceptionType.ts
+model/recurringTemplatePage.ts
+model/recurringTemplateResponse.ts
 model/refreshResponse.ts
 model/role.ts
 model/scheduleEntry.ts
@@ -64,6 +75,7 @@ model/taskResponse.ts
 model/taskStatus.ts
 model/updateMemberRoleRequest.ts
 model/updateOrganizationSettingsRequest.ts
+model/updateRecurringTemplateRequest.ts
 model/updateTaskRequest.ts
 model/updateUserRequest.ts
 model/upsertWorkingHoursRequest.ts

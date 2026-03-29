@@ -1,0 +1,80 @@
+<div class="page-container">
+  <h1>{{ title }}</h1>
+
+  <p-card class="working-hours-container" header="Arbeitszeiten">
+    <div class="button-wrapper">
+      <p-button
+        label="Arbeitszeit hinzufügen"
+        icon="pi pi-plus"
+         (click)="addWorkingHours()">
+      </p-button>
+
+      <p-button
+        label="Speichern"
+        icon="pi pi-save"
+        (click)="saveWorkingHours()">
+      </p-button>
+    </div>
+
+    <br>
+
+    <div class="working-hours-list">
+
+      @for (c of workingHours(); track $index; let i = $index) {
+        <div class="working-hour-item">
+
+          <label>{{ i + 1 }}.</label>
+
+          <!-- Start Day -->
+          <p-select
+            [options]="days"
+            [(ngModel)]="c.startDay"
+            placeholder="Starttag"
+            optionLabel="label"
+            optionValue="value">
+          </p-select>
+
+          <!-- End Day -->
+          <p-select
+            [options]="days"
+            [(ngModel)]="c.endDay"
+            placeholder="Endtag"
+            optionLabel="label"
+            optionValue="value">
+          </p-select>
+
+          <!-- Start Hour -->
+          <p-datePicker
+            [(ngModel)]="c.startHour"
+            [timeOnly]="true"
+            hourFormat="24"
+            placeholder="Startzeit">
+          </p-datePicker>
+
+          <!-- End Hour -->
+          <p-datePicker
+            [(ngModel)]="c.endHour"
+            [timeOnly]="true"
+            hourFormat="24"
+            placeholder="Endzeit">
+          </p-datePicker>
+
+          <!-- Delete Button -->
+          <p-button
+            icon="pi pi-trash"
+            severity="danger"
+            (click)="removeWorkingHour(i)">
+          </p-button>
+
+        </div>
+      }
+
+    </div>
+  </p-card>
+  <p-toast></p-toast>
+
+  <br>
+
+  <p-card class="breaks-container" header="Pausen">
+  </p-card>
+</div>

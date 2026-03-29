@@ -10,7 +10,7 @@
 
 
 /**
- * ISO-8601-Wochentag: - `MONDAY` bis `FRIDAY`: Werktage - `SATURDAY`, `SUNDAY`: Wochenende 
+ * ISO-8601-Wochentag: - `MONDAY` bis `FRIDAY`: Werktage - `SATURDAY`, `SUNDAY`: Wochenende
  */
 export const DayOfWeek = {
     Monday: 'MONDAY',

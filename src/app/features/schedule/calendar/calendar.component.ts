@@ -6,17 +6,17 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import deLocale from '@fullcalendar/core/locales/de';
 import { TaskService } from '../../../shared/services/task.service';
 import { ScheduleEntry } from '../../../api';
-import AddTaskDialog from '../../../shared/components/add-task-dialog/add-task-dialog.component';
+import { AddTaskDialogComponent } from '../../../shared/components/add-task-dialog/add-task-dialog.component';
 
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [FullCalendarModule, AddTaskDialog],
+  imports: [FullCalendarModule, AddTaskDialogComponent],
   templateUrl: 'calendar.component.html',
   styleUrl: 'calendar.component.scss',
 })
 export class CalendarComponent implements OnInit {
-  @ViewChild(AddTaskDialog) addTaskDialog!: AddTaskDialog;
+  @ViewChild(AddTaskDialogComponent) addTaskDialog!: AddTaskDialogComponent;
 
   private taskService = inject(TaskService);
   private lastEmittedRange = signal<{ from: string; to: string } | null>(null);
@@ -30,7 +30,7 @@ export class CalendarComponent implements OnInit {
   // Computed Signal für FullCalendar Events
   calendarEvents = computed(() => {
     return this.entries().map((entry) => ({
-      id: entry.id,
+      id: entry.source === 'ONE_TIME' ? entry.entryId : `${entry.templateId}-${entry.occurrenceDate}`,
       title:
         entry.type === 'TASK'
           ? entry.taskTitle || 'Unbenannte Aufgabe'

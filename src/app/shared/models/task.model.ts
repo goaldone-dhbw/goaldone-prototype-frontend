@@ -1,6 +1,5 @@
 import { TaskState} from './task-state.model';
 import { TaskDifficultyModel } from './task-difficulty.model';
-import { RecurrenceRule } from '../../api';
 
 export interface TaskModel {
   id?: string;
@@ -17,6 +16,5 @@ export interface TaskModel {
   chunks: string[];
   enableScheduleStart?: boolean;
   scheduleStartDate?: Date;
-  recurrence?: RecurrenceRule;
 }
 

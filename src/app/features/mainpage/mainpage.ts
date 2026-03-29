@@ -2,17 +2,17 @@ import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
-import AddTaskDialog from '../../shared/components/add-task-dialog/add-task-dialog.component';
+import { AddTaskDialogComponent } from '../../shared/components/add-task-dialog/add-task-dialog.component';
 
 @Component({
     selector: 'app-mainpage',
     standalone: true,
-    imports: [CommonModule, CardModule, ButtonModule, AddTaskDialog],
+    imports: [CommonModule, CardModule, ButtonModule, AddTaskDialogComponent],
     templateUrl: './mainpage.html',
     styleUrls: ['./mainpage.scss'],
 })
 export class MainpageComponent {
-    @ViewChild('taskDialog') taskDialog!: AddTaskDialog;
+    @ViewChild('taskDialog') taskDialog!: AddTaskDialogComponent;
 
     openDialog() {
         this.taskDialog.openDialog(null);

@@ -1,4 +1,18 @@
-import { Role, UserResponse, TaskResponse, OrganizationResponse, MemberResponse, TaskStatus, BreakResponse, RecurrenceType, ScheduleResponse, SuperAdminInvitationResponse, CognitiveLoad, ScheduleEntry } from '../../api';
+import {
+  Role,
+  UserResponse,
+  TaskResponse,
+  OrganizationResponse,
+  MemberResponse,
+  TaskStatus,
+  BreakResponse,
+  RecurrenceType,
+  ScheduleResponse,
+  SuperAdminInvitationResponse,
+  CognitiveLoad,
+  ScheduleEntry,
+  WorkingHoursResponse,
+} from '../../api';
 
 // Hilfsfunktion für das aktuelle Datum (Montag der Woche)
 const getMonday = (date: Date): Date => {
@@ -126,6 +140,7 @@ export const MOCK_MEMBERS: MemberResponse[] = [
 export const MOCK_BREAKS: BreakResponse[] = [
   {
     id: 'b-1',
+    breakType: 'RECURRING',
     label: 'Lunch Break',
     startTime: '12:00',
     endTime: '13:00',
@@ -136,6 +151,7 @@ export const MOCK_BREAKS: BreakResponse[] = [
   },
   {
     id: 'b-2',
+    breakType: 'RECURRING',
     label: 'Coffee Break',
     startTime: '15:00',
     endTime: '15:15',
@@ -157,7 +173,8 @@ export const MOCK_SCHEDULE: ScheduleResponse = {
   ],
   entries: [
     {
-      id: 'e-1',
+      source: 'ONE_TIME',
+      entryId: 'e-1',
       date: formatIsoDate(MONDAY),
       startTime: '09:00',
       endTime: '12:00',
@@ -168,7 +185,8 @@ export const MOCK_SCHEDULE: ScheduleResponse = {
       isPinned: false,
     },
     {
-      id: 'e-2',
+      source: 'ONE_TIME',
+      entryId: 'e-2',
       date: formatIsoDate(MONDAY),
       startTime: '12:00',
       endTime: '13:00',
@@ -179,7 +197,8 @@ export const MOCK_SCHEDULE: ScheduleResponse = {
       isPinned: false,
     },
     {
-      id: 'e-3',
+      source: 'ONE_TIME',
+      entryId: 'e-3',
       date: formatIsoDate(MONDAY),
       startTime: '13:00',
       endTime: '17:00',
@@ -190,7 +209,8 @@ export const MOCK_SCHEDULE: ScheduleResponse = {
       isPinned: false,
     },
     {
-      id: 'e-4',
+      source: 'ONE_TIME',
+      entryId: 'e-4',
       date: formatIsoDate(new Date(MONDAY.getTime() + 86400000)), // Dienstag
       startTime: '09:00',
       endTime: '10:30',
@@ -200,6 +220,18 @@ export const MOCK_SCHEDULE: ScheduleResponse = {
       isCompleted: false,
       isPinned: false,
     }
+  ],
+};
+
+export const MOCK_WORKING_HOURS: WorkingHoursResponse = {
+  days: [
+    { dayOfWeek: 'MONDAY', isWorkDay: true, startTime: '08:00', endTime: '17:00' },
+    { dayOfWeek: 'TUESDAY', isWorkDay: true, startTime: '08:00', endTime: '17:00' },
+    { dayOfWeek: 'WEDNESDAY', isWorkDay: true, startTime: '08:00', endTime: '17:00' },
+    { dayOfWeek: 'THURSDAY', isWorkDay: true, startTime: '08:00', endTime: '17:00' },
+    { dayOfWeek: 'FRIDAY', isWorkDay: true, startTime: '08:00', endTime: '15:00' },
+    { dayOfWeek: 'SATURDAY', isWorkDay: false },
+    { dayOfWeek: 'SUNDAY', isWorkDay: false },
   ],
 };
 

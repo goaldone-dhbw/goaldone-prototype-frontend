@@ -1,7 +1,7 @@
 <p-dialog
   [visible]="showDialog()"
   (visibleChange)="showDialog.set($event)"
-  [header]="isEditMode() ? 'Aufgabe bearbeiten' : 'Aufgabe hinzufügen'"
+  [header]="isEditMode() ? (isRoutine() ? 'Routine bearbeiten' : 'Aufgabe bearbeiten') : 'Hinzufügen'"
   [modal]="true"
   [style]="{ width: '60rem' }"
   [closable]="false">
@@ -16,6 +16,16 @@
     }
 
     <p-card class="form-grid">
+      <div class="toggle-container mb-4">
+        <label class="mr-2">Ist dies eine wiederkehrende Routine?</label>
+        <p-toggleswitch
+          [ngModel]="isRoutine()"
+          (ngModelChange)="onRoutineToggle($event)"
+          [disabled]="isEditMode()"
+          name="isRoutine">
+        </p-toggleswitch>
+      </div>
+
       <div class="general">
         <div class="input-row">
           <label>Titel:</label>
@@ -27,30 +37,32 @@
             name="title">
         </div>
 
-        <div class="input-row">
-          <label>Status:</label>
-          <p-select
-            id="status"
-            [options]="taskStates"
-            optionLabel="label"
-            optionValue="value"
-            [ngModel]="formData().status"
-            (ngModelChange)="updateFormData('status', $event)"
-            name="status"
-            placeholder="Status wählen">
-          </p-select>
-        </div>
+        @if (!isRoutine()) {
+          <div class="input-row">
+            <label>Status:</label>
+            <p-select
+              id="status"
+              [options]="taskStates"
+              optionLabel="label"
+              optionValue="value"
+              [ngModel]="formData().status"
+              (ngModelChange)="updateFormData('status', $event)"
+              name="status"
+              placeholder="Status wählen">
+            </p-select>
+          </div>
 
-        <div class="input-row">
-          <label>Frist:</label>
-          <p-datepicker
-            id="deadline"
-            [showTime]="true"
-            [ngModel]="formData().deadline"
-            (ngModelChange)="updateFormData('deadline', $event)"
-            name="deadline">
-          </p-datepicker>
-        </div>
+          <div class="input-row">
+            <label>Frist:</label>
+            <p-datepicker
+              id="deadline"
+              [showTime]="true"
+              [ngModel]="formData().deadline"
+              (ngModelChange)="updateFormData('deadline', $event)"
+              name="deadline">
+            </p-datepicker>
+          </div>
+        }
 
         <div class="input-row">
           <label>Kognitiver Anspruch:</label>
@@ -68,7 +80,6 @@
 
         <div class="input-row">
           <label>Geschätzte Zeit:</label>
-
           <input
             pInputText
             id="estimatedTime"
@@ -77,6 +88,19 @@
             name="estimatedTime"
             placeholder="z.B. 2d 1h 30m">
         </div>
+
+        @if (isRoutine()) {
+          <div class="input-row">
+            <label>Bevorzugte Startzeit:</label>
+            <input
+              pInputText
+              id="preferredStartTime"
+              [ngModel]="formData().preferredStartTime"
+              (ngModelChange)="updateFormData('preferredStartTime', $event)"
+              name="preferredStartTime"
+              placeholder="hh:mm">
+          </div>
+        }
 
         <div class="input-row full-width">
           <label>Beschreibung:</label>
@@ -91,85 +115,91 @@
         </div>
       </div>
 
-      <br>
-      <hr>
-      <br>
-      <div class="schedule">
-        <div class="input-row">
-          <label>Nicht planen vor:</label>
-          <br>
-          <p-datepicker
-            [showClear]="true"
-            id="scheduleStartDate"
-            [showTime]="true"
-            [ngModel]="formData().scheduleStartDate"
-            (ngModelChange)="updateFormData('scheduleStartDate', $event)"
-            name="scheduleStartDate">
-          </p-datepicker>
-        </div>
-      </div>
-
-      <br>
-      <hr>
-      <br>
-
-      <div class="schedule">
-
-        <div class="input-row">
-          <label>Wiederkehrende Aufgaben:</label>
-          <p-select
-            [options]="recurrenceTypes"
-            optionLabel="label"
-            optionValue="value"
-            [(ngModel)]="selectedRecurrenceType"
-            (ngModelChange)="updateRecurrence($event)"
-            [showClear]="false">
-          </p-select>
-        </div>
-      </div>
-
-      <br>
-      <hr>
-      <br>
-
-      <div class="chunk">
-
-        <!-- Bis jetzt noch nicht implementiert im Backend -->
-        <div class="input-row full-width">
-          <p-button
-            label="Arbeitspaket hinzufügen"
-            icon="pi pi-plus"
-            (click)="addChunk()">
-          </p-button>
-        </div>
-
-        <div class="input-row full-width">
-          <div class="chunk-list">
-
-            @for (c of formData().chunks; track $index; let i = $index) {
-              <div class="chunk-item">
-                <label>{{ i + 1 }}.</label>
-
-                <input
-                  pInputText
-                  [ngModel]="c"
-                  (ngModelChange)="updateChunk(i, $event)"
-                  [class.ng-invalid]="!isValidTime(c) && c"
-                  placeholder="hh:mm"
-                  name="chunk{{i}}">
-
-                <p-button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  (click)="removeChunk(i)">
-                </p-button>
-              </div>
-            }
-
+      @if (!isRoutine()) {
+        <br>
+        <hr>
+        <br>
+        <div class="schedule">
+          <div class="input-row">
+            <label>Nicht planen vor:</label>
+            <br>
+            <p-datepicker
+              [showClear]="true"
+              id="scheduleStartDate"
+              [showTime]="true"
+              [ngModel]="formData().scheduleStartDate"
+              (ngModelChange)="updateFormData('scheduleStartDate', $event)"
+              name="scheduleStartDate">
+            </p-datepicker>
           </div>
         </div>
+      }
 
-      </div>
+      @if (isRoutine()) {
+        <br>
+        <hr>
+        <br>
+        <div class="schedule">
+          <div class="input-row">
+            <label>Wiederholung:</label>
+            <p-select
+              [options]="recurrenceTypes"
+              optionLabel="label"
+              optionValue="value"
+              [ngModel]="selectedRecurrenceType()"
+              (ngModelChange)="updateRecurrence($event)"
+              [showClear]="false"
+              name="recurrenceType">
+            </p-select>
+          </div>
+          <div class="input-row">
+            <label>Intervall (alle N Einheiten):</label>
+            <p-inputnumber
+              [ngModel]="formData().recurrenceRule?.interval"
+              (ngModelChange)="updateFormData('recurrenceRule', { ...formData().recurrenceRule, interval: $event })"
+              [min]="1"
+              name="interval">
+            </p-inputnumber>
+          </div>
+        </div>
+      }
+
+      @if (!isRoutine()) {
+        <br>
+        <hr>
+        <br>
+        <div class="chunk">
+          <div class="input-row full-width">
+            <p-button
+              label="Arbeitspaket hinzufügen"
+              icon="pi pi-plus"
+              (click)="addChunk()">
+            </p-button>
+          </div>
+
+          <div class="input-row full-width">
+            <div class="chunk-list">
+              @for (c of formData().chunks; track $index; let i = $index) {
+                <div class="chunk-item">
+                  <label>{{ i + 1 }}.</label>
+                  <input
+                    pInputText
+                    [ngModel]="c"
+                    (ngModelChange)="updateChunk(i, $event)"
+                    [class.ng-invalid]="!isValidTime(c) && c"
+                    placeholder="hh:mm"
+                    name="chunk{{i}}">
+                  <p-button
+                    icon="pi pi-trash"
+                    severity="danger"
+                    (click)="removeChunk(i)">
+                  </p-button>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
 
       <br>
       <hr>

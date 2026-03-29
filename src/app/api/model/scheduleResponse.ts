@@ -16,13 +16,16 @@ export interface ScheduleResponse {
      */
     generatedAt: string;
     from: string;
+    /**
+     * Letzter tatsächlich eingeplanter Tag. Wird dynamisch vom Algorithmus bestimmt.
+     */
     to: string;
     /**
      * Summe aller eingeplanten Arbeitsminuten im Zeitraum
      */
     totalWorkMinutes: number;
     /**
-     * Warnungen des Planungsalgorithmus. Leer wenn kein Problem erkannt wurde. Mögliche Einträge (Beispiele): - `\"task-budget-exceeded:uuid\"` – Task passt nicht vollständig ins Tagesbudget - `\"deadline-at-risk:uuid\"` – Task-Deadline kann mit aktuellem Budget nicht eingehalten werden - `\"unschedulable-task:uuid\"` – Task konnte im Zeitraum gar nicht eingeplant werden 
+     * Warnungen des Planungsalgorithmus. Leer wenn kein Problem erkannt wurde. Mögliche Einträge: - `\"deadline-missed:uuid\"` – Einmaliger Task konnte vor seiner Deadline   nicht vollständig eingeplant werden. Das verfügbare Tagesbudget   (nach Abzug von RecurringTemplates, Pausen und Pinned/Completed Entries)   reichte nicht aus, um den Task rechtzeitig zu platzieren. 
      */
     warnings: Array<string>;
     entries: Array<ScheduleEntry>;
