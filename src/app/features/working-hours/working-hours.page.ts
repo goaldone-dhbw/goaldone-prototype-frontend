@@ -24,7 +24,6 @@ import { Toast } from 'primeng/toast';
 import { AddBreakDialog } from './breaks-dialog/breaks-dialog.component';
 import { InputText } from 'primeng/inputtext';
 
-
 @Component({
   selector: 'app-working-hours-page',
   standalone: true,
@@ -235,7 +234,7 @@ export class WorkingHoursPage implements OnInit {
   }
 
   addBreak() {
-    this.addBreakDialog.openDialog();
+    this.addBreakDialog.openDialog(null);
   }
 
   private loadBreaks() {
@@ -275,5 +274,9 @@ export class WorkingHoursPage implements OnInit {
         });
       },
     });
+  }
+
+  protected editBreak(breakModel: BreakResponse) {
+    this.addBreakDialog.openDialog(breakModel);
   }
 }

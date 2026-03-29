@@ -16,8 +16,8 @@ import { MessageModule } from 'primeng/message';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { MessageService } from 'primeng/api';
 
-import { BreakType, RecurrenceType } from '../../../api';
-import { CreateBreakRequest, RecurrenceRule } from '../../../api';
+import { BreakResponse, BreakType, RecurrenceType } from '../../../api';
+import { CreateBreakRequest } from '../../../api';
 import { BreaksService } from '../../../shared/services/breaks.service';
 import { BreaksModel } from '../../../shared/models/breaks.model';
 
@@ -86,20 +86,15 @@ export class AddBreakDialog {
 
   protected readonly BreakType = BreakType;
   protected readonly RecurrenceType = RecurrenceType;
+  private breakId: string = "";
 
 
-  openDialog() {
-    this.resetForm();
+  openDialog(data: BreakResponse | null) {
+    this.initializeForm(data);
     this.showDialog.set(true);
   }
 
-  onSubmit() {
-    if (!this.validate()) {
-      return;
-    }
-
-    this.isLoading.set(true);
-
+  createBreak() {
     const request = this.buildRequest();
     this.breaksService.createBreak(request).subscribe({
       next: () => {
@@ -124,6 +119,48 @@ export class AddBreakDialog {
         this.isLoading.set(false);
       },
     });
+  }
+
+  updateBreak(): void {
+    const request = this.buildRequest();
+    this.breaksService.updateBreak(request, this.breakId).subscribe({
+      next: () => {
+        this.breaksService.emitMessage({
+          severity: 'success',
+          summary: 'Erfolg',
+          detail: 'Pause wurde aktualisiert.',
+        });
+        // Trigger reload of breaks
+        this.breaksService.triggerBreaksRefresh();
+        this.showDialog.set(false);
+        this.resetForm();
+      },
+      error: () => {
+        this.breaksService.emitMessage({
+          severity: 'error',
+          summary: 'Fehler',
+          detail: 'Pause konnte nicht aktualisiert werden.',
+        });
+      },
+      complete: () => {
+        this.isLoading.set(false);
+      },
+    });
+  }
+
+
+  onSubmit() {
+    if (!this.validate()) {
+      return;
+    }
+
+    this.isLoading.set(true);
+
+    if (this.breakId) {
+      this.updateBreak();
+    } else {
+      this.createBreak();
+    }
   }
 
   private validate(): boolean {
@@ -199,6 +236,8 @@ export class AddBreakDialog {
   }
 
   private isValidTimeFormat(time: string): boolean {
+    console.log(`Validating time format for: ${time}`);
+
     const regex = /^([01]\d|2[0-3]):[0-5]\d$/;
     return regex.test(time);
   }
@@ -241,23 +280,6 @@ export class AddBreakDialog {
     return `${year}-${month}-${day}`;
   }
 
-  private resetForm() {
-    this.breakForm.set({
-      label: '',
-      startTime: '09:00',
-      endTime: '10:00',
-      breakType: BreakType.OneTime,
-      recurrence: {
-        type: RecurrenceType.Daily,
-        interval: 1,
-      },
-      date: null,
-      validFrom: null,
-      validUntil: null,
-    });
-    this.errorMessage.set(undefined);
-  }
-
   updateForm(field: string, value: any) {
     const current = this.breakForm();
 
@@ -279,7 +301,6 @@ export class AddBreakDialog {
       return;
     }
 
-    // optional UX reset bei Typwechsel
     if (field === 'breakType') {
       const updated = { ...current, breakType: value };
 
@@ -308,23 +329,44 @@ export class AddBreakDialog {
     });
   }
 
-  deleteBreak(breakId: string) {
-    this.breaksService.deleteBreak(breakId).subscribe({
-      next: () => {
-        this.breaksService.emitMessage({
-          severity: 'success',
-          summary: 'Erfolg',
-          detail: 'Pause wurde gelöscht.',
-        });
-        this.breaksService.triggerBreaksRefresh();
+  private resetForm() {
+    this.breakId = "";
+
+    this.breakForm.set({
+      label: '',
+      startTime: '09:00',
+      endTime: '10:00',
+      breakType: BreakType.OneTime,
+      recurrence: {
+        type: RecurrenceType.Daily,
+        interval: 1,
       },
-      error: () => {
-        this.breaksService.emitMessage({
-          severity: 'error',
-          summary: 'Fehler',
-          detail: 'Pause konnte nicht gelöscht werden.',
-        });
-      },
+      date: null,
+      validFrom: null,
+      validUntil: null,
     });
+    this.errorMessage.set(undefined);
+  }
+
+  private initializeForm(data: BreakResponse | null) {
+    if (!data) {
+      this.resetForm();
+    }
+    else {
+      this.breakId = data.id
+      this.breakForm.set({
+        label: data.label,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        breakType: data.breakType,
+        recurrence: {
+          type: data.recurrence?.type || RecurrenceType.Daily,
+          interval: data.recurrence?.interval || 1,
+        },
+        date: data.date ? new Date(data.date) : null,
+        validFrom: data.validFrom ? new Date(data.validFrom) : null,
+        validUntil: data.validUntil ? new Date(data.validUntil) : null,
+      });
+    }
   }
 }

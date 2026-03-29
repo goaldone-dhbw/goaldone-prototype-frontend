@@ -47,7 +47,8 @@
           <p-datePicker
             [(ngModel)]="c.startHour"
             [timeOnly]="true"
-            hourFormat="24">
+            hourFormat="24"
+            placeholder="Startzeit">
           </p-datePicker>
 
           <!-- End Hour -->
@@ -98,6 +99,7 @@
               pInputText
               [(ngModel)]="b.label"
               readonly
+              disabled
               placeholder="Bezeichnung">
 
             <!-- Break Type -->
@@ -106,8 +108,8 @@
               [ngModel]="mapBreakTypes(b.breakType)"
               [readonly]="true"
               readonly
+              disabled
               placeholder="Pausentyp">
-
 
             <!-- Break Start -->
             <p-datePicker
@@ -127,6 +129,13 @@
               hourFormat="24"
               placeholder="Endzeit">
             </p-datePicker>
+
+            <!-- Edit Button -->
+            <p-button
+              icon="pi pi-pencil"
+              severity="danger"
+              (click)="editBreak(b)">
+            </p-button>
 
             <!-- Delete Button -->
             <p-button

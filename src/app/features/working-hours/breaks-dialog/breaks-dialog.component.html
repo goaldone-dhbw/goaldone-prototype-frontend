@@ -33,6 +33,7 @@
             timeOnly="true"
             [(ngModel)]="breakForm().startTime"
             (ngModelChange)="updateForm('startTime',$event)"
+            hourFormat="24"
             name="startTime"
             required />
         </div>
@@ -74,7 +75,7 @@
               [(ngModel)]="breakForm().date"
               (ngModelChange)="updateForm('date',$event)"
               name="date"
-              dateFormat="dd.mm.yyyy">
+              dateFormat="dd.mm.yy">
             </p-datePicker>
           </div>
         }
@@ -133,7 +134,7 @@
               [(ngModel)]="breakForm().validFrom"
               (ngModelChange)="updateForm('validFrom',$event)"
               name="validFrom"
-              dateFormat="dd.mm.yyyy">
+              dateFormat="dd.mm.yy">
             </p-datePicker>
           </div>
 
