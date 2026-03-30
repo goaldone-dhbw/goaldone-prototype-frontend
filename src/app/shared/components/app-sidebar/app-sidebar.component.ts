@@ -26,6 +26,11 @@ export class AppSidebarComponent {
             routerLink: '/app',
         },
         {
+            label: 'Aufgaben & Routinen',
+            icon: 'pi pi-list',
+            routerLink: '/app/tasks',
+        },
+        {
             label: 'Planungsansicht',
             icon: 'pi pi-list-check',
             routerLink: '/app/schedule',

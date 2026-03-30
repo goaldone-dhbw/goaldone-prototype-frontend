@@ -3,7 +3,7 @@ import { TaskModel } from '../models/task.model';
 import { TaskDifficultyModel } from '../models/task-difficulty.model';
 import { TaskState } from '../models/task-state.model';
 import { TasksService as TasksApiService } from '../../api/api/tasks.service';
-import { map } from 'rxjs';
+import { map, switchMap, of } from 'rxjs';
 import {
   CognitiveLoad,
   CreateTaskRequest,
@@ -54,6 +54,15 @@ export class TaskService {
     };
 
     return this.tasksApiService.updateTask(task.id, request).pipe(
+      switchMap((response) => {
+        const currentStatus = this.mapStatusToState(response.status);
+        if (task.status === TaskState.DONE && currentStatus !== TaskState.DONE) {
+          return this.tasksApiService.completeTask(task.id!);
+        } else if (task.status !== TaskState.DONE && currentStatus === TaskState.DONE) {
+          return this.tasksApiService.reopenTask(task.id!);
+        }
+        return of(response);
+      }),
       map((response) => {
         this.loadTasksFromDB();
         return response;

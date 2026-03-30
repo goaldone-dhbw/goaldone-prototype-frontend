@@ -50,6 +50,10 @@ export class SchedulePage implements OnInit {
     this.addTaskDialog.openDialog(null);
   }
 
+  onTaskSaved(range: { from: string; to: string }) {
+    this.facade.loadWeek(range.from, range.to).subscribe();
+  }
+
   onWeekChanged(event: { from: string; to: string }) {
     // Load the schedule for the selected week
     this.facade.loadWeek(event.from, event.to).subscribe();
