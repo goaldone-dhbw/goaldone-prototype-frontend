@@ -1,0 +1,40 @@
+name: goaldone-frontend
+
+services:
+  goaldone-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: goaldone-frontend:latest
+    restart: unless-stopped
+    networks:
+      - zitadel
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=zitadel"
+      
+      - "traefik.http.services.goaldone-frontend.loadbalancer.server.port=80"
+      
+      # HTTP -> HTTPS Redirect
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
+      
+      # Web entrypoint (HTTP)
+      - "traefik.http.routers.goaldone-frontend-web.rule=Host(`${FRONTEND_DOMAIN}`)"
+      - "traefik.http.routers.goaldone-frontend-web.entrypoints=web"
+      - "traefik.http.routers.goaldone-frontend-web.middlewares=redirect-to-https"
+      - "traefik.http.routers.goaldone-frontend-web.service=goaldone-frontend"
+      - "traefik.http.routers.goaldone-frontend-web.priority=100"
+      
+      # Websecure entrypoint (HTTPS)
+      - "traefik.http.routers.goaldone-frontend-websecure.rule=Host(`${FRONTEND_DOMAIN}`)"
+      - "traefik.http.routers.goaldone-frontend-websecure.entrypoints=websecure"
+      - "traefik.http.routers.goaldone-frontend-websecure.tls=true"
+      - "traefik.http.routers.goaldone-frontend-websecure.tls.certresolver=le"
+      - "traefik.http.routers.goaldone-frontend-websecure.service=goaldone-frontend"
+      - "traefik.http.routers.goaldone-frontend-websecure.priority=100"
+
+networks:
+  zitadel:
+    external: true
+    name: zitadel
